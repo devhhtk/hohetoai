@@ -1,0 +1,675 @@
+/* ========================================
+   About Us — HoHeTo Kyle
+   Figma specs extracted from screenshots
+   ======================================== */
+
+/* ── Page Base ── */
+html {
+  scroll-behavior: smooth;
+  overflow: auto !important;
+  height: auto !important;
+}
+body {
+  font-family: 'Instrument Sans', sans-serif;
+  background: #ffffff;
+  color: #111111;
+  overflow: auto !important;
+  height: auto !important;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+
+:root {
+  --color-primary:      #08D2C1;
+  --color-primary-dark: #06b5a6;
+  --color-primary-glow: rgba(8, 210, 193, 0.35);
+  --color-text-dark:    #111111;
+  --color-text-body:    #333333;
+  --color-text-muted:   #6D6D6D;
+  --font-display:       'Exo 2', sans-serif;
+  --font-body:          'Instrument Sans', sans-serif;
+  --nav-height:         76px;
+  --max-width:          1200px;
+  --transition-normal:  0.25s ease;
+  --transition-fast:    0.15s ease;
+}
+
+/* ══════════════════════════════════════
+   PAGE HERO BANNER
+   Figma: W:1439 H:351
+   Background: page_hero_bg.png (dark teal nebula)
+   Title: "About Us" — Exo 2 Bold, white, centered
+   Subtitle: Instrument Sans, rgba(255,255,255,0.85), centered
+   ══════════════════════════════════════ */
+.page-hero {
+  position: relative;
+  width: 100%;
+  height: 351px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #041a18;
+}
+
+.page-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.page-hero__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+/* Subtle darkening overlay */
+.page-hero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 20, 18, 0.35);
+}
+
+.page-hero__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  max-width: var(--max-width);
+  padding: 0 40px;
+}
+
+/* Figma: Title — Exo 2, Bold, large white */
+.page-hero__title {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+/* Figma: Subtitle — Instrument Sans, ~16px, white 85% opacity, 2 lines centered */
+.page-hero__subtitle {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+  max-width: 100%;
+  text-align: center;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════
+   BREADCRUMB
+   Figma: "Home > About Us"
+   Instrument Sans Medium 16px, color #4B4B4B
+   Y: 461 (below hero), X: 100 — left-aligned in container
+   ══════════════════════════════════════ */
+.breadcrumb {
+  background: #ffffff;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.breadcrumb__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.breadcrumb__link {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 500;
+  color: #4B4B4B;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+.breadcrumb__link:hover {
+  color: var(--color-primary);
+}
+.breadcrumb__sep {
+  /* Figma: angle-right icon — SVG chevron */
+  display: flex;
+  align-items: center;
+  color: #4B4B4B;
+  font-size: 14px;
+}
+.breadcrumb__current {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 500;
+  color: #4B4B4B;
+}
+
+/* ══════════════════════════════════════
+   WHO WE ARE SECTION
+   Figma: White bg, 2-col layout
+   Left: text block W:618 — heading Exo2 Bold 40px, body text
+   Right: img_about.png — rounded corners ~12px
+   Vertical padding: ~72px top/bottom
+   ══════════════════════════════════════ */
+.who-we-are {
+  background: #ffffff;
+  padding: 72px 0 80px;
+}
+.who-we-are__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+/* Figma: "Who We Are" — Exo 2 Bold 40px, #021129 */
+.who-we-are__heading {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 700;
+  color: #021129;
+  line-height: 1.2;
+  margin: 0 0 20px 0;
+}
+
+/* Figma: Body text — Instrument Sans Medium 16px, line-height 26px, #333 */
+.who-we-are__text {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+.who-we-are__text p {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  color: #444444;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Figma: Right image — rounded ~12px, fills column */
+.who-we-are__image {
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+}
+.who-we-are__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+
+/* ══════════════════════════════════════
+   OUR VISION SECTION
+   Figma: Dark teal banner section (like CTA banner on homepage)
+   Background: cta-banner-bg.png, rounded 20px, full-width-ish
+   Title: "Our Vision" — Exo 2 Bold white
+   Body: Instrument Sans, white ~80% opacity
+   ══════════════════════════════════════ */
+.our-vision {
+  background: #ffffff;
+  padding: 0 0 30px;
+}
+.our-vision__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 40px;
+}
+.our-vision__banner {
+  width: 100%;
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.our-vision__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.our-vision__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.our-vision__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 18, 16, 0.50);
+}
+.our-vision__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  padding: 56px 60px;
+  max-width: 90%;
+}
+.our-vision__heading {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+  margin: 0;
+}
+.our-vision__text {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.65;
+
+  margin: 0;
+}
+
+/* ══════════════════════════════════════
+   OUR MISSION SECTION
+   Exact same card structure & CSS as homepage "Why People Love Summoning Creatures"
+   Uses .features / .feature-card classes — fully shared with homepage pattern
+   ══════════════════════════════════════ */
+.our-mission.features {
+  background: #ffffff;
+  padding: 50px 24px;
+}
+
+/* ── Feature card grid (copied 1:1 from homepage) ── */
+.features__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+}
+
+.features__header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.features__heading {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.2;
+  max-width: 750px;
+  text-align: center;
+}
+
+.features__subtext {
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 32px;
+  color: #6D6D6D;
+  max-width: 776px;
+  text-align: center;
+}
+
+.features__cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+  padding: 12px; /* space for teal rotate corners to show without clipping */
+}
+
+/* Figma: Rectangle 8 (teal, 177.01°) behind Rectangle 9 (white, 180°)
+   — ~3° rotation difference makes teal poke out at all four corners */
+.feature-card {
+  position: relative;
+}
+
+/* Teal background rectangle — same size, rotated ~3deg so corners peek out */
+.feature-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #00D7CC;
+  border-radius: 20px;
+  z-index: 0;
+  transform: rotate(-3deg);
+  transform-origin: center;
+}
+
+/* White card on top — straight, no rotation */
+.feature-card__inner {
+  position: relative;
+  z-index: 1;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 32px 28px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  min-height: 225px;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.feature-card:hover .feature-card__inner {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Icon container — mission SVGs are 67×92 / 75×92, displayed at 85px height */
+.feature-card__icon {
+  width: 108px;
+  height: 85px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.feature-card__icon img,
+.feature-card__icon svg {
+  width: auto;
+  height: 85px;
+  object-fit: contain;
+}
+
+/* Figma: Exo 2 SemiBold 20px #000000 */
+.feature-card__title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  color: #000000;
+  line-height: 1.3;
+  padding: 0 25px 0 25px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .features__heading { font-size: 34px; }
+  .features__subtext { font-size: 17px; }
+  .feature-card__title { font-size: 18px; }
+}
+
+@media (max-width: 768px) {
+  .our-mission.features { padding: 56px 20px; }
+  .features__heading { font-size: 26px; }
+  .features__subtext { font-size: 15px; line-height: 26px; }
+  .features__cards {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .who-we-are__inner {
+    gap: 40px;
+  }
+  .who-we-are__heading { font-size: 34px; }
+}
+
+@media (max-width: 768px) {
+  .page-hero { height: 260px; }
+  .page-hero__title { font-size: 34px; }
+  .page-hero__subtitle { font-size: 14px; }
+
+  .who-we-are { padding: 48px 0 56px; }
+  .who-we-are__inner {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 0 24px;
+  }
+  .who-we-are__heading { font-size: 28px; }
+
+  .our-vision { padding: 0 24px 56px; }
+  .our-vision__content { padding: 40px 28px; }
+  .our-vision__heading { font-size: 24px; }
+
+  .breadcrumb__inner { padding: 0 24px; }
+}
+
+@media (max-width: 480px) {
+  .page-hero__title { font-size: 28px; }
+  .our-vision__banner { border-radius: 14px; }
+}
+/* ══════════════════════════════════════
+   WHAT MAKES US DIFFERENT
+   Figma: W:1439 H:651, fill #08D2C1 (teal)
+   Left: creature illustration (Group_11.png)
+   Right: heading + 4 feature rows
+   Heading: Exo 2 Bold 40px #0D0D0D
+   Feature title: Exo 2 SemiBold 24px #0D0D0D (shield icon left)
+   Feature body: Instrument Sans Regular 18px lh:26 #2E2E2E
+   ══════════════════════════════════════ */
+.what-makes-us-different {
+  background: #08D2C1;
+  width: 100%;
+  overflow: hidden;
+}
+
+.wmd__inner {
+  max-width: 90%;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  align-items: center;
+  min-height: 651px;
+  gap: 40px;
+}
+
+/* ── Left: Creature image ── */
+.wmd__image {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  align-self: stretch;
+  padding-top: 24px;
+}
+
+.wmd__creature {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  object-fit: contain;
+  object-position: bottom center;
+  display: block;
+  margin-bottom: -4px;
+}
+
+/* ── Right: Content ── */
+.wmd__content {
+  padding: 56px 0 56px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Figma: Exo 2 Bold 40px #0D0D0D */
+.wmd__heading {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 700;
+  color: #0D0D0D;
+  line-height: 1.2;
+  margin: 0;
+}
+
+/* ── Feature list ── */
+.wmd__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0;
+  margin: 0;
+}
+
+.wmd__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Row: shield icon + bold title side by side */
+.wmd__item-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Figma: Vector.svg — shield-check W:18 H:22, white fill */
+.wmd__icon {
+  width: 18px;
+  height: 22px;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Figma: Exo 2 SemiBold 24px #0D0D0D */
+.wmd__item-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+/* Figma: Instrument Sans Regular 18px lh:26 #2E2E2E */
+.wmd__item-desc {
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 400;
+  color: #2E2E2E;
+  line-height: 26px;
+  margin: 0;
+  /* Indent to align with title text (icon width + gap) */
+  padding-left: 28px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .wmd__heading { font-size: 32px; }
+  .wmd__item-title { font-size: 20px; }
+  .wmd__item-desc { font-size: 16px; }
+  .wmd__creature { max-width: 380px; }
+}
+
+@media (max-width: 768px) {
+  .wmd__inner {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 40px 24px;
+    gap: 32px;
+  }
+  .wmd__image {
+    justify-content: center;
+    padding-top: 0;
+    max-height: 300px;
+    overflow: hidden;
+  }
+  .wmd__creature {
+    max-width: 280px;
+    margin-bottom: 0;
+  }
+  .wmd__content {
+    padding: 0;
+    gap: 20px;
+  }
+  .wmd__heading { font-size: 26px; }
+  .wmd__item-title { font-size: 18px; }
+  .wmd__item-desc { font-size: 15px; line-height: 22px; }
+}
+/* ══════════════════════════════════════
+   CTA BANNER SECTION
+   Copied 1:1 from homepage.css
+   Dark teal rounded container on #F5F5F5 background
+   Rounded corners ~20px, full bg image with sparkles
+   ══════════════════════════════════════ */
+.cta-banner-section {
+  background: #F5F5F5;
+  padding: 55px 40px 72px;
+}
+.cta-banner {
+  max-width: 1060px;
+  margin: 0 auto;
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cta-banner__bg { position: absolute; inset: 0; z-index: 0; }
+.cta-banner__bg img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+.cta-banner__bg::after { content: ''; position: absolute; inset: 0; background: rgba(2, 18, 16, 0.5); }
+.cta-banner__content {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column;
+  align-items: center; text-align: center;
+  gap: 12px; padding: 52px 40px;
+}
+.cta-banner__heading {
+  font-family: var(--font-display);
+  font-size: 30px; font-weight: 700;
+  color: #ffffff; line-height: 1.2;
+}
+.cta-banner__subtext {
+  font-family: var(--font-body);
+  font-size: 16px; font-weight: 400;
+  color: rgba(255,255,255,0.8);
+  max-width: 90%; line-height: 1.6;
+  margin-bottom: 4px;
+}
+.cta-banner__btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 28px;
+  background: var(--color-primary);
+  color: #041a1a;
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 600;
+  border-radius: 100px; border: none; cursor: pointer;
+  text-decoration: none; letter-spacing: 0.02em;
+  transition: background var(--transition-normal), box-shadow var(--transition-normal), transform var(--transition-fast);
+}
+.cta-banner__btn:hover { background: #0ae0cd; box-shadow: 0 6px 24px rgba(8,210,193,0.5); transform: translateY(-2px); color: #041a1a; }
+.cta-banner__btn:active { transform: translateY(0); }
+.cta-banner__btn-icon { font-size: 14px; line-height: 1; }
+
+@media (max-width: 768px) {
+  .cta-banner__heading { font-size: 22px; }
+  .cta-banner__subtext { font-size: 14px; }
+  .cta-banner__content { padding: 36px 24px; }
+  .cta-banner-section { padding: 40px 20px 56px; }
+}
+@media (max-width: 480px) {
+  .cta-banner { border-radius: 14px; }
+}

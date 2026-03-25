@@ -1,0 +1,239 @@
+/* ========================================
+   Register Page — Mirrors Login Styles
+   (inherits all shared classes from login.css)
+   Add register-specific overrides below
+   ======================================== */
+
+/* Re-import all login styles by including login.css in HTML,
+   OR copy login.css here. Since the project uses per-page CSS files,
+   this file simply extends login.css. Include BOTH in register.html
+   if you want to share styles, or duplicate below. */
+
+/* ── Shared layout (copy of login.css core) ── */
+
+.login-page {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 48fr 52fr;  /* ← was 1fr 1fr */
+  overflow: hidden;
+}
+
+/* ── Left Panel: Artwork ── */
+.login-artwork {
+  position: relative;
+  overflow: hidden;
+  background: #050c10;
+}
+
+/* REPLACE with this */
+.login-artwork__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 80% 20%;
+  display: block;
+}
+
+.login-artwork__edge {
+  position: absolute;
+  top: 0; right: 0;
+  width: 2px; height: 100%;
+  background: rgba(8, 210, 193, 0.12);
+  pointer-events: none;
+}
+
+/* ── Right Panel: Form ── */
+.login-form-panel {
+  background: #0d0d0f;               /* ← was #0b1a1a, Figma is near-black */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 60px;
+  overflow: hidden;
+}
+
+.login-form-container {
+  width: 100%;
+  max-width: 480px;
+}
+
+/* Heading */
+.login-heading {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  text-align: center;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.login-subheading {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  color: #FFFFFF;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+/* Form Fields */
+.form-group {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 16px 48px;                /* ← was 14px, taller fields */
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);  /* ← slightly more subtle */
+  border-radius: var(--radius-sm);
+  color: #FFFFFF;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.form-input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+
+.form-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(8,210,193,0.15);
+}
+
+.form-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,0.5);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.form-group:focus-within .form-icon {
+  color: var(--color-primary);
+}
+.form-group:focus-within .form-icon img,
+.form-group:focus-within .form-icon svg path {
+  opacity: 1 !important;
+  filter: invert(72%) sepia(60%) saturate(400%) hue-rotate(140deg) brightness(105%);
+}
+
+.form-toggle-password {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  color: rgba(255,255,255,0.5);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: color var(--transition-fast);
+}
+.form-toggle-password:hover { color: var(--color-primary); }
+
+/* Register / Submit Button */
+.btn-login {
+  width: 100%;
+  padding: 13px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-normal), box-shadow var(--transition-normal), transform var(--transition-fast);
+  margin-bottom: 28px;
+}
+.btn-login:hover {
+  background: #0ae0cd;
+  box-shadow: 0 4px 20px rgba(8,210,193,0.4);
+  transform: translateY(-1px);
+}
+.btn-login:active { transform: translateY(0); }
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #FFFFFF;
+  opacity: 0.3;
+}
+.divider span {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #FFFFFF;
+  letter-spacing: 0.12em;
+}
+
+/* Social Buttons */
+.social-buttons {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.btn-social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;                      /* ← was 80px */
+  height: 52px;                      /* ← was 48px */
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-md);   /* ← was radius-sm, slightly more rounded */
+  transition: border-color var(--transition-normal), background var(--transition-normal);
+  padding: 0;
+  overflow: hidden;
+}
+.btn-social:hover {
+  border-color: rgba(8,210,193,0.45);
+  background: rgba(255,255,255,0.1);
+}
+.btn-social svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Login prompt */
+.register-prompt {
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: #FFFFFF;
+}
+.register-prompt a {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  html, body { overflow: auto; }
+  .login-page {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 100vh;
+  }
+  .login-artwork { height: 280px; }
+  .login-form-panel { padding: 40px 24px; }
+}
