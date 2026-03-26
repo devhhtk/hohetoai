@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — HoHeTo Kyle</title>
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body class="dashboard-page">
+    <!-- ══ Navbar ══ -->
+    <header class="navbar" id="navbar">
+        <div class="navbar__inner">
+            <a href="../index.html" class="navbar__logo">
+                <img src="../img/logo.png" alt="Hoheto Kai" class="navbar__logo-img">
+            </a>
+            <nav class="navbar__nav" id="navMenu">
+                <a href="../index.html" class="navbar__link">Home</a>
+                <a href="../pages/about.html" class="navbar__link">About Us</a>
+                <a href="../pages/how-it-works.html" class="navbar__link">How It Works</a>
+                <a href="../pages/explore.html" class="navbar__link">Explore Creatures</a>
+                <a href="../pages/support.html" class="navbar__link">Support Us</a>
+                <a href="../pages/contact.html" class="navbar__link">Contact Us</a>
+            </nav>
+
+            <!-- Auth State UI -->
+            <div id="auth-logged-out">
+                <a href="../pages/login.html" class="navbar__signin">Sign In</a>
+            </div>
+            <div id="auth-logged-in" class="navbar__user hidden">
+                <a href="dashboard.html" class="navbar__user-link">
+                    <span id="auth-user-name" class="navbar__username">...</span>
+                </a>
+                <button id="auth-signout-btn" class="navbar__signout">Sign Out</button>
+            </div>
+
+            <button class="navbar__hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- ══ Hub Hero ══ -->
+        <section class="dashboard-hero">
+            <div class="dashboard-hero__inner">
+                <h1 class="dashboard-hero__welcome">Welcome Back, <span id="dash-user-name">Creator</span></h1>
+                <p class="dashboard-hero__email" id="dash-user-email">...</p>
+            </div>
+        </section>
+
+        <!-- ══ Main Content ══ -->
+        <section class="dashboard-content">
+            <div class="dashboard-content__inner">
+                
+                <!-- Stats Grid -->
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <span class="stat-card__label">Creatures Created</span>
+                        <span class="stat-card__value" id="stats-count">0</span>
+                        <p class="stat-card__desc">Total digital beings summoned.</p>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__label">Platform Rank</span>
+                        <span class="stat-card__value">Alpha</span>
+                        <p class="stat-card__desc">Early access supporter status.</p>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__label">Storage Used</span>
+                        <span class="stat-card__value">12 MB</span>
+                        <p class="stat-card__desc">Media and creature data.</p>
+                    </div>
+                </div>
+
+                <!-- Collection Placeholder -->
+                <div class="dashboard-section">
+                    <div class="dashboard-section__header">
+                        <h2 class="dashboard-section__title">Your Collection</h2>
+                        <a href="../pages/explore.html" class="btn-neon">Create New</a>
+                    </div>
+
+                    <div class="dashboard-empty">
+                        <div class="dashboard-empty__icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="16"></line>
+                                <line x1="8" y1="12" x2="16" y2="12"></line>
+                            </svg>
+                        </div>
+                        <p class="dashboard-empty__text">
+                            You haven't created any creatures yet. Start your journey by summoning your first digital companion.
+                        </p>
+                        <a href="../pages/explore.html" style="color: var(--neon-teal); font-weight: 500;">Begin Summoning &rarr;</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- ══ Site Footer ══ -->
+    <footer class="site-footer">
+        <div class="footer__body">
+            <div class="footer__brand">
+                <a href="../index.html" class="footer__logo">
+                    <img src="../img/logo_footer.png" alt="Hoheto Kai" class="footer__logo-img">
+                </a>
+                <p class="footer__desc">
+                    Creature-Gen AI is a creative AI platform designed to turn everyday
+                    media into extraordinary digital creatures.
+                </p>
+            </div>
+            <div class="footer__links-col">
+                <h3 class="footer__col-heading">Dashboard</h3>
+                <ul class="footer__links">
+                    <li><a href="dashboard.html">My Profile</a></li>
+                    <li><a href="#">Settings</a></li>
+                    <li><a href="../pages/support.html">Member Benefits</a></li>
+                </ul>
+            </div>
+            <div class="footer__links-col">
+                <h3 class="footer__col-heading">Quick Links</h3>
+                <ul class="footer__links">
+                    <li><a href="../pages/explore.html">Explore</a></li>
+                    <li><a href="../pages/how-it-works.html">Tutorial</a></li>
+                    <li><a href="../pages/contact.html">Help Desk</a></li>
+                </ul>
+            </div>
+            <div class="footer__newsletter">
+                <h3 class="footer__col-heading">Member Support</h3>
+                <p style="font-size: 14px; color: #94A3B8; margin-top: 10px;">
+                    Having issues? Contact our tech team for immediate assistance.
+                </p>
+                <a href="../pages/contact.html" class="btn-neon" style="margin-top: 15px; display: inline-block;">Get Help</a>
+            </div>
+        </div>
+        <div class="footer__bottom">
+            <p class="footer__copyright">By Kyma Found © 2025 GraffMedia LLC</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/db.js"></script>
+    <script>
+        // Init Auth & Load Stats
+        if (window.AumageDB) {
+            window.AumageDB.init();
+            
+            // Custom listener to update dashboard content when auth state changes
+            const originalUpdateUI = window.AumageDB.updateAuthUI;
+            window.AumageDB.updateAuthUI = function() {
+                originalUpdateUI.call(this);
+                
+                const user = this.user;
+                if (user) {
+                    document.getElementById('dash-user-name').textContent = user.email?.split('@')[0] || 'Creator';
+                    document.getElementById('dash-user-email').textContent = user.email;
+                    
+                    // Fetch real count if available
+                    if (this.getMyCreatures) {
+                        this.getMyCreatures().then(list => {
+                            if (list && list.length > 0) {
+                                document.getElementById('stats-count').textContent = list.length;
+                                // Could also populate the "collection" section here
+                            }
+                        });
+                    }
+                } else {
+                    // Not logged in? Redirect to login if on dashboard
+                    window.location.href = '../pages/login.html';
+                }
+            };
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const navbar = document.getElementById("navbar");
+            if (navbar) {
+                window.addEventListener("scroll", () => {
+                    navbar.classList.toggle("scrolled", window.scrollY > 10);
+                }, { passive: true });
+            }
+        });
+    </script>
+</body>
+</html>

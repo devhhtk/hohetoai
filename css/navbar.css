@@ -34,6 +34,18 @@ body {
   min-height: 200px;
 }
 
+.navbar__user-link {
+  text-decoration: none !important;
+  color: inherit !important;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.2s ease;
+}
+
+.navbar__user-link:hover {
+  opacity: 0.8;
+}
+
 .hidden {
   display: none !important;
 }
