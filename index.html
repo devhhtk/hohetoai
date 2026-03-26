@@ -5,27 +5,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HoHeTo Kyle — Homepage</title>
-  <link rel="stylesheet" href="../css/variables.css" />
-  <link rel="stylesheet" href="../css/navbar.css" />
-  <link rel="stylesheet" href="../css/homepage.css" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/homepage.css" />
 </head>
 
 <body>
   <!-- ══ Navbar ══ -->
   <header class="navbar" id="navbar">
     <div class="navbar__inner">
-      <a href="../pages/homepage.html" class="navbar__logo">
+      <a href="index.html" class="navbar__logo">
         <img src="img/logo.png" alt="Hoheto Kai" class="navbar__logo-img" />
       </a>
       <nav class="navbar__nav" id="navMenu">
-        <a href="../pages/homepage.html" class="navbar__link navbar__link--active">Home</a>
-        <a href="../pages/about.html" class="navbar__link">About Us</a>
-        <a href="../pages/how-it-works.html" class="navbar__link">How It Works</a>
-        <a href="../pages/explore.html" class="navbar__link">Explore Creatures</a>
-        <a href="../pages/support.html" class="navbar__link">Support Us</a>
-        <a href="../pages/contact.html" class="navbar__link">Contact Us</a>
+        <a href="index.html" class="navbar__link navbar__link--active">Home</a>
+        <a href="pages/about.html" class="navbar__link">About Us</a>
+        <a href="pages/how-it-works.html" class="navbar__link">How It Works</a>
+        <a href="pages/explore.html" class="navbar__link">Explore Creatures</a>
+        <a href="pages/support.html" class="navbar__link">Support Us</a>
+        <a href="pages/contact.html" class="navbar__link">Contact Us</a>
       </nav>
-      <a href="pages/login.html" class="navbar__signin">Sign In</a>
+
+      <!-- Auth State UI -->
+      <div id="auth-logged-out">
+        <a href="pages/login.html" class="navbar__signin">Sign In</a>
+      </div>
+      <div id="auth-logged-in" class="navbar__user hidden">
+        <span id="auth-user-name" class="navbar__username">...</span>
+        <button id="auth-signout-btn" class="navbar__signout">Sign Out</button>
+      </div>
+
       <button class="navbar__hamburger" id="hamburger" aria-label="Toggle menu">
         <span></span><span></span><span></span>
       </button>
@@ -43,7 +52,7 @@
         Make Some Noise.<br />
         Reveal The Monster You Unlocked.
       </h1>
-      <a href="../pages/explore.html" class="hero__cta">Create Your Creature</a>
+      <a href="pages/explore.html" class="hero__cta">Create Your Creature</a>
     </div>
   </section>
 
@@ -244,7 +253,7 @@
           Press record, upload an image, or mix both. Discover the creature
           hiding inside your sound.
         </p>
-        <a href="../pages/explore.html" class="cta-banner__btn">
+        <a href="pages/explore.html" class="cta-banner__btn">
           <span class="cta-banner__btn-icon">✦</span>
           Start Your First Summon
         </a>
@@ -258,7 +267,7 @@
     <div class="footer__body">
       <!-- Col 1: Brand + description -->
       <div class="footer__brand">
-        <a href="../pages/homepage.html" class="footer__logo">
+        <a href="index.html" class="footer__logo">
           <img src="img/logo_footer.png" alt="Hoheto Kai" class="footer__logo-img" />
         </a>
         <p class="footer__desc">
@@ -271,10 +280,10 @@
       <div class="footer__links-col">
         <h3 class="footer__col-heading">Quick Links</h3>
         <ul class="footer__links">
-          <li><a href="../pages/homepage.html">Home</a></li>
-          <li><a href="../pages/about.html">About Us</a></li>
-          <li><a href="../pages/how-it-works.html">How It Works</a></li>
-          <li><a href="../pages/explore.html">Explore Creatures</a></li>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="pages/about.html">About Us</a></li>
+          <li><a href="pages/how-it-works.html">How It Works</a></li>
+          <li><a href="pages/explore.html">Explore Creatures</a></li>
         </ul>
       </div>
 
@@ -282,10 +291,10 @@
       <div class="footer__links-col">
         <h3 class="footer__col-heading">Quick Links</h3>
         <ul class="footer__links">
-          <li><a href="../pages/faqs.html">FAQs</a></li>
-          <li><a href="../pages/contact.html">Contact Us</a></li>
-          <li><a href="../pages/terms.html">Terms Of Service</a></li>
-          <li><a href="../pages/privacy.html">Privacy Policy</a></li>
+          <li><a href="pages/faqs.html">FAQs</a></li>
+          <li><a href="pages/contact.html">Contact Us</a></li>
+          <li><a href="pages/terms.html">Terms Of Service</a></li>
+          <li><a href="pages/privacy.html">Privacy Policy</a></li>
         </ul>
       </div>
 
@@ -363,8 +372,14 @@
     </div>
   </footer>
 
-  <script src="../js/navbar.js"></script>
-  <script src="../js/homepage.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/db.js"></script>
+  <script>
+    // Initialize Supabase/Auth UI
+    if (window.AumageDB) {
+      window.AumageDB.init();
+    }
+  </script>
 
   <script>
     /* ══ Fan Carousel ══ */

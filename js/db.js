@@ -30,10 +30,16 @@ const AumageDB = {
 
     this.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-    // Check for existing session
-    this.supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        this.user = data.session.user;
+    // Check for existing session and verify with server
+    this.supabase.auth.getUser().then(({ data, error }) => {
+      if (error) {
+        console.warn('AumageDB: Session invalid or user deleted', error.message);
+        this.user = null;
+        this.updateAuthUI();
+        return;
+      }
+      if (data.user) {
+        this.user = data.user;
         console.log('AumageDB: Logged in as', this.user.email || this.user.id);
         this.updateAuthUI();
       }

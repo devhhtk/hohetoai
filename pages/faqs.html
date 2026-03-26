@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FAQs — HoHeTo Kyle</title>
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/navbar.css" />
+    <link rel="stylesheet" href="../css/footer.css" />
+    <link rel="stylesheet" href="../css/faqs.css" />
+  </head>
+  <body>
+    <!-- ══ Navbar ══ -->
+    <header class="navbar" id="navbar">
+      <div class="navbar__inner">
+        <a href="../index.html" class="navbar__logo">
+          <img
+            src="../img/logo.png"
+            alt="Hoheto Kai"
+            class="navbar__logo-img"
+          />
+        </a>
+        <nav class="navbar__nav" id="navMenu">
+          <a href="../index.html" class="navbar__link">Home</a>
+          <a href="about.html" class="navbar__link">About Us</a>
+          <a href="how-it-works.html" class="navbar__link">How It Works</a>
+          <a href="explore.html" class="navbar__link">Explore Creatures</a>
+          <a href="support.html" class="navbar__link">Support Us</a>
+          <a href="contact.html" class="navbar__link">Contact Us</a>
+        </nav>
+
+        <!-- Auth State UI -->
+        <div id="auth-logged-out">
+          <a href="login.html" class="navbar__signin">Sign In</a>
+        </div>
+        <div id="auth-logged-in" class="navbar__user hidden">
+          <span id="auth-user-name" class="navbar__username">...</span>
+          <button id="auth-signout-btn" class="navbar__signout">Sign Out</button>
+        </div>
+        <button
+          class="navbar__hamburger"
+          id="hamburger"
+          aria-label="Toggle menu"
+        >
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ══ Page Hero Banner ══
+         Figma: Dark teal nebula bg, centered
+         Title: "Answers Before You Create" — Exo 2 Bold white
+         Subtitle: Instrument Sans, rgba(255,255,255,0.85)
+    ══ -->
+    <section class="page-hero">
+      <div class="page-hero__bg">
+        <img src="../img/page_hero_bg.png" alt="" />
+      </div>
+      <div class="page-hero__content">
+        <h1 class="page-hero__title">Answers Before You Create</h1>
+        <p class="page-hero__subtitle">
+          Everything you need to know about turning sound, images, and video
+          into creatures.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ Breadcrumb ══
+         Figma: "Home > FAQs"
+    ══ -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <div class="breadcrumb__inner">
+        <a href="../index.html" class="breadcrumb__link">Home</a>
+        <span class="breadcrumb__sep">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </span>
+        <span class="breadcrumb__current">FAQs</span>
+      </div>
+    </nav>
+
+    <!-- ══ FAQ Main Section ══
+         Figma: Centered header (FAQs title + subtext)
+                2-column accordion grid
+                Footer note with support email link
+    ══ -->
+    <section class="faq-section">
+      <div class="faq-section__inner">
+        <!-- Header -->
+        <div class="faq-section__header">
+          <h2 class="faq-section__heading">FAQs</h2>
+          <p class="faq-section__subtext">
+            Welcome to the Hoheto Kai FAQ section! Here you'll find answers to
+            common questions about how to use the platform, manage your account,
+            share content, and connect with the community.
+          </p>
+        </div>
+
+        <!-- 2-Column Accordion Grid
+             Figma: Left col — 7 items (first open/active with teal bg)
+                    Right col — 7 items (all closed)
+        -->
+        <div class="faq-grid">
+          <!-- Left Column -->
+          <div class="faq-col" id="faqColLeft">
+            <!-- Item 1 — Active/Open (teal bg, minus icon) -->
+            <div class="faq-item faq-item--active" id="faq-1">
+              <button
+                class="faq-item__question"
+                aria-expanded="true"
+                data-target="faq-1"
+              >
+                <span class="faq-item__text">What is this platform?</span>
+                <span class="faq-item__icon">
+                  <!-- faq-icon-collapse.svg: white diamond with horizontal minus line -->
+                  <img src="../img/faq-icon-collapse.svg" alt="Collapse" />
+                </span>
+              </button>
+              <div class="faq-item__answer">
+                <p>
+                  It's an AI platform where you can generate creatures from
+                  sound, audio, images, and videos.
+                </p>
+              </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="faq-item" id="faq-2">
+              <button
+                class="faq-item__question"
+                aria-expanded="false"
+                data-target="faq-2"
+              >
+                <span class="faq-item__text">How does it work?</span>
+                <span class="faq-item__icon">
+                  <!-- faq-icon-expand.svg: teal diamond with plus -->
+                  <img src="../img/faq-icon-expand.svg" alt="Expand" />
+                </span>
+              </button>
+              <div class="faq-item__answer">
+                <p>
+                  Upload a sound, image, or video and our AI engine processes
+                  your input to generate a unique creature card tailored to the
+                  characteristics of your media.
+                </p>
+              </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="faq-item" id="faq-3">
+              <button
+                class="faq-item__question"
+                aria-expanded="false"
+                data-target="faq-3"
+              >
+                <span class="faq-item__text"
+                  >What are the system requirements?</span
+                >
+                <span class="faq-item__icon">
+                  <img src="../img/faq-icon-expand.svg" alt="Expand" />
+                </span>
+              </button>
+              <div class="faq-item__answer">
+                <p>
+                  Hoheto Kai runs entirely in your browser. A modern browser
+                  (Chrome, Firefox, Safari, Edge) with a stable internet
+                  connection is all you need.
+                </p>
+              </div>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="faq-item" id="faq-4">
+              <button
+                class="faq-item__question"
+                aria-expanded="false"
+                data-target="faq-4"
+              >
+                <span class="faq-item__text"
+                  >Can I use Hoheto Kai on mobile?</span
+                >
+                <span class="faq-item__icon">
+                  <img src="../img/faq-icon-expand.svg" alt="Expand" />
+                </span>
+              </button>
+              <div class="faq-item__answer">
+                <p>
+                  Yes! The platform is fully responsive and works on iOS and
+                  Android browsers. A dedicated mobile app is coming soon.
+                </p>
+              </div>
+            </div>
+
+            <!-- Item 5 -->
+            <div class="faq-item" id="faq-5">
+              <button
+                class="faq-item__question"
+                aria-expanded="false"
+                data-target="faq-5"
+              >
+                <span class="faq-item__text">Is there a tutorial?</span>
+                <span class="faq-item__icon">
+                  <img src="../img/faq-icon-expand.svg" alt="Expand" />
+                </span>
+              </button>
+              <div class="faq-item__answer">
+                <p>
+                  Absolutely. Visit our How It Works page for a step-by-step
+                  guide on recording, uploading, and generating your first
+                  creature.
+                </p>
+              </div>
+            </div>
+
+            <!-- Item 6 -->
+            <div class="faq-item" id="faq-6">
+              <button
+                class="faq-item__question"
+                aria-expanded="false"
+                data-target="faq-6"
+              >
+                <span class="faq-item__text">How do I share my creations?</span>
+                <span class="faq-item__icon">
+                  <img src="../img/faq-icon-expand.svg" alt="Expand" />
+                </span>
+              </button>
+              <div class="faq-item__answer">
+                <p>
+                  Each creature card has a share button that lets you copy a
+                  public link or post directly to social media. You can also
+                  download the card as a high-res image.
+                </p>
+              </div>
+            </div>
+
+            <!-- Item 7 -->
+            <div class="faq-item" id="faq-7">
+              <button
+                class="faq-item__question"
+                aria-expanded="false"
+                data-target="faq-7"
+              >
+                <span class="faq-item__text"
+                  >What file formats are supported?</span
+                >
+                <span class="faq-item__icon">
+                  <img src="../img/faq-icon-expand.svg" alt="Expand" />
+                </span>
+              </button>
+              <div class="faq-item__answer">
+                <p>
+                  We support MP3, WAV, OGG for audio; JPG, PNG, WEBP for images;
+                  and MP4, MOV, WEBM for video. Maximum file size is 50MB per
+                  upload.
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- /faq-col left -->
+
+          <!-- Right Column -->
+          <div class="faq-col" id="faqColRight">
+            <!-- Item 8 -->
+            <div class="faq-item" id="faq-8">
+              <button
+                class="faq-item__question"
+                aria-expanded="false"
+                data-target="faq-8"
+              >
+                <span class="faq-item__text"
+                  >How do I collaborate with others?</span
+                >
+                <span class="faq-item__icon">
+                  <img src="../img/faq-icon-expand.svg" alt="Expand" />
+                </span>
+              </button>
+              <div class="faq-item__answer">
+                <p>
+                  You can invite friends via email or share a project link.
+                  Collaborators can co-create, comment on, and remix each
+                  other's creatures in real time.
+                </p>
+              </div>
+            </div>
+
+            <!-- Item 9 -->
+            <div class="faq-item" id="faq-9">
+              <button
+                class="faq-item__question"
+                aria-expanded="false"
+                data-target="faq-9"
+              >
+                <span class="faq-item__text">Can I sell my creatures?</span>
+                <span class="faq-item__icon">
+                  <img src="../img/faq-icon-expand.svg" alt="Expand" />
+                </span>
+              </button>
+              <div class="faq-item__answer">
+                <p>
+                  Yes. Pro and Enterprise plan users can list creatures on our
+                  marketplace. A small platform fee applies to each sale. See
+                  our pricing page for details.
+                </p>
+              </div>
+            </div>
+
+            <!-- Item 10 -->
+            <div class="faq-item" id="faq-10">
+              <button
+                class="faq-item__question"
+                aria-expanded="false"
+                data-target="faq-10"
+              >
+                <span class="faq-item__text"
+                  >How do I report inappropriate content?</span
+                >
+                <span class="faq-item__icon">
+                  <img src="../img/faq-icon-expand.svg" alt="Expand" />
+                </span>
+              </button>
+              <div class="faq-item__answer">
+                <p>
+                  Use the flag icon on any creature card or profile page to
+                  submit a report. Our moderation team reviews all reports
+                  within 24 hours.
+                </p>
+              </div>
+            </div>
+
+            <!-- Item 11 -->
+            <div class="faq-item" id="faq-11">
+              <button
+                class="faq-item__question"
+                aria-expanded="false"
+                data-target="faq-11"
+              >
+                <span class="faq-item__text">What is the privacy policy?</span>
+                <span class="faq-item__icon">
+                  <img src="../img/faq-icon-expand.svg" alt="Expand" />
+                </span>
+              </button>
+              <div class="faq-item__answer">
+                <p>
+                  We never sell your personal data. Your uploaded media is used
+                  solely to generate creatures and is deleted from our servers
+                  after 30 days. See our Privacy Policy for full details.
+                </p>
+              </div>
+            </div>
+
+            <!-- Item 12 -->
+            <div class="faq-item" id="faq-12">
+              <button
+                class="faq-item__question"
+                aria-expanded="false"
+                data-target="faq-12"
+              >
+                <span class="faq-item__text"
+                  >How do I manage my subscription?</span
+                >
+                <span class="faq-item__icon">
+                  <img src="../img/faq-icon-expand.svg" alt="Expand" />
+                </span>
+              </button>
+              <div class="faq-item__answer">
+                <p>
+                  Go to Account Settings → Subscription to upgrade, downgrade,
+                  or cancel your plan. Changes take effect at the start of your
+                  next billing cycle.
+                </p>
+              </div>
+            </div>
+
+            <!-- Item 13 -->
+            <div class="faq-item" id="faq-13">
+              <button
+                class="faq-item__question"
+                aria-expanded="false"
+                data-target="faq-13"
+              >
+                <span class="faq-item__text">What is the refund policy?</span>
+                <span class="faq-item__icon">
+                  <img src="../img/faq-icon-expand.svg" alt="Expand" />
+                </span>
+              </button>
+              <div class="faq-item__answer">
+                <p>
+                  We offer a 7-day money-back guarantee on all paid plans.
+                  Contact support within 7 days of your charge to request a full
+                  refund.
+                </p>
+              </div>
+            </div>
+
+            <!-- Item 14 -->
+            <div class="faq-item" id="faq-14">
+              <button
+                class="faq-item__question"
+                aria-expanded="false"
+                data-target="faq-14"
+              >
+                <span class="faq-item__text">How do I delete my account?</span>
+                <span class="faq-item__icon">
+                  <img src="../img/faq-icon-expand.svg" alt="Expand" />
+                </span>
+              </button>
+              <div class="faq-item__answer">
+                <p>
+                  Go to Account Settings → Danger Zone → Delete Account. This
+                  action is irreversible and all your creatures, collections,
+                  and data will be permanently removed.
+                </p>
+              </div>
+            </div>
+
+            <!-- Item 15 -->
+            <div class="faq-item" id="faq-15">
+              <button
+                class="faq-item__question"
+                aria-expanded="false"
+                data-target="faq-15"
+              >
+                <span class="faq-item__text"
+                  >Where can I find inspiration?</span
+                >
+                <span class="faq-item__icon">
+                  <img src="../img/faq-icon-expand.svg" alt="Expand" />
+                </span>
+              </button>
+              <div class="faq-item__answer">
+                <p>
+                  Browse the Explore Creatures gallery to see what the community
+                  has created. You can filter by trope, rarity, and trending to
+                  spark your next idea.
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- /faq-col right -->
+        </div>
+        <!-- /faq-grid -->
+
+        <!-- Footer note -->
+        <p class="faq-footer-note">
+          If you don't see your question here, feel free to reach out to
+          <a href="mailto:support@HoHeTo.com">support@HoHeTo.com</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ Site Footer (shared — identical to about.html) ══ -->
+    <footer class="site-footer">
+      <div class="footer__body">
+        <!-- Col 1: Brand -->
+        <div class="footer__brand">
+          <a href="../index.html" class="footer__logo">
+            <img
+              src="../img/logo_footer.png"
+              alt="Hoheto Kai"
+              class="footer__logo-img"
+            />
+          </a>
+          <p class="footer__desc">
+            Creature-Gen AI is a creative AI platform designed to turn everyday
+            media into extraordinary digital creatures.
+          </p>
+        </div>
+
+        <!-- Col 2: Quick Links (nav) -->
+        <div class="footer__links-col">
+          <h3 class="footer__col-heading">Quick Links</h3>
+          <ul class="footer__links">
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="how-it-works.html">How It Works</a></li>
+            <li><a href="explore.html">Explore Creatures</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Quick Links (legal) -->
+        <div class="footer__links-col">
+          <h3 class="footer__col-heading">Quick Links</h3>
+          <ul class="footer__links">
+            <li><a href="faqs.html">FAQs</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="terms.html">Terms Of Service</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Newsletter -->
+        <div class="footer__newsletter">
+          <h3 class="footer__col-heading">Join our newsletter</h3>
+          <div class="footer__newsletter-form">
+            <span
+              style="
+                display: flex;
+                align-items: center;
+                padding-left: 12px;
+                flex-shrink: 0;
+              "
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M16.5 5.25L9.75675 9.54525C9.52792 9.67816 9.268 9.74817 9.00338 9.74817C8.73875 9.74817 8.47883 9.67816 8.25 9.54525L1.5 5.25"
+                  stroke="#94A3B8"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M15 3H3C2.17157 3 1.5 3.67157 1.5 4.5V13.5C1.5 14.3284 2.17157 15 3 15H15C15.8284 15 16.5 14.3284 16.5 13.5V4.5C16.5 3.67157 15.8284 3 15 3Z"
+                  stroke="#94A3B8"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+            <input
+              type="email"
+              class="footer__newsletter-input"
+              placeholder="Enter Email"
+              aria-label="Email for newsletter"
+            />
+            <button
+              class="footer__newsletter-btn"
+              type="button"
+              aria-label="Subscribe"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g clip-path="url(#clip0_footer_faqs)">
+                  <path
+                    d="M12.1135 18.0716C12.1452 18.1505 12.2002 18.2179 12.2712 18.2646C12.3423 18.3113 12.4259 18.3352 12.5109 18.333C12.5959 18.3308 12.6781 18.3027 12.7467 18.2524C12.8152 18.2021 12.8668 18.1321 12.8943 18.0516L18.311 2.2183C18.3377 2.14446 18.3428 2.06455 18.3257 1.98793C18.3086 1.9113 18.27 1.84113 18.2145 1.78561C18.159 1.7301 18.0888 1.69154 18.0122 1.67446C17.9356 1.65737 17.8557 1.66246 17.7818 1.68913L1.9485 7.1058C1.86808 7.13338 1.79802 7.1849 1.74772 7.25344C1.69743 7.32199 1.66931 7.40428 1.66713 7.48926C1.66495 7.57425 1.68883 7.65787 1.73555 7.7289C1.78226 7.79993 1.84959 7.85497 1.9285 7.88663L8.53683 10.5366C8.74574 10.6203 8.93554 10.7453 9.0948 10.9043C9.25406 11.0633 9.37948 11.2529 9.4635 11.4616L12.1135 18.0716Z"
+                    stroke="white"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M18.2119 1.78906L9.09521 10.9049"
+                    stroke="white"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </g>
+                <defs>
+                  <clipPath id="clip0_footer_faqs">
+                    <rect width="20" height="20" fill="white" />
+                  </clipPath>
+                </defs>
+              </svg>
+            </button>
+          </div>
+          <div class="footer__socials">
+            <a href="#" class="footer__social-link" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+                />
+              </svg>
+            </a>
+            <a href="#" class="footer__social-link" aria-label="Twitter">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"
+                />
+              </svg>
+            </a>
+            <a href="#" class="footer__social-link" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <path
+                  d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"
+                  fill="#EAEAEA"
+                />
+                <line
+                  x1="17.5"
+                  y1="6.5"
+                  x2="17.51"
+                  y2="6.5"
+                  stroke="#EAEAEA"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Copyright strip -->
+      <div class="footer__bottom">
+        <p class="footer__copyright">By Kyma Found © 2025 GraffMedia LLC</p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/db.js"></script>
+    <script>
+      // Initialize Supabase/Auth UI
+      if (window.AumageDB) {
+        window.AumageDB.init();
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        /* ── Navbar scroll shadow ── */
+        const navbar = document.getElementById("navbar");
+        if (navbar) {
+          window.addEventListener(
+            "scroll",
+            () => {
+              navbar.classList.toggle("scrolled", window.scrollY > 10);
+            },
+            { passive: true }
+          );
+        }
+
+        /* ── Hamburger ── */
+        const hamburger = document.getElementById("hamburger");
+        const navMenu = document.getElementById("navMenu");
+        if (hamburger && navMenu) {
+          hamburger.addEventListener("click", () => {
+            const isOpen = navMenu.classList.toggle("open");
+            hamburger.classList.toggle("open", isOpen);
+          });
+          document.addEventListener("click", (e) => {
+            if (navbar && !navbar.contains(e.target)) {
+              navMenu.classList.remove("open");
+              hamburger.classList.remove("open");
+            }
+          });
+        }
+
+        /* ══ FAQ Accordion ══
+           Clicking a question:
+           1. Closes any other open item across BOTH columns
+           2. Toggles the clicked item open/closed
+           3. Swaps expand/collapse icon
+        ══ */
+        const EXPAND_SRC = "../img/faq-icon-expand.svg";
+        const COLLAPSE_SRC = "../img/faq-icon-collapse.svg";
+
+        const allItems = document.querySelectorAll(".faq-item");
+
+        allItems.forEach((item) => {
+          const btn = item.querySelector(".faq-item__question");
+          const icon = item.querySelector(".faq-item__icon img");
+          const answer = item.querySelector(".faq-item__answer");
+
+          btn.addEventListener("click", () => {
+            const isOpen = item.classList.contains("faq-item--active");
+
+            /* Close all items */
+            allItems.forEach((i) => {
+              i.classList.remove("faq-item--active");
+              const ib = i.querySelector(".faq-item__question");
+              const ii = i.querySelector(".faq-item__icon img");
+              if (ib) ib.setAttribute("aria-expanded", "false");
+              if (ii) ii.src = EXPAND_SRC;
+            });
+
+            /* If it was closed, open it */
+            if (!isOpen) {
+              item.classList.add("faq-item--active");
+              btn.setAttribute("aria-expanded", "true");
+              icon.src = COLLAPSE_SRC;
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
