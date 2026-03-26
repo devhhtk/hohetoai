@@ -96,7 +96,7 @@ const AumageDB = {
   async signInWithEmail(email) {
     const { error } = await this.supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: window.location.origin }
+      options: { emailRedirectTo: window.location.origin + '/auth/dashboard.html' }
     });
     if (error) throw error;
   },

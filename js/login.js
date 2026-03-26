@@ -59,8 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (error) throw error;
 
             console.log('Login successful:', data);
-            // Redirect to explore or home page
-            window.location.href = '../index.html';
+            // Redirect to dashboard
+            window.location.href = '../auth/dashboard.html';
         } catch (err) {
             console.error('Login error:', err.message);
             alert('Login failed: ' + err.message);
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const { error } = await AumageDB.supabase.auth.signInWithOtp({
                     email,
                     options: {
-                        emailRedirectTo: window.location.origin + '/pages/explore.html'
+                        emailRedirectTo: window.location.origin + '/auth/dashboard.html'
                     }
                 });
 
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const { error } = await AumageDB.supabase.auth.signInWithOAuth({
                     provider,
                     options: {
-                        redirectTo: window.location.origin + '/pages/explore.html'
+                        redirectTo: window.location.origin + '/auth/dashboard.html'
                     }
                 });
                 if (error) throw error;

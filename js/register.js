@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     data: {
                         full_name: fullname
                     },
-                    redirectTo: window.location.origin + '/pages/explore.html'
+                    redirectTo: window.location.origin + '/auth/dashboard.html'
                 }
             });
 
@@ -85,8 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Registration successful:', data);
             
             if (data.user && data.session) {
-                // User is immediately logged in
-                window.location.href = '../index.html';
+                // User is immediately logged in - redirect to dashboard
+                window.location.href = '../auth/dashboard.html';
             } else {
                 // Email confirmation might be required
                 alert('Registration successful! Please check your email for confirmation.');
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const { error } = await AumageDB.supabase.auth.signInWithOAuth({
                     provider,
                     options: {
-                        redirectTo: window.location.origin + '/pages/explore.html'
+                        redirectTo: window.location.origin + '/auth/dashboard.html'
                     }
                 });
                 if (error) throw error;

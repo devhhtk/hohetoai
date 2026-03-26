@@ -4,184 +4,249 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — HoHeTo Kyle</title>
-    <link rel="stylesheet" href="../css/variables.css">
-    <link rel="stylesheet" href="../css/navbar.css">
-    <link rel="stylesheet" href="../css/footer.css">
+    <!-- CSS Dependencies -->
     <link rel="stylesheet" href="../css/dashboard.css">
 </head>
-<body class="dashboard-page">
-    <!-- ══ Navbar ══ -->
-    <header class="navbar" id="navbar">
-        <div class="navbar__inner">
-            <a href="../index.html" class="navbar__logo">
-                <img src="../img/logo.png" alt="Hoheto Kai" class="navbar__logo-img">
+<body class="dashboard-body">
+
+    <!-- ══ Sidebar ══ -->
+    <aside class="sidebar">
+        <div class="sidebar__logo">
+            <a href="../index.html">
+                <img src="../img/logo.png" alt="Hoheto Kai" class="sidebar__logo-img">
             </a>
-            <nav class="navbar__nav" id="navMenu">
-                <a href="../index.html" class="navbar__link">Home</a>
-                <a href="../pages/about.html" class="navbar__link">About Us</a>
-                <a href="../pages/how-it-works.html" class="navbar__link">How It Works</a>
-                <a href="../pages/explore.html" class="navbar__link">Explore Creatures</a>
-                <a href="../pages/support.html" class="navbar__link">Support Us</a>
-                <a href="../pages/contact.html" class="navbar__link">Contact Us</a>
-            </nav>
-
-            <!-- Auth State UI -->
-            <div id="auth-logged-out">
-                <a href="../pages/login.html" class="navbar__signin">Sign In</a>
-            </div>
-            <div id="auth-logged-in" class="navbar__user hidden">
-                <a href="dashboard.html" class="navbar__user-link">
-                    <span id="auth-user-name" class="navbar__username">...</span>
-                </a>
-                <button id="auth-signout-btn" class="navbar__signout">Sign Out</button>
-            </div>
-
-            <button class="navbar__hamburger" id="hamburger" aria-label="Toggle menu">
-                <span></span><span></span><span></span>
-            </button>
         </div>
-    </header>
+        
+        <nav class="sidebar__nav">
+            <a href="#" class="nav-item nav-item--active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Dashboard
+            </a>
+            <a href="#" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                My Creatures
+            </a>
+            <a href="../pages/explore.html" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                Explore
+            </a>
+            <a href="#" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                Lab
+            </a>
+            <a href="#" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18h.01"></path><path d="M7 21h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z"></path></svg>
+                Sound Library
+            </a>
+            <a href="#" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Settings
+            </a>
+        </nav>
 
-    <main>
-        <!-- ══ Hub Hero ══ -->
-        <section class="dashboard-hero">
-            <div class="dashboard-hero__inner">
-                <h1 class="dashboard-hero__welcome">Welcome Back, <span id="dash-user-name">Creator</span></h1>
-                <p class="dashboard-hero__email" id="dash-user-email">...</p>
+        <div class="sidebar__profile" id="profileContainer">
+            <!-- Drop-up Menu -->
+            <div class="profile-dropup" id="profileDropup">
+                <a href="#" class="dropup-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    My Profile
+                </a>
+                <a href="#" class="dropup-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    Settings
+                </a>
+                <div style="height: 1px; background: rgba(255,255,255,0.05); margin: 4px 0;"></div>
+                <a href="#" class="dropup-item dropup-item--logout" id="auth-signout-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Sign Out
+                </a>
             </div>
-        </section>
 
-        <!-- ══ Main Content ══ -->
-        <section class="dashboard-content">
-            <div class="dashboard-content__inner">
-                
-                <!-- Stats Grid -->
-                <div class="dashboard-grid">
-                    <div class="stat-card">
-                        <span class="stat-card__label">Creatures Created</span>
-                        <span class="stat-card__value" id="stats-count">0</span>
-                        <p class="stat-card__desc">Total digital beings summoned.</p>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-card__label">Platform Rank</span>
-                        <span class="stat-card__value">Alpha</span>
-                        <p class="stat-card__desc">Early access supporter status.</p>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-card__label">Storage Used</span>
-                        <span class="stat-card__value">12 MB</span>
-                        <p class="stat-card__desc">Media and creature data.</p>
-                    </div>
+            <div class="profile-card" id="profileToggle">
+                <div class="profile-card__avatar">
+                    <img src="../img/avatar_placeholder.png" alt="" id="prof-avatar" onerror="this.src='https://ui-avatars.com/api/?name=User&background=334155&color=fff'">
                 </div>
+                <div class="profile-card__info">
+                    <span class="profile-card__name" id="prof-name">Loading...</span>
+                    <span class="profile-card__plan">Free Plan</span>
+                </div>
+                <div class="profile-card__chevron">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+            </div>
+        </div>
+    </aside>
 
-                <!-- Collection Placeholder -->
-                <div class="dashboard-section">
-                    <div class="dashboard-section__header">
-                        <h2 class="dashboard-section__title">Your Collection</h2>
-                        <a href="../pages/explore.html" class="btn-neon">Create New</a>
-                    </div>
+    <!-- ══ Main Content Area ══ -->
+    <main class="main-area">
+        
+        <!-- Top Navigation Bar -->
+        <header class="top-bar">
+            <h2 class="top-bar__title">Dashboard</h2>
+            
+            <div class="top-bar__search">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" class="search-input" placeholder="Search Here">
+            </div>
 
-                    <div class="dashboard-empty">
-                        <div class="dashboard-empty__icon">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="12" y1="8" x2="12" y2="16"></line>
-                                <line x1="8" y1="12" x2="16" y2="12"></line>
-                            </svg>
+            <div class="top-bar__actions">
+                <button class="action-btn" title="Toggle Theme">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </button>
+                <button class="action-btn" title="Notifications">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    <span class="badge--dot"></span>
+                </button>
+                <button class="btn-create">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Create Creature
+                </button>
+            </div>
+        </header>
+
+        <!-- Dynamic Content View -->
+        <div class="content-view">
+            
+            <!-- Welcome Header -->
+            <div class="welcome-section">
+                <h1 class="welcome-title">Welcome back, <span id="dash-greeting-name">Storyteller</span> 👋</h1>
+                <p class="welcome-subtitle">Turn sound, images, or video into creatures.</p>
+            </div>
+
+            <!-- Who's This For? -->
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <h3 class="section-title">Who's This For?</h3>
+                </div>
+                <div class="categories-grid">
+                    <!-- Standard (Default - All Ages) -->
+                    <div class="category-card">
+                        <div class="category-card__icon" style="color: var(--color-primary);">
+                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4"></path><path d="M12 18v4"></path><path d="M4.93 4.93l2.83 2.83"></path><path d="M16.24 16.24l2.83 2.83"></path><path d="M2 12h4"></path><path d="M18 12h4"></path><path d="M4.93 19.07l2.83-2.83"></path><path d="M16.24 7.76l2.83-2.83"></path></svg>
                         </div>
-                        <p class="dashboard-empty__text">
-                            You haven't created any creatures yet. Start your journey by summoning your first digital companion.
-                        </p>
-                        <a href="../pages/explore.html" style="color: var(--neon-teal); font-weight: 500;">Begin Summoning &rarr;</a>
+                        <div class="category-card__info">
+                            <span class="category-card__title">Standard</span>
+                            <span class="category-card__desc">Default - All Ages</span>
+                        </div>
+                    </div>
+                    <!-- Tween (Age 9-12, Fun Names) -->
+                    <div class="category-card">
+                        <div class="category-card__icon" style="color: #6366f1;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3z"></path><path d="M6 3a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3 3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z"></path></svg>
+                        </div>
+                        <div class="category-card__info">
+                            <span class="category-card__title">Tween</span>
+                            <span class="category-card__desc">Age 9-12, Fun Names</span>
+                        </div>
+                    </div>
+                    <!-- Kids (Age 5-8, Friendly & Cute) -->
+                    <div class="category-card">
+                        <div class="category-card__icon" style="color: #f59e0b;">
+                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        </div>
+                        <div class="category-card__info">
+                            <span class="category-card__title">Kids</span>
+                            <span class="category-card__desc">Age 5-8, Friendly & Cute</span>
+                        </div>
                     </div>
                 </div>
+            </section>
 
-            </div>
-        </section>
+            <!-- Trending Creatures -->
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <h3 class="section-title">Our Trending Creatures Cards</h3>
+                    <a href="#" class="btn-see-all">See all</a>
+                </div>
+                <div class="horizontal-scroll">
+                    <!-- Blank cards as placeholders -->
+                    <div class="creature-card--tall">
+                        <div class="placeholder-img"><span class="placeholder-label">GLIMMERWISP</span></div>
+                    </div>
+                    <div class="creature-card--tall">
+                        <div class="placeholder-img"><span class="placeholder-label">FLAMECURL</span></div>
+                    </div>
+                    <div class="creature-card--tall">
+                        <div class="placeholder-img"><span class="placeholder-label">GLOOMSERAPH</span></div>
+                    </div>
+                    <div class="creature-card--tall">
+                        <div class="placeholder-img"><span class="placeholder-label">GLOOMFIZZ</span></div>
+                    </div>
+                    <div class="creature-card--tall">
+                        <div class="placeholder-img"><span class="placeholder-label">FROSTCLAW</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Popular Characters -->
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <h3 class="section-title">Our Popular Characters</h3>
+                    <a href="#" class="btn-see-all">See all</a>
+                </div>
+                <div class="horizontal-scroll">
+                    <!-- Square cards as placeholders -->
+                    <div class="creature-card--square">
+                        <div class="placeholder-img"><span class="placeholder-label">JELLYFISH</span></div>
+                    </div>
+                    <div class="creature-card--square">
+                        <div class="placeholder-img"><span class="placeholder-label">OXIDIAN</span></div>
+                    </div>
+                    <div class="creature-card--square">
+                        <div class="placeholder-img"><span class="placeholder-label">MONKPET</span></div>
+                    </div>
+                    <div class="creature-card--square">
+                        <div class="placeholder-img"><span class="placeholder-label">LIZARD</span></div>
+                    </div>
+                    <div class="creature-card--square">
+                        <div class="placeholder-img"><span class="placeholder-label">BEARDED</span></div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
     </main>
 
-    <!-- ══ Site Footer ══ -->
-    <footer class="site-footer">
-        <div class="footer__body">
-            <div class="footer__brand">
-                <a href="../index.html" class="footer__logo">
-                    <img src="../img/logo_footer.png" alt="Hoheto Kai" class="footer__logo-img">
-                </a>
-                <p class="footer__desc">
-                    Creature-Gen AI is a creative AI platform designed to turn everyday
-                    media into extraordinary digital creatures.
-                </p>
-            </div>
-            <div class="footer__links-col">
-                <h3 class="footer__col-heading">Dashboard</h3>
-                <ul class="footer__links">
-                    <li><a href="dashboard.html">My Profile</a></li>
-                    <li><a href="#">Settings</a></li>
-                    <li><a href="../pages/support.html">Member Benefits</a></li>
-                </ul>
-            </div>
-            <div class="footer__links-col">
-                <h3 class="footer__col-heading">Quick Links</h3>
-                <ul class="footer__links">
-                    <li><a href="../pages/explore.html">Explore</a></li>
-                    <li><a href="../pages/how-it-works.html">Tutorial</a></li>
-                    <li><a href="../pages/contact.html">Help Desk</a></li>
-                </ul>
-            </div>
-            <div class="footer__newsletter">
-                <h3 class="footer__col-heading">Member Support</h3>
-                <p style="font-size: 14px; color: #94A3B8; margin-top: 10px;">
-                    Having issues? Contact our tech team for immediate assistance.
-                </p>
-                <a href="../pages/contact.html" class="btn-neon" style="margin-top: 15px; display: inline-block;">Get Help</a>
-            </div>
-        </div>
-        <div class="footer__bottom">
-            <p class="footer__copyright">By Kyma Found © 2025 GraffMedia LLC</p>
-        </div>
-    </footer>
-
+    <!-- Supabase & DB Layer -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/db.js"></script>
     <script>
-        // Init Auth & Load Stats
+        // Init Auth & Load User Data
         if (window.AumageDB) {
             window.AumageDB.init();
             
-            // Custom listener to update dashboard content when auth state changes
             const originalUpdateUI = window.AumageDB.updateAuthUI;
             window.AumageDB.updateAuthUI = function() {
                 originalUpdateUI.call(this);
                 
                 const user = this.user;
                 if (user) {
-                    document.getElementById('dash-user-name').textContent = user.email?.split('@')[0] || 'Creator';
-                    document.getElementById('dash-user-email').textContent = user.email;
-                    
-                    // Fetch real count if available
-                    if (this.getMyCreatures) {
-                        this.getMyCreatures().then(list => {
-                            if (list && list.length > 0) {
-                                document.getElementById('stats-count').textContent = list.length;
-                                // Could also populate the "collection" section here
-                            }
-                        });
-                    }
+                    const name = user.email?.split('@')[0] || 'Storyteller';
+                    document.getElementById('prof-name').textContent = name;
+                    document.getElementById('dash-greeting-name').textContent = name;
                 } else {
-                    // Not logged in? Redirect to login if on dashboard
+                    // Force login if dashboard accessed without session
                     window.location.href = '../pages/login.html';
                 }
             };
-        }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const navbar = document.getElementById("navbar");
-            if (navbar) {
-                window.addEventListener("scroll", () => {
-                    navbar.classList.toggle("scrolled", window.scrollY > 10);
-                }, { passive: true });
-            }
-        });
+            // Toggle Profile Dropup
+            const profileToggle = document.getElementById('profileToggle');
+            const profileDropup = document.getElementById('profileDropup');
+
+            profileToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileDropup.classList.toggle('profile-dropup--active');
+            });
+
+            document.addEventListener('click', () => {
+                profileDropup.classList.remove('profile-dropup--active');
+            });
+
+            profileDropup.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
     </script>
 </body>
 </html>
