@@ -44,15 +44,32 @@
   <!-- ══ Hero ══ -->
   <section class="hero">
     <div class="hero__bg">
-      <img src="img/hero-bg.png" alt="" class="hero__bg-img" />
+      <div class="carousel">
+        <div class="slider">
+          <div class="slide">
+            <img src="img/hero-bg.png" alt="" class="hero__bg-img" />
+          </div>
+          <div class="slide">
+            <img src="img/slider2.png" alt="" class="hero__bg-img" />
+          </div>
+          <div class="slide">
+            <img src="img/slider3.png" alt="" class="hero__bg-img" />
+          </div>
+
+        </div>
+        <button class="prev">❮</button>
+        <button class="next">❯</button>
+        <div class="dots"></div>
+      </div>
     </div>
+
     <div class="hero__content">
       <div class="hero__badge">See It. Hear It. Creature It.</div>
       <h1 class="hero__heading">
         Make Some Noise.<br />
         Reveal The Monster You Unlocked.
       </h1>
-      <a href="pages/explore.html" class="hero__cta">Create Your Creature</a>
+      <a href="../pages/explore.html" class="hero__cta">Create Your Creature</a>
     </div>
   </section>
 
@@ -428,6 +445,112 @@
       });
       render();
     })();
+  </script>
+  <script>
+    const slider = document.querySelector(".slider");
+    const originalSlides = Array.from(document.querySelectorAll(".slide"));
+    const dotsContainer = document.querySelector(".dots");
+
+    const total = originalSlides.length;
+    let index = 1;
+
+    // Create clones for infinite loop effect
+    const firstClone = originalSlides[0].cloneNode(true);
+    const lastClone = originalSlides[total - 1].cloneNode(true);
+
+    firstClone.id = "first-clone";
+    lastClone.id = "last-clone";
+
+    // Append and prepend clones
+    slider.appendChild(firstClone);
+    slider.insertBefore(lastClone, originalSlides[0]);
+
+    const allSlides = document.querySelectorAll(".slide");
+
+    // Prevent CSS transition on initial load
+    slider.style.transition = "none";
+    slider.style.transform = `translateX(-${index * 100}%)`;
+
+    // Generate dots based on original total
+    for (let i = 0; i < total; i++) {
+      const dot = document.createElement("div");
+      dot.classList.add("dot");
+      if (i === 0) dot.classList.add("active");
+
+      dot.addEventListener("click", () => {
+        slider.style.transition = "transform 0.5s ease";
+        index = i + 1;
+        updateSlider();
+      });
+      dotsContainer.appendChild(dot);
+    }
+
+    const dots = document.querySelectorAll(".dot");
+
+    function updateSlider() {
+      slider.style.transform = `translateX(-${index * 100}%)`;
+
+      // Active dot synchronization
+      dots.forEach(d => d.classList.remove("active"));
+
+      let dotIndex = index - 1;
+      if (index === 0) dotIndex = total - 1; // last clone active
+      if (index === allSlides.length - 1) dotIndex = 0; // first clone active
+
+      if (dots[dotIndex]) dots[dotIndex].classList.add("active");
+    }
+
+    // Seamless jump
+    slider.addEventListener("transitionend", () => {
+      if (allSlides[index].id === firstClone.id) {
+        slider.style.transition = "none";
+        index = 1;
+        slider.style.transform = `translateX(-${index * 100}%)`;
+      }
+      if (allSlides[index].id === lastClone.id) {
+        slider.style.transition = "none";
+        index = total;
+        slider.style.transform = `translateX(-${index * 100}%)`;
+      }
+    });
+
+    // next
+    document.querySelector(".next").onclick = () => {
+      if (index >= allSlides.length - 1) return;
+      slider.style.transition = "transform 0.5s ease";
+      index++;
+      updateSlider();
+    }
+
+    // prev
+    document.querySelector(".prev").onclick = () => {
+      if (index <= 0) return;
+      slider.style.transition = "transform 0.5s ease";
+      index--;
+      updateSlider();
+    }
+
+    // auto slide
+    let slideInterval = setInterval(() => {
+      if (index >= allSlides.length - 1) return;
+      slider.style.transition = "transform 0.5s ease";
+      index++;
+      updateSlider();
+    }, 2000);
+
+    // Optional: Pause auto slide when interacting
+    const carouselContainer = slider.closest('.carousel');
+    if (carouselContainer) {
+      carouselContainer.addEventListener('mouseenter', () => clearInterval(slideInterval));
+      carouselContainer.addEventListener('mouseleave', () => {
+        slideInterval = setInterval(() => {
+          if (index >= allSlides.length - 1) return;
+          slider.style.transition = "transform 0.5s ease";
+          index++;
+          updateSlider();
+        }, 2000);
+      });
+    }
   </script>
 </body>
 
