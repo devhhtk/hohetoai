@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,106 +8,21 @@
     <!-- CSS Dependencies -->
     <link rel="stylesheet" href="../css/dashboard.css">
 </head>
+
 <body class="dashboard-body">
 
-    <!-- ══ Sidebar ══ -->
-    <aside class="sidebar">
-        <div class="sidebar__logo">
-            <a href="../index.html">
-                <img src="../img/logo.png" alt="Hoheto Kai" class="sidebar__logo-img">
-            </a>
-        </div>
-        
-        <nav class="sidebar__nav">
-            <a href="#" class="nav-item nav-item--active">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                Dashboard
-            </a>
-            <a href="#" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                My Creatures
-            </a>
-            <a href="../pages/explore.html" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                Explore
-            </a>
-            <a href="#" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-                Lab
-            </a>
-            <a href="#" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18h.01"></path><path d="M7 21h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z"></path></svg>
-                Sound Library
-            </a>
-            <a href="#" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                Settings
-            </a>
-        </nav>
-
-        <div class="sidebar__profile" id="profileContainer">
-            <!-- Drop-up Menu -->
-            <div class="profile-dropup" id="profileDropup">
-                <a href="#" class="dropup-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                    My Profile
-                </a>
-                <a href="#" class="dropup-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                    Settings
-                </a>
-                <div style="height: 1px; background: rgba(255,255,255,0.05); margin: 4px 0;"></div>
-                <a href="#" class="dropup-item dropup-item--logout" id="auth-signout-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                    Sign Out
-                </a>
-            </div>
-
-            <div class="profile-card" id="profileToggle">
-                <div class="profile-card__avatar">
-                    <img src="../img/avatar_placeholder.png" alt="" id="prof-avatar" onerror="this.src='https://ui-avatars.com/api/?name=User&background=334155&color=fff'">
-                </div>
-                <div class="profile-card__info">
-                    <span class="profile-card__name" id="prof-name">Loading...</span>
-                    <span class="profile-card__plan">Free Plan</span>
-                </div>
-                <div class="profile-card__chevron">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </div>
-            </div>
-        </div>
-    </aside>
+    <!-- ══ Sidebar Placeholder ══ -->
+    <div id="comp-sidebar"></div>
 
     <!-- ══ Main Content Area ══ -->
     <main class="main-area">
-        
-        <!-- Top Navigation Bar -->
-        <header class="top-bar">
-            <h2 class="top-bar__title">Dashboard</h2>
-            
-            <div class="top-bar__search">
-                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" class="search-input" placeholder="Search Here">
-            </div>
 
-            <div class="top-bar__actions">
-                <button class="action-btn" title="Toggle Theme">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-                </button>
-                <button class="action-btn" title="Notifications">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                    <span class="badge--dot"></span>
-                </button>
-                <button class="btn-create">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    Create Creature
-                </button>
-            </div>
-        </header>
+        <!-- Top Navigation Bar Placeholder -->
+        <div id="comp-header"></div>
 
         <!-- Dynamic Content View -->
         <div class="content-view">
-            
+
             <!-- Welcome Header -->
             <div class="welcome-section">
                 <h1 class="welcome-title">Welcome back, <span id="dash-greeting-name">Storyteller</span> 👋</h1>
@@ -121,8 +37,8 @@
                 <div class="categories-grid">
                     <!-- Standard (Default - All Ages) -->
                     <div class="category-card">
-                        <div class="category-card__icon" style="color: var(--color-primary);">
-                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4"></path><path d="M12 18v4"></path><path d="M4.93 4.93l2.83 2.83"></path><path d="M16.24 16.24l2.83 2.83"></path><path d="M2 12h4"></path><path d="M18 12h4"></path><path d="M4.93 19.07l2.83-2.83"></path><path d="M16.24 7.76l2.83-2.83"></path></svg>
+                        <div class="category-card__img" style="color: #08D2C1;">
+                            <img src="../img/dash_3.png" alt="Standard">
                         </div>
                         <div class="category-card__info">
                             <span class="category-card__title">Standard</span>
@@ -131,8 +47,8 @@
                     </div>
                     <!-- Tween (Age 9-12, Fun Names) -->
                     <div class="category-card">
-                        <div class="category-card__icon" style="color: #6366f1;">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3z"></path><path d="M6 3a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3 3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z"></path></svg>
+                        <div class="category-card__img" style="color: #4ade80;">
+                            <img src="../img/dash_2.png" alt="Tween">
                         </div>
                         <div class="category-card__info">
                             <span class="category-card__title">Tween</span>
@@ -141,8 +57,8 @@
                     </div>
                     <!-- Kids (Age 5-8, Friendly & Cute) -->
                     <div class="category-card">
-                        <div class="category-card__icon" style="color: #f59e0b;">
-                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        <div class="category-card__img" style="color: #60a5fa;">
+                            <img src="../img/dash_1.png" alt="Kids">
                         </div>
                         <div class="category-card__info">
                             <span class="category-card__title">Kids</span>
@@ -158,51 +74,62 @@
                     <h3 class="section-title">Our Trending Creatures Cards</h3>
                     <a href="#" class="btn-see-all">See all</a>
                 </div>
-                <div class="horizontal-scroll">
-                    <!-- Blank cards as placeholders -->
+                <div class="creatures-grid">
+                    <!-- Glimmerwisp -->
                     <div class="creature-card--tall">
-                        <div class="placeholder-img"><span class="placeholder-label">GLIMMERWISP</span></div>
+                        <img src="../img/card1.png" alt="Glimmerwisp">
                     </div>
+                    <!-- Flamecurl -->
                     <div class="creature-card--tall">
-                        <div class="placeholder-img"><span class="placeholder-label">FLAMECURL</span></div>
+                        <img src="../img/card5.png" alt="Flamecurl">
                     </div>
+                    <!-- Gloomseraph -->
                     <div class="creature-card--tall">
-                        <div class="placeholder-img"><span class="placeholder-label">GLOOMSERAPH</span></div>
+                        <img src="../img/card4.png" alt="Gloomseraph">
                     </div>
+                    <!-- Gloomfizz -->
                     <div class="creature-card--tall">
-                        <div class="placeholder-img"><span class="placeholder-label">GLOOMFIZZ</span></div>
+                        <img src="../img/card3.png" alt="Gloomfizz">
                     </div>
+                    <!-- Frostclaw -->
                     <div class="creature-card--tall">
-                        <div class="placeholder-img"><span class="placeholder-label">FROSTCLAW</span></div>
+                        <img src="../img/card2.png" alt="Frostclaw">
                     </div>
                 </div>
             </section>
 
-            <!-- Popular Characters -->
+            <!-- Popular Characters Rounded Squares -->
             <section class="dashboard-section">
                 <div class="section-header">
                     <h3 class="section-title">Our Popular Characters</h3>
                     <a href="#" class="btn-see-all">See all</a>
                 </div>
-                <div class="horizontal-scroll">
-                    <!-- Square cards as placeholders -->
-                    <div class="creature-card--square">
-                        <div class="placeholder-img"><span class="placeholder-label">JELLYFISH</span></div>
+                <div class="creatures-grid">
+                    <!-- Jellyfish -->
+                    <div class="creature-card--rounded">
+                        <img src="../img/creature5.png" alt="Jellyfish">
                     </div>
-                    <div class="creature-card--square">
-                        <div class="placeholder-img"><span class="placeholder-label">OXIDIAN</span></div>
+                    <!-- Oxidian -->
+                    <div class="creature-card--rounded">
+                        <img src="../img/creature4.png" alt="Oxidian">
                     </div>
-                    <div class="creature-card--square">
-                        <div class="placeholder-img"><span class="placeholder-label">MONKPET</span></div>
+                    <!-- Monkpet -->
+                    <div class="creature-card--rounded">
+                        <img src="../img/creature3.png" alt="Monkpet">
                     </div>
-                    <div class="creature-card--square">
-                        <div class="placeholder-img"><span class="placeholder-label">LIZARD</span></div>
+                    <!-- Lizard -->
+                    <div class="creature-card--rounded">
+                        <img src="../img/creature2.png" alt="Lizard">
                     </div>
-                    <div class="creature-card--square">
-                        <div class="placeholder-img"><span class="placeholder-label">BEARDED</span></div>
+                    <!-- Bearded -->
+                    <div class="creature-card--rounded">
+                        <img src="../img/creature1.png" alt="Bearded">
                     </div>
                 </div>
             </section>
+
+            <!-- Footer Placeholder -->
+            <div id="comp-footer"></div>
 
         </div>
     </main>
@@ -210,43 +137,89 @@
     <!-- Supabase & DB Layer -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/db.js"></script>
+    <script src="../js/components.js"></script>
     <script>
-        // Init Auth & Load User Data
-        if (window.AumageDB) {
-            window.AumageDB.init();
-            
-            const originalUpdateUI = window.AumageDB.updateAuthUI;
-            window.AumageDB.updateAuthUI = function() {
-                originalUpdateUI.call(this);
-                
-                const user = this.user;
-                if (user) {
-                    const name = user.email?.split('@')[0] || 'Storyteller';
-                    document.getElementById('prof-name').textContent = name;
-                    document.getElementById('dash-greeting-name').textContent = name;
-                } else {
-                    // Force login if dashboard accessed without session
-                    window.location.href = '../pages/login.html';
-                }
-            };
+        // Init Components & Functionalities
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load Components
+            await ComponentLoader.loadAll([
+                { id: 'comp-sidebar', path: '../components/sidebar.html' },
+                { id: 'comp-header', path: '../components/header.html' },
+                { id: 'comp-footer', path: '../components/footer.html' }
+            ]);
 
-            // Toggle Profile Dropup
+            // Database & Auth Initialization
+            if (window.AumageDB) {
+                window.AumageDB.init();
+
+                const originalUpdateUI = window.AumageDB.updateAuthUI;
+                window.AumageDB.updateAuthUI = function () {
+                    originalUpdateUI.call(this);
+
+                    const user = this.user;
+                    if (user) {
+                        const name = user.email?.split('@')[0] || 'Storyteller';
+                        // Elements might be newly injected, so we select them again
+                        const profName = document.getElementById('prof-name');
+                        const greetName = document.getElementById('dash-greeting-name');
+                        if (profName) profName.textContent = name;
+                        if (greetName) greetName.textContent = name;
+                    } else {
+                        window.location.href = '../pages/login.html';
+                    }
+                };
+            }
+
+            // --- Sidebar & Profile UI ---
             const profileToggle = document.getElementById('profileToggle');
             const profileDropup = document.getElementById('profileDropup');
 
-            profileToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                profileDropup.classList.toggle('profile-dropup--active');
-            });
+            if (profileToggle && profileDropup) {
+                profileToggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    profileDropup.classList.toggle('profile-dropup--active');
+                });
 
-            document.addEventListener('click', () => {
-                profileDropup.classList.remove('profile-dropup--active');
-            });
+                document.addEventListener('click', () => {
+                    profileDropup.classList.remove('profile-dropup--active');
+                });
 
-            profileDropup.addEventListener('click', (e) => {
-                e.stopPropagation();
-            });
-        }
+                profileDropup.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            }
+
+            // --- Theme Toggle Logic ---
+            const themeToggle = document.getElementById('themeToggle');
+            const body = document.body;
+
+            if (themeToggle) {
+                const updateThemeIcon = (theme) => {
+                    const icon = themeToggle.querySelector('svg');
+                    if (!icon) return;
+                    if (theme === 'light') {
+                        icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+                    } else {
+                        icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+                    }
+                };
+
+                // Initialize theme
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'light') {
+                    body.classList.add('light-mode');
+                    updateThemeIcon('light');
+                }
+
+                themeToggle.addEventListener('click', () => {
+                    const isLight = body.classList.toggle('light-mode');
+                    const newTheme = isLight ? 'light' : 'dark';
+                    localStorage.setItem('theme', newTheme);
+                    updateThemeIcon(newTheme);
+                });
+            }
+        });
     </script>
 </body>
+
 </html>
