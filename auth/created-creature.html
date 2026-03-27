@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creature Generated — HoHeTo Kyle</title>
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        /* Specialized styles for the "Created Creature" page */
+        .generated-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 60px;
+            align-items: flex-start;
+            padding-top: 20px;
+        }
+
+        .generated-left {
+            flex: 1;
+        }
+
+        .generated-right {
+            width: 450px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .generated-title {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 60px;
+            width: 100%;
+        }
+
+        /* Tool Tabs */
+        .tool-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .tool-tab {
+            padding: 8px 16px;
+            border: 1px solid rgba(8, 210, 193, 0.3);
+            border-radius: 8px;
+            background: rgba(8, 210, 193, 0.05);
+            color: var(--text-main);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .tool-tab:hover {
+            background: rgba(8, 210, 193, 0.15);
+            border-color: var(--color-primary);
+        }
+
+        .tool-tab--active {
+            background: rgba(8, 210, 193, 0.2);
+            border-color: var(--color-primary);
+        }
+
+        /* Visualizer Box */
+        .visualizer-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .visualizer-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .visualizer-header span b {
+            color: var(--color-primary);
+        }
+
+        .waveform-mock {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            margin-bottom: 20px;
+        }
+
+        .wave-bar-static {
+            flex: 1;
+            background: var(--color-primary);
+            border-radius: 2px;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            height: 40px;
+        }
+
+        .wave-bar-static:hover {
+            opacity: 1;
+        }
+
+        .audio-player-mock {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            padding: 8px 16px;
+            color: var(--text-muted);
+        }
+
+        .play-btn {
+            width: 32px;
+            height: 32px;
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .audio-progress {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .audio-progress-fill {
+            width: 30%;
+            height: 100%;
+            background: var(--color-primary);
+            border-radius: 2px;
+        }
+
+        /* DNA Labels & Bars */
+        .dna-title {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 30px 0 20px;
+        }
+
+        .dna-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px 40px;
+            margin-bottom: 40px;
+        }
+
+        .dna-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dna-label {
+            width: 80px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .dna-track {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .dna-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .dna-val {
+            width: 35px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* Category Chips */
+        .cat-title {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .cat-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .cat-chip {
+            padding: 8px 16px;
+            border: 1px solid rgba(8, 210, 193, 0.5);
+            border-radius: 30px;
+            background: rgba(8, 210, 193, 0.02);
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .cat-chip b {
+            color: #fff;
+            margin-left: 4px;
+        }
+
+        /* Main Buttons */
+        .action-btns {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .btn-secondary-outline {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary-solid {
+            background: var(--color-primary);
+            color: #011616;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary-solid:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--color-primary-glow);
+        }
+
+        /* Creature Card on Right */
+        .creature-card-frame {
+            width: 420px;
+            aspect-ratio: 1 / 1.4;
+            background: #021a1a;
+            border: 10px solid #042d2d;
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        .creature-card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        .make-collectible-btn {
+            margin-top: 24px;
+            width: 100%;
+        }
+
+        .footer-note {
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.5;
+            max-width: 400px;
+        }
+
+        /* Light Mode Adjustment */
+        body.light-mode .visualizer-box {
+            background: rgba(0, 0, 0, 0.02);
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        body.light-mode .audio-player-mock {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .cat-chip b {
+            color: #1a1a1a;
+        }
+
+        body.light-mode .btn-secondary-outline {
+            color: #1a1a1a;
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .creature-card-frame {
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border-color: rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+
+<body class="dashboard-body">
+
+    <!-- ══ Sidebar Placeholder ══ -->
+    <div id="comp-sidebar"></div>
+
+    <!-- ══ Main Content Area ══ -->
+    <main class="main-area">
+
+        <!-- Top Navigation Bar Placeholder -->
+        <div id="comp-header"></div>
+
+        <!-- Dynamic Content View -->
+        <div class="content-view">
+
+            <div class="generated-container">
+                <div class="generated-left">
+                    <h1 class="generated-title">Your Attractive Card Generated</h1>
+
+                    <!-- Tool Tabs -->
+                    <div class="tool-tabs">
+                        <a href="#" class="tool-tab tool-tab--active">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M9 18V5l12-2v13"></path>
+                                <circle cx="6" cy="18" r="3"></circle>
+                                <circle cx="18" cy="16" r="3"></circle>
+                            </svg>
+                            Audio Born
+                        </a>
+                        <a href="#" class="tool-tab">Vent Crab</a>
+                        <a href="#" class="tool-tab">Shadow</a>
+                    </div>
+
+                    <!-- Visualizer Box -->
+                    <div class="visualizer-box">
+                        <div class="visualizer-header">
+                            <span>Harmony <b>50%</b></span>
+                            <span>Complexity <b>30%</b></span>
+                            <span>Intensity <b>38%</b></span>
+                        </div>
+                        <div class="waveform-mock">
+                            <!-- Generated via JS -->
+                        </div>
+                        <div class="audio-player-mock">
+                            <button class="play-btn">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                            </button>
+                            <span class="curr-time">0:00</span>
+                            <div class="audio-progress">
+                                <div class="audio-progress-fill"></div>
+                            </div>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="dna-title">Audio DNA</div>
+                    <div class="dna-grid">
+                        <div class="dna-row">
+                            <span class="dna-label">Complexity:</span>
+                            <div class="dna-track">
+                                <div class="dna-fill" style="width: 30%; background: #f97316;"></div>
+                            </div>
+                            <span class="dna-val">30%</span>
+                        </div>
+                        <div class="dna-row">
+                            <span class="dna-label">Intensity:</span>
+                            <div class="dna-track">
+                                <div class="dna-fill" style="width: 38%; background: #ec4899;"></div>
+                            </div>
+                            <span class="dna-val">38%</span>
+                        </div>
+                        <div class="dna-row">
+                            <span class="dna-label">Harmony:</span>
+                            <div class="dna-track">
+                                <div class="dna-fill" style="width: 50%; background: #3b82f6;"></div>
+                            </div>
+                            <span class="dna-val">50%</span>
+                        </div>
+                        <div class="dna-row">
+                            <span class="dna-label">Warmth:</span>
+                            <div class="dna-track">
+                                <div class="dna-fill" style="width: 80%; background: #f59e0b;"></div>
+                            </div>
+                            <span class="dna-val">80%</span>
+                        </div>
+                        <div class="dna-row">
+                            <span class="dna-label">Roughness:</span>
+                            <div class="dna-track">
+                                <div class="dna-fill" style="width: 29%; background: #ef4444;"></div>
+                            </div>
+                            <span class="dna-val">29%</span>
+                        </div>
+                        <div class="dna-row">
+                            <span class="dna-label">Brightness:</span>
+                            <div class="dna-track">
+                                <div class="dna-fill" style="width: 20%; background: #eab308;"></div>
+                            </div>
+                            <span class="dna-val">20%</span>
+                        </div>
+                    </div>
+
+                    <div class="cat-title">Categories Tags</div>
+                    <div class="cat-grid">
+                        <div class="cat-chip">Trope <b>Terratrope</b></div>
+                        <div class="cat-chip">Element <b>Shadow</b></div>
+                        <div class="cat-chip">Intelligence <b>Basic</b></div>
+                        <div class="cat-chip">Platte <b>Warm</b></div>
+                        <div class="cat-chip">Evaluation <b>Basic</b></div>
+                        <div class="cat-chip">Style <b>Plushie</b></div>
+                    </div>
+
+                    <div class="action-btns">
+                        <button class="btn-secondary-outline">Save Image</button>
+                        <button class="btn-secondary-outline" onclick="window.location.href='create-creature.html'">New
+                            Sound</button>
+                        <button class="btn-primary-solid">Make Collectible Card</button>
+                    </div>
+                </div>
+
+                <div class="generated-right">
+                    <div class="creature-card-frame">
+                        <img src="../img/created_card.png" alt="Generated Creature" class="creature-card-img">
+                    </div>
+                    <button class="btn-primary-solid make-collectible-btn">Make Collectible Card</button>
+                    <p class="footer-note">Save the creature art or turn into a schematic card with nameing,
+                        classification and scoring.</p>
+                </div>
+            </div>
+
+            <!-- Footer Placeholder -->
+            <div id="comp-footer"></div>
+
+        </div>
+    </main>
+
+    <!-- Supabase & DB Layer -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/db.js"></script>
+    <script src="../js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load Components
+            await ComponentLoader.loadAll([
+                { id: 'comp-sidebar', path: '../components/sidebar.html' },
+                { id: 'comp-header', path: '../components/header.html' },
+                { id: 'comp-footer', path: '../components/footer.html' }
+            ]);
+
+            // Set active nav item
+            const navCreatures = document.getElementById('nav-creatures');
+            if (navCreatures) navCreatures.classList.add('nav-item--active');
+
+            // Theme Toggle Logic
+            const setupTheme = () => {
+                const themeToggle = document.getElementById('themeToggle');
+                const body = document.body;
+                if (!themeToggle) return;
+
+                const updateThemeIcon = (theme) => {
+                    const icon = themeToggle.querySelector('svg');
+                    if (!icon) return;
+                    if (theme === 'light') {
+                        icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+                    } else {
+                        icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+                    }
+                };
+
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'light') {
+                    body.classList.add('light-mode');
+                    updateThemeIcon('light');
+                }
+
+                themeToggle.addEventListener('click', () => {
+                    const isLight = body.classList.toggle('light-mode');
+                    const newTheme = isLight ? 'light' : 'dark';
+                    localStorage.setItem('theme', newTheme);
+                    updateThemeIcon(newTheme);
+                });
+            };
+            setupTheme();
+
+            // Mock Waveform Generation
+            const waveContainer = document.querySelector('.waveform-mock');
+            if (waveContainer) {
+                for (let i = 0; i < 80; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'wave-bar-static';
+                    const height = 10 + Math.random() * 40;
+                    bar.style.height = `${height}px`;
+                    waveContainer.appendChild(bar);
+                }
+            }
+
+            // Update Title in Header
+            const headerTitle = document.querySelector('.top-bar__title');
+            if (headerTitle) headerTitle.textContent = 'Dashboard';
+        });
+    </script>
+</body>
+
+</html>

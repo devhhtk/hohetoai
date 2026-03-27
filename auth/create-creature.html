@@ -148,6 +148,39 @@
             // Update Title in Header
             const headerTitle = document.querySelector('.top-bar__title');
             if (headerTitle) headerTitle.textContent = 'Create Creature';
+
+            // Redirection Logic for Creation Triggers
+            const redirectToResult = () => {
+                // Simulate a brief loading state
+                const btnGenerate = document.querySelector('.btn-generate');
+                if (btnGenerate) {
+                    btnGenerate.textContent = 'Generating...';
+                    btnGenerate.disabled = true;
+                }
+                setTimeout(() => {
+                    window.location.href = 'created-creature.html';
+                }, 1500);
+            };
+
+            const triggers = [
+                document.querySelector('.btn-start-record'),
+                document.querySelector('.upload-dropzone'),
+                document.querySelector('.btn-generate')
+            ];
+
+            triggers.forEach(trigger => {
+                if (trigger) {
+                    trigger.addEventListener('click', (e) => {
+                        // Prevent default if it's a form or link
+                        if (trigger.classList.contains('upload-dropzone')) {
+                            // For dropzone, we might want to wait for "upload" but user asked for simple redirect
+                            redirectToResult();
+                        } else {
+                            redirectToResult();
+                        }
+                    });
+                }
+            });
         });
     </script>
 </body>
