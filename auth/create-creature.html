@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Creature — HoHeTo Kyle</title>
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+
+<body class="dashboard-body">
+
+    <!-- ══ Sidebar Placeholder ══ -->
+    <div id="comp-sidebar"></div>
+
+    <!-- ══ Main Content Area ══ -->
+    <main class="main-area">
+
+        <!-- Top Navigation Bar Placeholder -->
+        <div id="comp-header"></div>
+
+        <!-- Dynamic Content View -->
+        <div class="content-view">
+
+            <!-- Welcome Header -->
+            <div class="welcome-section">
+                <h1 class="welcome-title">Create Your Own Creature</h1>
+                <p class="welcome-subtitle">Turn sound, images, or video into creatures.</p>
+            </div>
+
+            <!-- Creation Options Grid -->
+            <div class="creation-grid">
+
+                <!-- Card 1: Record Sound -->
+                <div class="creation-card record-card">
+                    <div class="card-icon">
+                        <img src="../img/make1.png" alt="Record Sound">
+                    </div>
+                    <h3 class="card-title">Record Sound</h3>
+                    <p class="card-subtitle">Capture up to 30 seconds</p>
+                    <div class="recording-ui">
+                        <button class="btn-start-record">Start Recording</button>
+                    </div>
+
+                    <div class="card-footer-text">Perfect for live inspiration.</div>
+                </div>
+
+                <!-- Card 2: Upload Photos -->
+                <div class="creation-card upload-card">
+                    <div class="card-icon">
+                        <img src="../img/make2.png" alt="Upload Photos">
+                    </div>
+                    <h3 class="card-title">Upload Photos</h3>
+                    <p class="card-subtitle">Upload your own sound file.</p>
+
+                    <div class="upload-dropzone">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M7 16a4 4 0 0 1-.88-7.903A5 5 0 1 1 15.9 6L16 6a5 5 0 0 1 1 9.9M15 13l-3-3-3 3M12 10v9">
+                            </path>
+                        </svg>
+                        <span>Drag or Drop or click</span>
+                    </div>
+
+                    <div class="formats-info">MP3 • WAV • M4A • OGG • FLAC</div>
+                </div>
+
+                <!-- Card 3: Upload Videos -->
+                <div class="creation-card video-card">
+                    <div class="card-icon">
+                        <img src="../img/make3.png" alt="Upload Videos">
+                    </div>
+                    <h3 class="card-title">Upload Videos</h3>
+                    <p class="card-subtitle">Paste a Spotify or YouTube link.</p>
+
+                    <div class="input-url-group">
+                        <input type="text" placeholder="Paste a link" class="url-input">
+                        <button class="btn-generate">Generate From Track</button>
+                    </div>
+
+                    <div class="card-footer-text">Supports most streaming platforms.</div>
+                </div>
+
+            </div>
+
+            <!-- Footer Placeholder -->
+            <div id="comp-footer"></div>
+
+        </div>
+    </main>
+
+    <!-- Supabase & DB Layer -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/db.js"></script>
+    <script src="../js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load Components
+            await ComponentLoader.loadAll([
+                { id: 'comp-sidebar', path: '../components/sidebar.html' },
+                { id: 'comp-header', path: '../components/header.html' },
+                { id: 'comp-footer', path: '../components/footer.html' }
+            ]);
+
+            // Set active nav item
+            const navCreatures = document.getElementById('nav-creatures');
+            if (navCreatures) navCreatures.classList.add('nav-item--active');
+
+            // Database & Auth Initialization
+            if (window.AumageDB) {
+                window.AumageDB.init();
+                // ... same auth UI logic as dashboard.html ...
+            }
+
+            // Theme Toggle Re-initialization (since it's in the header component)
+            const setupThemeToggle = () => {
+                const themeToggle = document.getElementById('themeToggle');
+                const body = document.body;
+                if (!themeToggle) return;
+
+                const updateThemeIcon = (theme) => {
+                    const icon = themeToggle.querySelector('svg');
+                    if (!icon) return;
+                    if (theme === 'light') {
+                        icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+                    } else {
+                        icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+                    }
+                };
+
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'light') {
+                    body.classList.add('light-mode');
+                    updateThemeIcon('light');
+                }
+
+                themeToggle.addEventListener('click', () => {
+                    const isLight = body.classList.toggle('light-mode');
+                    const newTheme = isLight ? 'light' : 'dark';
+                    localStorage.setItem('theme', newTheme);
+                    updateThemeIcon(newTheme);
+                });
+            };
+            setupThemeToggle();
+
+            // Update Title in Header
+            const headerTitle = document.querySelector('.top-bar__title');
+            if (headerTitle) headerTitle.textContent = 'Create Creature';
+        });
+    </script>
+</body>
+
+</html>

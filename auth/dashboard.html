@@ -148,6 +148,10 @@
                 { id: 'comp-footer', path: '../components/footer.html' }
             ]);
 
+            // Set active nav item
+            const navDash = document.getElementById('nav-dashboard');
+            if (navDash) navDash.classList.add('nav-item--active');
+
             // Database & Auth Initialization
             if (window.AumageDB) {
                 window.AumageDB.init();
