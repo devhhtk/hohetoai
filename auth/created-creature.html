@@ -460,9 +460,32 @@
                     <div class="creature-card-frame">
                         <img src="../img/created_card.png" alt="Generated Creature" class="creature-card-img">
                     </div>
+                    <div class="flavor-box"
+                        style="margin-top: 20px; font-style: italic; color: var(--text-muted); text-align: center; max-width: 400px; line-height: 1.6;">
+                        <!-- Flavor text populated here -->
+                    </div>
                     <button class="btn-primary-solid make-collectible-btn">Make Collectible Card</button>
                     <p class="footer-note">Save the creature art or turn into a schematic card with nameing,
                         classification and scoring.</p>
+                </div>
+            </div>
+
+            <!-- Error Overlay -->
+            <div id="errorOverlay"
+                style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
+                <div
+                    style="background: #111; border: 1px solid #ff4444; padding: 40px; border-radius: 20px; text-align: center; max-width: 500px;">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ff4444" stroke-width="2"
+                        style="margin-bottom: 20px;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <h2 style="color: #fff; margin-bottom: 10px;">Biological Anomaly</h2>
+                    <p id="errorMessage" style="color: var(--text-muted); margin-bottom: 30px;">Failed to retrieve
+                        creature data.</p>
+                    <button class="btn-primary-solid" onclick="window.location.href='dashboard.html'">Return to
+                        Dashboard</button>
                 </div>
             </div>
 
@@ -474,6 +497,8 @@
 
     <!-- Supabase & DB Layer -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
     <script src="../js/db.js"></script>
     <script src="../js/components.js"></script>
     <script>
@@ -534,7 +559,102 @@
 
             // Update Title in Header
             const headerTitle = document.querySelector('.top-bar__title');
-            if (headerTitle) headerTitle.textContent = 'Dashboard';
+            if (headerTitle) headerTitle.textContent = 'Creature Generated';
+
+            // Fetch and Populate Creature Data
+            const params = new URLSearchParams(window.location.search);
+            let creatureId = params.get('id');
+            
+            // Fallback to localStorage if parameter is missing
+            if (!creatureId) {
+                creatureId = localStorage.getItem('aumage_last_id');
+                console.log('[DR-KAI] ID parameter missing. Fallback to storage:', creatureId);
+            }
+            
+            console.log('[DR-KAI] Manifesting Creature ID:', creatureId);
+
+            const showError = (msg) => {
+                const overlay = document.getElementById('errorOverlay');
+                const text = document.getElementById('errorMessage');
+                if (overlay && text) {
+                    text.textContent = msg;
+                    overlay.style.display = 'flex';
+                } else {
+                    alert(msg);
+                }
+            };
+
+            if (creatureId) {
+                try {
+                    const creature = await AumageAPI.getCreature(creatureId);
+                    if (creature) {
+                        // 1. Update Image
+                        const img = document.querySelector('.creature-card-img');
+                        if (img) img.src = creature.card_url || creature.creature_url;
+
+                        // 2. Update Title/Name
+                        const title = document.querySelector('.generated-title');
+                        if (title) {
+                            const name = creature.creature_name || `New ${creature.morphology} Generated`;
+                            const serial = creature.serial_number ? `<span style="opacity:0.5; font-size: 0.7em; display: block;">${creature.serial_number}</span>` : '';
+                            title.innerHTML = `${name}${serial}`;
+                        }
+
+                        // 3. Update Audio DNA (Stats)
+                        const dnaGrid = document.querySelector('.dna-grid');
+                        const stats = creature.variant_tags || {}; // Map stats from variant_tags
+                        if (dnaGrid) {
+                            const dnaRows = dnaGrid.querySelectorAll('.dna-row');
+                            dnaRows.forEach(row => {
+                                const label = row.querySelector('.dna-label').textContent.toLowerCase().replace(':', '');
+                                let val = 50;
+
+                                if (label.includes('complexity')) val = stats.complexity || stats.arcana || 30;
+                                else if (label.includes('intensity')) val = stats.intensity || stats.power || stats.ars * 100 || 38;
+                                else if (label.includes('harmony')) val = stats.harmony || stats.defense || 50;
+                                else if (label.includes('warmth')) val = stats.warmth || 80;
+                                else if (label.includes('roughness')) val = stats.roughness || 29;
+                                else if (label.includes('brightness')) val = stats.brightness || stats.agility || 20;
+
+                                row.querySelector('.dna-fill').style.width = `${val}%`;
+                                row.querySelector('.dna-val').textContent = `${val}%`;
+                            });
+                        }
+
+                        // 4. Update Categories Tags
+                        const catGrid = document.querySelector('.cat-grid');
+                        if (catGrid) {
+                            catGrid.innerHTML = `
+                                <div class="cat-chip">Trope <b>${creature.trope_class || 'Unknown'}</b></div>
+                                <div class="cat-chip">Element <b>${creature.element || 'Neutral'}</b></div>
+                                <div class="cat-chip">Rarity <b>${creature.base_rarity || 'Common'}</b></div>
+                                <div class="cat-chip">Season <b>${creature.season || 'Spring'}</b></div>
+                            `;
+                        }
+
+                        // 5. Update Flavor Text
+                        const flavorBox = document.querySelector('.flavor-box');
+                        if (flavorBox) flavorBox.textContent = `"${creature.flavor_text || 'A unique biological manifestation extracted from visual signals.'}"`;
+
+                        // 6. Update Header Visualizer
+                        const visualizerHeader = document.querySelector('.visualizer-header');
+                        if (visualizerHeader) {
+                            visualizerHeader.innerHTML = `
+                                <span>Harmony <b>${stats.harmony || 50}%</b></span>
+                                <span>Complexity <b>${stats.complexity || 30}%</b></span>
+                                <span>Intensity <b>${stats.intensity || Math.floor(stats.power) || 38}%</b></span>
+                            `;
+                        }
+                    } else {
+                        showError('Biological record not found in the archives.');
+                    }
+                } catch (err) {
+                    console.error('Failed to load creature data:', err);
+                    showError('System error: Could not retrieve creature neural data.');
+                }
+            } else {
+                showError('No creature ID provided. Please generate a creature first.');
+            }
         });
     </script>
 </body>
