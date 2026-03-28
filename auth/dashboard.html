@@ -104,7 +104,7 @@
                     <h3 class="section-title">Our Popular Characters</h3>
                     <a href="#" class="btn-see-all">See all</a>
                 </div>
-                <div class="creatures-grid">
+                <div id="popular-grid" class="creatures-grid">
                     <!-- Jellyfish -->
                     <div class="creature-card--rounded">
                         <img src="../img/creature5.png" alt="Jellyfish">
@@ -222,6 +222,33 @@
                     updateThemeIcon(newTheme);
                 });
             }
+
+            // --- Load Popular Creatures ---
+            async function loadPopularCreatures() {
+                const popularGrid = document.getElementById('popular-grid');
+                if (!popularGrid || !window.AumageDB) return;
+
+                // Fetch popular creatures from Supabase
+                const creatures = await window.AumageDB.getPopularCreatures(10); // Fetch more to filter
+                
+                if (creatures && creatures.length > 0) {
+                    // Filter for valid images and take top 5
+                    const validCreatures = creatures
+                        .filter(c => c.image_url)
+                        .slice(0, 5);
+
+                    if (validCreatures.length > 0) {
+                        popularGrid.innerHTML = validCreatures.map(c => `
+                            <a href="../c/${c.share_slug}" class="creature-card--rounded">
+                                <img src="${c.image_url}" alt="${c.creature_name || 'Generated Creature'}" title="${c.creature_name || 'Creature'}">
+                            </a>
+                        `).join('');
+                    }
+                }
+            }
+
+            // Run initial load
+            loadPopularCreatures();
         });
     </script>
 </body>

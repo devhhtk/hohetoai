@@ -14,14 +14,11 @@ const AumageDB = {
 
   init() {
     // ACTIVE: Backend-side project (from wrangler.toml)
-    const SUPABASE_URL = 'https://rweykteohelwgvenzpai.supabase.co';
-    const SUPABASE_ANON = 'sb_publishable_MIeAlOW6K62Snbaa_VXRkA_ceOUhodT';
+    // const SUPABASE_URL = 'https://rweykteohelwgvenzpai.supabase.co';
+    // const SUPABASE_ANON = 'sb_publishable_MIeAlOW6K62Snbaa_VXRkA_ceOUhodT';
 
-    /* 
-    OLD / COMMENTED OUT:
     const SUPABASE_URL = 'https://ddndxmjedlddgnchqxmk.supabase.co';
     const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkbmR4bWplZGxkZGduY2hxeG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNTY5ODIsImV4cCI6MjA4NzczMjk4Mn0.NB4VCoHivoTifxPrj-MPDa8JRxQOnis2W0JEMmmWNMA';
-    */
 
     if (typeof window.supabase === 'undefined') {
       console.error('Supabase client not loaded. Make sure supabase-js CDN is included before db.js');
@@ -109,28 +106,60 @@ const AumageDB = {
    * Save a new creature record.
    * Returns the saved record with id and share_slug.
    */
-  async saveCreature({ imageUrl, videoUrl, audioSource, audioStoragePath, linkUrl, fingerprint, seed, mode, style, features, visuals, promptText }) {
+  async saveCreature({
+    imageUrl, videoUrl, audioSource, audioStoragePath, linkUrl,
+    fingerprint, seed, mode, style, features, visuals, promptText,
+    rarity, morphology, tier, domain, trope, element,
+    region, climate, season, hemisphere,
+    stats, traits, flavorText, creatureName,
+    serialNumber, catalogId, ars,
+    isPublic, folderId, frameVariant,
+    promptHash, waveformHash
+  }) {
     if (!this.supabase) return null;
 
-    // Generate a short share slug
+    // Generate a short share slug if not triggers-managed
     const shareSlug = this._generateSlug();
+    const timestamp = new Date().toISOString();
 
     const record = {
       user_id: this.user?.id || null,
       image_url: imageUrl,
       video_url: videoUrl || null,
-      audio_source: audioSource,
+      audio_source: audioSource || 'record',
       audio_storage_path: audioStoragePath || null,
       link_url: linkUrl || null,
-      fingerprint: fingerprint,
-      seed: seed,
-      mode: mode,
+      fingerprint: fingerprint || null,
+      seed: seed || null,
+      mode: mode || 'creature',
       style: style || 'realistic',
-      features: features,
-      visuals: visuals,
-      prompt_text: promptText,
+      features: features || {},
+      visuals: visuals || {},
+      prompt_text: promptText || null,
       share_slug: shareSlug,
-      created_at: new Date().toISOString()
+      is_public: isPublic !== undefined ? isPublic : true,
+      created_at: timestamp,
+      folder_id: folderId || null,
+      serial_number: serialNumber || null,
+      catalog_id: catalogId || null,
+      base_rarity: rarity || 'common',
+      ars: ars || 0.5,
+      trope_class: trope || null,
+      morphology: morphology || null,
+      tier: tier || '1',
+      element: element || 'neutral',
+      domain: domain || 'terrestrial',
+      variant_tags: { ...(stats || {}), ...(traits || {}) },
+      mint_timestamp: timestamp,
+      residence_region: region || 'Unknown',
+      climate_zone: climate || 'Temperate',
+      season: season || 'spring',
+      hemisphere: hemisphere || 'northern',
+      waveform_hash: waveformHash || null,
+      prompt_hash: promptHash || null,
+      creature_name: creatureName || null,
+      flavor_text: flavorText || null,
+      frame_variant: frameVariant || 'standard',
     };
 
     const { data, error } = await this.supabase
@@ -296,6 +325,49 @@ const AumageDB = {
    */
   saveCreatureState(slug) {
     if (slug) localStorage.setItem('aumage_creature_state', slug);
+  },
+
+  // ============================================================
+  // COMMUNITY & EXPLORE
+  // ============================================================
+
+  /**
+   * Get trending creatures (latest public creations).
+   */
+  async getTrendingCreatures(limit = 8) {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('creatures')
+      .select('*')
+      .eq('is_public', true)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error('AumageDB getTrendingCreatures error:', error);
+      return [];
+    }
+    return data || [];
+  },
+
+  /**
+   * Get popular creatures (for now, fetching a mixed sample).
+   */
+  async getPopularCreatures(limit = 20) {
+    if (!this.supabase) return [];
+    // Currently using random sample of public creatures since no like/view metrics exist yet
+    const { data, error } = await this.supabase
+      .from('creatures')
+      .select('*')
+      .eq('is_public', true)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error('AumageDB getPopularCreatures error:', error);
+      return [];
+    }
+    return data || [];
   },
 
   // ============================================================
