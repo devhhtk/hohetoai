@@ -449,7 +449,7 @@
                     </div>
 
                     <div class="action-btns">
-                        <button class="btn-secondary-outline">Save Image</button>
+                        <button class="btn-secondary-outline" id="saveImageBtn">Save Image</button>
                         <button class="btn-secondary-outline" onclick="window.location.href='create-creature.html'">New
                             Sound</button>
                         <button class="btn-primary-solid">Make Collectible Card</button>
@@ -458,7 +458,7 @@
 
                 <div class="generated-right">
                     <div class="creature-card-frame">
-                        <img src="../img/created_card.png" alt="Generated Creature" class="creature-card-img">
+                        <img src="../img/placeholder.png" alt="Generated Creature" class="creature-card-img">
                     </div>
                     <div class="flavor-box"
                         style="margin-top: 20px; font-style: italic; color: var(--text-muted); text-align: center; max-width: 400px; line-height: 1.6;">
@@ -564,13 +564,13 @@
             // Fetch and Populate Creature Data
             const params = new URLSearchParams(window.location.search);
             let creatureId = params.get('id');
-            
+
             // Fallback to localStorage if parameter is missing
             if (!creatureId) {
                 creatureId = localStorage.getItem('aumage_last_id');
                 console.log('[DR-KAI] ID parameter missing. Fallback to storage:', creatureId);
             }
-            
+
             console.log('[DR-KAI] Manifesting Creature ID:', creatureId);
 
             const showError = (msg) => {
@@ -654,6 +654,52 @@
                 }
             } else {
                 showError('No creature ID provided. Please generate a creature first.');
+            }
+
+            // --- SAVE IMAGE LOGIC ---
+            const saveBtn = document.getElementById('saveImageBtn');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', async () => {
+                    const img = document.querySelector('.creature-card-img');
+                    if (!img || !img.src || img.src.includes('placeholder.png')) {
+                        console.warn('[DR-KAI] No image available to save');
+                        return;
+                    }
+
+                    saveBtn.textContent = 'Preparing...';
+                    saveBtn.disabled = true;
+
+                    try {
+                        let downloadUrl = img.src;
+
+                        // If it's a B2 URL, use the worker proxy to bypass CORS
+                        if (img.src.includes('backblazeb2.com')) {
+                            const filename = img.src.split('/').pop();
+                            downloadUrl = `${CONFIG.API_BASE_URL}/api/image/creatures/${filename}`;
+                        }
+
+                        console.log('[DR-KAI] Downloading via:', downloadUrl);
+                        const response = await fetch(downloadUrl);
+                        if (!response.ok) throw new Error('Download request failed');
+                        
+                        const blob = await response.blob();
+                        const blobUrl = window.URL.createObjectURL(blob);
+                        
+                        const link = document.createElement('a');
+                        link.href = blobUrl;
+                        link.download = `Hohetai-${creatureId || 'creature'}.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        window.URL.revokeObjectURL(blobUrl);
+                    } catch (err) {
+                        console.error('[DR-KAI] Proxy download failed, falling back to new tab:', err);
+                        window.open(img.src, '_blank');
+                    } finally {
+                        saveBtn.textContent = 'Save Image';
+                        saveBtn.disabled = false;
+                    }
+                });
             }
         });
     </script>

@@ -107,23 +107,23 @@
                 <div id="popular-grid" class="creatures-grid">
                     <!-- Jellyfish -->
                     <div class="creature-card--rounded">
-                        <img src="../img/creature5.png" alt="Jellyfish">
+                        <img src="../img/placeholder.png" alt="Jellyfish">
                     </div>
                     <!-- Oxidian -->
                     <div class="creature-card--rounded">
-                        <img src="../img/creature4.png" alt="Oxidian">
+                        <img src="../img/placeholder.png" alt="Oxidian">
                     </div>
                     <!-- Monkpet -->
                     <div class="creature-card--rounded">
-                        <img src="../img/creature3.png" alt="Monkpet">
+                        <img src="../img/placeholder.png" alt="Monkpet">
                     </div>
                     <!-- Lizard -->
                     <div class="creature-card--rounded">
-                        <img src="../img/creature2.png" alt="Lizard">
+                        <img src="../img/placeholder.png" alt="Lizard">
                     </div>
                     <!-- Bearded -->
                     <div class="creature-card--rounded">
-                        <img src="../img/creature1.png" alt="Bearded">
+                        <img src="../img/placeholder.png" alt="Bearded">
                     </div>
                 </div>
             </section>
@@ -230,7 +230,7 @@
 
                 // Fetch popular creatures from Supabase
                 const creatures = await window.AumageDB.getPopularCreatures(10); // Fetch more to filter
-                
+
                 if (creatures && creatures.length > 0) {
                     // Filter for valid images and take top 5
                     const validCreatures = creatures
