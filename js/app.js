@@ -16,8 +16,8 @@ var Aumage = {
   lastCreatureRecord: null,
 
   API_BASE: '',
-  // PIPELINE_URL: 'https://aumage-pipeline.admin-it-e6e.workers.dev',
-  PIPELINE_URL: 'http://localhost:8787',
+  PIPELINE_URL: 'https://aumage-pipeline.admin-it-e6e.workers.dev',
+  // PIPELINE_URL: 'http://localhost:8787',
 
   // Build payload for pipeline Worker from frontend creature engine data
   buildPipelinePayload(visuals, features, fingerprint) {
@@ -616,7 +616,7 @@ var Aumage = {
 
       const response = await fetch(this.PIPELINE_URL + '/api/generate', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
