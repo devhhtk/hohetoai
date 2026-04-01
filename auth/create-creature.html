@@ -340,9 +340,76 @@ if (btnRecord) {
                     if (e.data.size > 0) audioChunks.push(e.data);
                 };
 
+                //////////////////////
+
+                async function convertToWav(webmBlob) {
+                const audioContext = new AudioContext();
+                const arrayBuffer = await webmBlob.arrayBuffer();
+                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+            
+                const numChannels = audioBuffer.numberOfChannels;
+                const sampleRate = audioBuffer.sampleRate;
+                const format = 1; // PCM
+                const bitDepth = 16;
+            
+                const samples = audioBuffer.length;
+                const buffer = new ArrayBuffer(44 + samples * numChannels * 2);
+                const view = new DataView(buffer);
+            
+                let offset = 0;
+            
+                function writeString(s) {
+                    for (let i = 0; i < s.length; i++) {
+                        view.setUint8(offset++, s.charCodeAt(i));
+                    }
+                }
+            
+                function writeUint32(data) {
+                    view.setUint32(offset, data, true);
+                    offset += 4;
+                }
+            
+                function writeUint16(data) {
+                    view.setUint16(offset, data, true);
+                    offset += 2;
+                }
+            
+                // WAV HEADER
+                writeString('RIFF');
+                writeUint32(36 + samples * numChannels * 2);
+                writeString('WAVE');
+            
+                writeString('fmt ');
+                writeUint32(16);
+                writeUint16(format);
+                writeUint16(numChannels);
+                writeUint32(sampleRate);
+                writeUint32(sampleRate * numChannels * 2);
+                writeUint16(numChannels * 2);
+                writeUint16(bitDepth);
+            
+                writeString('data');
+                writeUint32(samples * numChannels * 2);
+            
+                // PCM DATA
+                for (let i = 0; i < samples; i++) {
+                    for (let channel = 0; channel < numChannels; channel++) {
+                        let sample = audioBuffer.getChannelData(channel)[i];
+                        sample = Math.max(-1, Math.min(1, sample));
+                        view.setInt16(offset, sample * 0x7fff, true);
+                        offset += 2;
+                    }
+                }
+            
+                return new Blob([buffer], { type: 'audio/wav' });
+            }
+
+                /////////////////////
+
                 mediaRecorder.onstop = async () => {
                     try {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const webmBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const audioBlob = await convertToWav(webmBlob);
 
                         showHUD();
                         updateHUD('Extracting Audio Signal...', 20);
