@@ -24,6 +24,32 @@ const AumageAPI = {
     return await response.json();
   },
 
+
+/**
+ * Extract signal from audio recording.
+ * @param {Blob} file 
+ */
+async extractAudio(file) {
+  const arrayBuffer = await file.arrayBuffer();
+
+  const response = await fetch(`${CONFIG.API_BASE_URL}/api/extract`, {
+    method: 'POST',
+    body: arrayBuffer,
+    headers: {
+      'Content-Type': 'audio/webm', // matches MediaRecorder output
+    }
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to extract audio signal');
+  }
+
+  return await response.json();
+},
+
+  
+
   /**
    * Generate a creature from a signed signal.
    * @param {Object} signal 
