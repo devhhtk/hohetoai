@@ -17,7 +17,7 @@ var Aumage = {
 
   API_BASE: '',
   // PIPELINE_URL: 'https://aumage-pipeline.admin-it-e6e.workers.dev',
-  PIPELINE_URL: 'https://hohetai-back.devhhtk.workers.dev',
+  PIPELINE_URL: 'https://hohetai-api.devhhtk.workers.dev',
 
   // Build payload for pipeline Worker from frontend creature engine data
   buildPipelinePayload(visuals, features, fingerprint) {
