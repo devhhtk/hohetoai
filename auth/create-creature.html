@@ -312,12 +312,96 @@
             }
 
             // Record Sound Logic (Placeholder for now, could be implemented next)
-            const btnRecord = document.querySelector('.btn-start-record');
+          /*  const btnRecord = document.querySelector('.btn-start-record');
             if (btnRecord) {
                 btnRecord.addEventListener('click', () => {
                     alert('Audio recording coming soon! Use "Upload Photos" for now.');
                 });
+            } */
+
+            
+const btnRecord = document.querySelector('.btn-start-record');
+
+if (btnRecord) {
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
+
+    btnRecord.addEventListener('click', async () => {
+        try {
+            if (!isRecording) {
+                // Start recording
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) audioChunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = async () => {
+                    try {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+
+                        showHUD();
+                        updateHUD('Extracting Audio Signal...', 20);
+
+                        // 1. Extract Signal (audio)
+                        const { signal, signature } = await AumageAPI.extract(audioBlob);
+
+                        updateHUD('Analyzing Sonic DNA...', 40);
+                        await new Promise(r => setTimeout(r, 800));
+
+                        updateHUD('Generating Creature Manifestation...', 60);
+
+                        // 2. Generate Creature
+                        const result = await AumageAPI.generateCreature(signal, signature);
+
+                        updateHUD('Finalizing Manifestation...', 90);
+                        await new Promise(r => setTimeout(r, 500));
+
+                        updateHUD('Complete!', 100);
+
+                        setTimeout(() => {
+                            const cid = result.id || result.creature_id;
+                            if (cid) {
+                                localStorage.setItem('aumage_last_id', cid);
+                                window.location.href = `created-creature.html?id=${cid}`;
+                            } else {
+                                alert('Critical error: Creature ID missing.');
+                                hideHUD();
+                            }
+                        }, 500);
+
+                    } catch (err) {
+                        console.error('Audio creation failed:', err);
+                        alert(`Biological error: ${err.message}`);
+                        hideHUD();
+                    }
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                btnRecord.textContent = 'Stop Recording';
+
+                console.log('[DR-KAI] Recording started');
+
+            } else {
+                // Stop recording
+                mediaRecorder.stop();
+                isRecording = false;
+                btnRecord.textContent = 'Start Recording';
+
+                console.log('[DR-KAI] Recording stopped');
             }
+
+        } catch (err) {
+            console.error('Microphone error:', err);
+            alert('Microphone access denied or unavailable.');
+        }
+    });
+}
 
             // Generate From Track Logic (URL)
             const btnGenerate = document.querySelector('.btn-generate');
