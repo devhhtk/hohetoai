@@ -9,7 +9,7 @@
 
 const AumageExtractor = {
 
-  PIPELINE_URL: 'https://hohetai-back.devhhtk.workers.dev',
+  PIPELINE_URL: 'https://hohetai-api.devhhtk.workers.dev',
 
   // ─────────────────────────────────────────────────────────────
   // PRIMARY: Server-side extraction + HMAC signature
