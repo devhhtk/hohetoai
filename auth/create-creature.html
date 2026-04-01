@@ -348,7 +348,7 @@ if (btnRecord) {
                         updateHUD('Extracting Audio Signal...', 20);
 
                         // 1. Extract Signal (audio)
-                        const { signal, signature } = await AumageAPI.extract(audioBlob);
+                       const { signal, signature } = await AumageAPI.extractAudio(audioBlob);
 
                         updateHUD('Analyzing Sonic DNA...', 40);
                         await new Promise(r => setTimeout(r, 800));
