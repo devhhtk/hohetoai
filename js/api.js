@@ -48,6 +48,26 @@ async extractAudio(file) {
   return await response.json();
 },
 
+
+/**
+ * Extract signal from a URL (YouTube / Spotify)
+ */
+async extractFromUrl(url) {
+  const response = await fetch(`${CONFIG.API_BASE_URL}/api/extract-url`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ url })
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to extract from URL');
+  }
+
+  return await response.json();
+}
   
 
   /**
