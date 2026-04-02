@@ -184,12 +184,12 @@
 
     <!-- Supabase & DB Layer -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../js/config.js"></script>
-    <script src="../js/api.js"></script>
-    <script src="../js/db.js"></script>
-    <script src="../js/components.js"></script>
+    <script src="../js/config.js" defer></script>
+    <script src="../js/api.js" defer></script>
+    <script src="../js/db.js" defer></script>
+    <script src="../js/components.js" defer></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
+        window.addEventListener('load', async () => {
             // Load Components
             await ComponentLoader.loadAll([
                 { id: 'comp-sidebar', path: '../components/sidebar.html' },
