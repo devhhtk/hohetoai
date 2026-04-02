@@ -67,7 +67,7 @@ async extractFromUrl(url) {
   }
 
   return await response.json();
-}
+},
   
 
   /**
