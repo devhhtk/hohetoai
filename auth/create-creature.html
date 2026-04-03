@@ -474,13 +474,49 @@ if (btnRecord) {
             const btnGenerate = document.querySelector('.btn-generate');
             const urlInput = document.querySelector('.url-input');
             if (btnGenerate) {
-                btnGenerate.addEventListener('click', () => {
+                btnGenerate.addEventListener('click', async () => {
                     const url = urlInput?.value?.trim();
                     if (!url) {
                         alert('Please paste a link first.');
                         return;
                     }
-                    alert('URL generation coming soon! Use "Upload Photos" for now.');
+
+                    try {
+                        showHUD();
+                        updateHUD('Connecting to Media Source...', 20);
+
+                        // 1. Extract Signal from URL
+                        const { signal, signature } = await AumageAPI.extractFromUrl(url);
+
+                        updateHUD('Analyzing Streaming DNA...', 50);
+                        await new Promise(r => setTimeout(r, 800));
+
+                        updateHUD('Generating Creature Manifestation...', 75);
+
+                        // 2. Generate Creature
+                        const result = await AumageAPI.generateCreature(signal, signature);
+
+                        updateHUD('Finalizing Manifestation...', 95);
+                        await new Promise(r => setTimeout(r, 500));
+
+                        updateHUD('Complete!', 100);
+
+                        setTimeout(() => {
+                            const cid = result.id || result.creature_id;
+                            if (cid) {
+                                localStorage.setItem('aumage_last_id', cid);
+                                window.location.href = `created-creature.html?id=${cid}`;
+                            } else {
+                                alert('Critical error: Creature ID missing.');
+                                hideHUD();
+                            }
+                        }, 500);
+
+                    } catch (err) {
+                        console.error('URL creation failed:', err);
+                        alert(`Biological error: ${err.message}`);
+                        hideHUD();
+                    }
                 });
             }
         });
