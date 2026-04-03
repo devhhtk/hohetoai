@@ -1,3 +1,5 @@
+<input type="checkbox" id="streakModalToggle" class="streak-modal-toggle" hidden>
+
 <header class="top-bar">
     <h2 class="top-bar__title">Dashboard</h2>
 
@@ -11,6 +13,13 @@
     </div>
 
     <div class="top-bar__actions">
+        <label for="streakModalToggle" class="action-btn streak-btn" title="Daily Streak">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3 2.5.5 4.5 2.5 4.5 5.5a4.5 4.5 0 0 1-9 0c0-1.11.33-2.11 1-3 .5 1.11 1 2 3.5 3z"></path>
+                <path d="M12 2c0 2-3 4.5-3 8.5h6c0-4-3-6.5-3-8.5z"></path>
+            </svg>
+            <span class="streak-count">7</span>
+        </label>
         <button class="action-btn" id="themeToggle" title="Toggle Theme">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -32,3 +41,174 @@
         </button>
     </div>
 </header>
+
+<!-- Daily Streak Modal Overlay -->
+<div class="streak-modal-overlay">
+    <div class="streak-modal">
+        <div class="streak-modal__header">
+            <h3>Monthly Streak Rewards</h3>
+            <label for="streakModalToggle" class="close-modal">&times;</label>
+        </div>
+        <div class="streak-modal__content">
+            <div class="streak-grid">
+                <!-- Days 1-6 (Claimed) -->
+                <div class="streak-item streak-item--claimed">
+                    <span class="streak-day">Day 1</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">50 XP</span>
+                </div>
+                <!-- ... Repeat for 6 days ... -->
+                <div class="streak-item streak-item--claimed">
+                    <span class="streak-day">Day 2</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">50 XP</span>
+                </div>
+                <div class="streak-item streak-item--claimed">
+                    <span class="streak-day">Day 3</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">50 XP</span>
+                </div>
+                <div class="streak-item streak-item--claimed">
+                    <span class="streak-day">Day 4</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">50 XP</span>
+                </div>
+                <div class="streak-item streak-item--claimed">
+                    <span class="streak-day">Day 5</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">100 XP</span>
+                </div>
+                <div class="streak-item streak-item--claimed">
+                    <span class="streak-day">Day 6</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">100 XP</span>
+                </div>
+
+                <!-- Day 7 (Active) -->
+                <div class="streak-item streak-item--active">
+                    <span class="streak-day">Day 7</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">100 XP</span>
+                </div>
+
+                <!-- Days 8-30 (Locked) -->
+                <!-- I'll add more items below to fill the grid -->
+                <div class="streak-item">
+                    <span class="streak-day">Day 8</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">100 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 9</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">150 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 10</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">150 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 11</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">150 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 12</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">150 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 13</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">200 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 14</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">200 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 15</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">200 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 16</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">200 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 17</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">250 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 18</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">250 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 19</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">250 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 20</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">250 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 21</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">300 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 22</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">300 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 23</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">300 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 24</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">300 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 25</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">500 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 26</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">500 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 27</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">500 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 28</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">500 XP</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-day">Day 29</span>
+                    <div class="streak-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">500 XP</span>
+                </div>
+                <div class="streak-item" style="border-color: #ffd700; background: rgba(255, 215, 0, 0.05);">
+                    <span class="streak-day" style="color: #ffd700;">Day 30</span>
+                    <div class="streak-icon" style="color: #ffd700;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span class="streak-reward">1000 XP</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
