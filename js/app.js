@@ -583,7 +583,13 @@ var Aumage = {
 
     try {
       this.updateProgress('Analyzing audio characteristics...');
-      const features = await AumageExtractor.extract(this.audioBlob);
+      
+      let features;
+      if (this.audioSource === 'link' && this.linkUrl) {
+        features = await AumageExtractor.extractFromUrl(this.linkUrl);
+      } else {
+        features = await AumageExtractor.extract(this.audioBlob);
+      }
 
       this.updateProgress('Extracting sonic fingerprint...');
       const fingerprint = await AumagePrompt.generateFingerprint(features);

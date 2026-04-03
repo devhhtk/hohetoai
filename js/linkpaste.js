@@ -7,7 +7,9 @@
 const AumageLinkPaste = {
   patterns: {
     spotify: /^https?:\/\/(open\.)?spotify\.com\/(track|album|playlist)\//,
-    youtube: /^https?:\/\/(www\.)?(youtube\.com\/watch|youtu\.be\/)/
+    youtube: /^https?:\/\/(www\.)?(youtube\.com\/watch|youtu\.be\/|youtube\.com\/shorts\/)/,
+    image: /^https?:\/\/.*\.(png|jpg|jpeg|webp|gif)$/i,
+    audio: /^https?:\/\/.*\.(mp3|wav|ogg|flv|m4a)$/i
   },
   
   init() {
@@ -21,14 +23,17 @@ const AumageLinkPaste = {
     const input = document.getElementById('link-input');
     const url = input?.value?.trim();
     
-    if (!url) { alert('Please paste a Spotify or YouTube link.'); return; }
-    if (!this.isValidLink(url)) { alert('Please paste a valid Spotify or YouTube link.'); return; }
+    if (!url) { alert('Please paste a link.'); return; }
+    if (!this.isValidLink(url)) { alert('Please paste a valid YouTube, Spotify, or Media link.'); return; }
     
     Aumage.onLinkReady(url);
   },
   
   isValidLink(url) {
-    return this.patterns.spotify.test(url) || this.patterns.youtube.test(url);
+    return this.patterns.spotify.test(url) || 
+           this.patterns.youtube.test(url) || 
+           this.patterns.image.test(url) || 
+           this.patterns.audio.test(url);
   }
 };
 

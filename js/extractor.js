@@ -42,6 +42,44 @@ const AumageExtractor = {
   },
 
   // ─────────────────────────────────────────────────────────────
+  // NEW: Extract from YouTube/Spotify/Direct URL
+  // Calls /api/extract-url on backend (which fetches + extracts)
+  // ─────────────────────────────────────────────────────────────
+
+  async extractFromUrl(url) {
+    console.log('[Extractor] Extracting from URL:', url);
+    try {
+      const response = await fetch(this.PIPELINE_URL + '/api/extract-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || 'URL extraction HTTP ' + response.status);
+      }
+
+      const result = await response.json();
+      if (!result.signal || !result.signature) throw new Error('Incomplete server signal');
+
+      const { signal, signature } = result;
+      console.log('[Extractor] URL Server ✓ | ARS:', signal.intelligence?.arsAdjusted);
+
+      return {
+        _serverSignal: signal,
+        _serverSignature: signature,
+        _serverExtracted: true,
+        // Map it as if it were a client extraction for UI compatibility
+        ...this._mapServerToClient(signal, this._fallbackFeatures()),
+      };
+    } catch (e) {
+      console.error('[Extractor] URL extraction failed:', e.message);
+      throw e;
+    }
+  },
+
+  // ─────────────────────────────────────────────────────────────
   // SERVER EXTRACTION
   // ─────────────────────────────────────────────────────────────
 
