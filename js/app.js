@@ -635,6 +635,9 @@ var Aumage = {
       const result = await response.json();
       if (result.error) throw new Error(result.message || result.error);
 
+      // Store progress for Level Up check
+      this._lastXpProgress = result.progress;
+
       // Convert creature URL to proxied URL (avoids B2 CORS / missing CDN DNS)
       const rawUrl = result.creature_url || result.card_url || '';
       // Extract creature path from any known URL format:
@@ -842,6 +845,11 @@ var Aumage = {
         
         // Refresh sidebar stats to show new XP gain
         if (window.AumageDB) AumageDB.updateSidebarStats();
+
+        // Check for Level Up!
+        if (this._lastXpProgress?.leveledUp) {
+          this.showLevelUpModal(this._lastXpProgress.profile.level);
+        }
       }
     } catch (err) {
       console.error('Save failed (non-blocking):', err);
@@ -1315,6 +1323,27 @@ var Aumage = {
     this.videoUrl = null;
     this.lastCreatureRecord = null;
     this.showStep('input');
+  },
+
+  // ============================================================
+  // LEVEL UP MODAL
+  // ============================================================
+
+  showLevelUpModal(newLevel) {
+    const oldLvlEl = document.getElementById('lvl-old');
+    const newLvlEl = document.getElementById('lvl-new');
+    const toggle = document.getElementById('levelUpModalToggle');
+
+    if (oldLvlEl) oldLvlEl.textContent = newLevel - 1;
+    if (newLvlEl) newLvlEl.textContent = newLevel;
+    
+    if (toggle) {
+      setTimeout(() => {
+        toggle.checked = true;
+        // Optional: Play sound or extra effects here
+        console.log(`[UI] Showing Level Up Modal: ${newLevel}`);
+      }, 500);
+    }
   }
 };
 
