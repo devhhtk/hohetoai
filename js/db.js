@@ -536,6 +536,63 @@ const AumageDB = {
       console.error('AumageDB.getUserProfile error:', e);
       return null;
     }
+  },
+
+  /**
+   * Fetch login streak status and rewards.
+   */
+  async getStreakStatus() {
+    if (!this.user) return null;
+
+    try {
+      const session = await this.supabase.auth.getSession();
+      const token = session?.data?.session?.access_token;
+      const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+
+      const resp = await fetch(`${apiBase}/api/streak/status`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
+      });
+
+      if (!resp.ok) throw new Error(`Streak status fetch failed: ${resp.status}`);
+      return await resp.json();
+    } catch (e) {
+      console.error('AumageDB.getStreakStatus error:', e);
+      return null;
+    }
+  },
+
+  /**
+   * Claim the next reward in the streak sequence.
+   */
+  async claimStreakReward() {
+    if (!this.user) return null;
+
+    try {
+      const session = await this.supabase.auth.getSession();
+      const token = session?.data?.session?.access_token;
+      const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+
+      const resp = await fetch(`${apiBase}/api/streak/claim`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
+      });
+
+      if (!resp.ok) {
+        const result = await resp.json();
+        throw new Error(result.error || `Claim failed: ${resp.status}`);
+      }
+      return await resp.json();
+    } catch (e) {
+      console.error('AumageDB.claimStreakReward error:', e);
+      throw e;
+    }
   }
 };
 
