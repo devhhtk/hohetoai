@@ -510,9 +510,11 @@
                 { id: 'comp-footer', path: '../components/footer.html' }
             ]);
 
-            // Set active nav item
-            const navCreatures = document.getElementById('nav-creatures');
-            if (navCreatures) navCreatures.classList.add('nav-item--active');
+            // Database & Auth Initialization
+            if (window.AumageDB) {
+                window.AumageDB.init();
+                await window.AumageDB.requireAuth();
+            }
 
             // Theme Toggle Logic
             const setupTheme = () => {

@@ -155,23 +155,7 @@
             // Database & Auth Initialization
             if (window.AumageDB) {
                 window.AumageDB.init();
-
-                const originalUpdateUI = window.AumageDB.updateAuthUI;
-                window.AumageDB.updateAuthUI = function () {
-                    originalUpdateUI.call(this);
-
-                    const user = this.user;
-                    if (user) {
-                        const name = user.email?.split('@')[0] || 'Storyteller';
-                        // Elements might be newly injected, so we select them again
-                        const profName = document.getElementById('prof-name');
-                        const greetName = document.getElementById('dash-greeting-name');
-                        if (profName) profName.textContent = name;
-                        if (greetName) greetName.textContent = name;
-                    } else {
-                        window.location.href = '../pages/login.html';
-                    }
-                };
+                await window.AumageDB.requireAuth();
             }
 
             // --- Sidebar & Profile UI ---

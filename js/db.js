@@ -61,6 +61,26 @@ const AumageDB = {
   },
 
   /**
+   * Check if a user is logged in (auth guard).
+   * Redirects if not authenticated.
+   */
+  async requireAuth(options = {}) {
+    const { redirectPath = '../pages/login.html' } = options;
+
+    const { data: { user }, error } = await this.supabase.auth.getUser();
+
+    if (error || !user) {
+      console.warn('AumageDB: Unauthorized access — redirecting to', redirectPath);
+      window.location.href = redirectPath;
+      return null;
+    }
+
+    this.user = user;
+    this.updateAuthUI();
+    return user;
+  },
+
+  /**
    * Update header UI to reflect auth state.
    */
   updateAuthUI() {

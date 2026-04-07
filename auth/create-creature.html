@@ -204,7 +204,7 @@
             // Database & Auth Initialization
             if (window.AumageDB) {
                 window.AumageDB.init();
-                // ... same auth UI logic as dashboard.html ...
+                await window.AumageDB.requireAuth();
             }
 
             // Theme Toggle Re-initialization (since it's in the header component)
