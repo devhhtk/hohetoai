@@ -755,13 +755,104 @@ const StreakUI = {
   }
 };
 
+/**
+ * High-performance Canvas Particle Engine
+ */
+const ConfettiEngine = {
+  canvas: null,
+  ctx: null,
+  particles: [],
+  animationId: null,
+  active: false,
+
+  init() {
+    this.canvas = document.getElementById('levelUpCanvas');
+    if (!this.canvas) return;
+    this.ctx = this.canvas.getContext('2d');
+    this.resize();
+    window.addEventListener('resize', () => this.resize());
+  },
+
+  resize() {
+    if (this.canvas) {
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+    }
+  },
+
+  burst() {
+    this.particles = [];
+    const colors = ['#08D2C1', '#00f2e0', '#ffffff', '#ffd700', '#ff6b00'];
+    
+    for (let i = 0; i < 150; i++) {
+      this.particles.push({
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+        size: Math.random() * 8 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 20,
+        vy: (Math.random() - 0.5) * 20 - 5,
+        gravity: 0.3,
+        friction: 0.95,
+        rotation: Math.random() * 360,
+        rotationSpeed: (Math.random() - 0.5) * 10
+      });
+    }
+
+    if (!this.active) {
+      this.active = true;
+      this.render();
+    }
+
+    // Add "active" class to overlay for the CSS flash effect
+    const overlay = document.querySelector('.level-up-modal-overlay');
+    if (overlay) {
+      overlay.classList.add('active');
+      setTimeout(() => overlay.classList.remove('active'), 1000);
+    }
+  },
+
+  render() {
+    if (!this.active) return;
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    let alive = false;
+    this.particles.forEach(p => {
+      p.vx *= p.friction;
+      p.vy *= p.friction;
+      p.vy += p.gravity;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rotation += p.rotationSpeed;
+
+      if (p.y < this.canvas.height) {
+        alive = true;
+        this.ctx.save();
+        this.ctx.translate(p.x, p.y);
+        this.ctx.rotate(p.rotation * Math.PI / 180);
+        this.ctx.fillStyle = p.color;
+        this.ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+        this.ctx.restore();
+      }
+    });
+
+    if (alive) {
+      this.animationId = requestAnimationFrame(() => this.render());
+    } else {
+      this.active = false;
+    }
+  }
+};
+
 window.StreakUI = StreakUI;
+window.ConfettiEngine = ConfettiEngine;
 
 // Auto-initialize when possible
 (function() {
   const tryInit = () => {
     if (window.AumageDB && window.AumageDB.user && document.getElementById('streakGrid')) {
       window.StreakUI.init();
+      window.ConfettiEngine.init();
       return true;
     }
     return false;
@@ -774,6 +865,9 @@ window.StreakUI = StreakUI;
   document.addEventListener('change', (e) => {
     if (e.target.id === 'streakModalToggle' && e.target.checked) {
       window.StreakUI.init();
+    }
+    if (e.target.id === 'levelUpModalToggle' && e.target.checked) {
+      setTimeout(() => window.ConfettiEngine.burst(), 100);
     }
   });
 
