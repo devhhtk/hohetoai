@@ -80,10 +80,63 @@ const AumageDB = {
           this.updateAuthUI();
         };
       }
+      // Call progress update
+      this.updateSidebarStats();
     } else {
       if (loggedOut) loggedOut.classList.remove('hidden');
       if (loggedIn) loggedIn.classList.add('hidden');
     }
+  },
+
+  /**
+   * Update sidebar level and XP progress bars with live data.
+   */
+  async updateSidebarStats() {
+    if (!this.user) return;
+
+    // Wait a bit for components to load if they haven't yet
+    if (!document.querySelector('.xp-level')) {
+        // If sidebar not yet in DOM, wait for the event
+        document.addEventListener('componentsLoaded', () => this.updateSidebarStats(), { once: true });
+        return;
+    }
+
+    const data = await this.getUserProfile();
+    if (!data || !data.success) return;
+
+    const { profile, target_level, base_xp } = data;
+    
+    const levelEl = document.querySelector('.xp-level');
+    const valueEl = document.querySelector('.xp-value');
+    const progressFill = document.querySelector('.xp-progress-fill');
+
+    if (levelEl) levelEl.textContent = `Lv. ${profile.level}`;
+    
+    if (valueEl || progressFill) {
+        const currentXP = profile.total_xp;
+        const requiredXP = target_level.xp_required;
+        const thresholdXP = base_xp;
+
+        // Progress within the current level
+        const xpInLevel = currentXP - thresholdXP;
+        const rangeInLevel = requiredXP - thresholdXP;
+        const progressPct = Math.min(100, Math.max(0, (xpInLevel / rangeInLevel) * 100));
+
+        if (valueEl) {
+            valueEl.textContent = `${currentXP.toLocaleString()} / ${requiredXP.toLocaleString()} XP`;
+        }
+        if (progressFill) {
+            progressFill.style.width = `${progressPct}%`;
+        }
+    }
+
+    // Also update profile card if it exists
+    const profName = document.getElementById('prof-name');
+    const greetName = document.getElementById('dash-greeting-name');
+    const name = this.user.email?.split('@')[0] || 'Storyteller';
+    
+    if (profName) profName.textContent = name;
+    if (greetName) greetName.textContent = name;
   },
 
   // ============================================================
@@ -384,6 +437,39 @@ const AumageDB = {
       slug += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return slug;
+  },
+
+  // ============================================================
+  // PROFILE & PROGRESS
+  // ============================================================
+
+  /**
+   * Fetch live user profile and level data from backend.
+   */
+  async getUserProfile() {
+    if (!this.user) return null;
+
+    try {
+      const session = await this.supabase.auth.getSession();
+      const token = session?.data?.session?.access_token;
+
+      // Extract PIPELINE_URL from Aumage if available, or use default
+      const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+
+      const resp = await fetch(`${apiBase}/api/profile`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
+      });
+
+      if (!resp.ok) throw new Error(`Profile fetch failed: ${resp.status}`);
+      return await resp.json();
+    } catch (e) {
+      console.error('AumageDB.getUserProfile error:', e);
+      return null;
+    }
   }
 };
 

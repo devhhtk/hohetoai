@@ -108,7 +108,10 @@ var Aumage = {
   },
 
   init() {
-    if (window.AumageDB) AumageDB.init();
+    if (window.AumageDB) {
+      AumageDB.init();
+      AumageDB.updateSidebarStats();
+    }
     this.bindEvents(); // Always bind — even on share routes
     if (this.checkShareRoute()) return;
 
@@ -836,7 +839,9 @@ var Aumage = {
       if (record) {
         this.lastCreatureRecord = record;
         console.log('Creature saved, slug:', record.share_slug);
-        // saveCreatureState removed — was causing redirect to share URL after generation
+        
+        // Refresh sidebar stats to show new XP gain
+        if (window.AumageDB) AumageDB.updateSidebarStats();
       }
     } catch (err) {
       console.error('Save failed (non-blocking):', err);
