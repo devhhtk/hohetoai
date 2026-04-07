@@ -368,7 +368,7 @@ body.dashboard-body {
   padding: 24px;
 }
 
-.streak-modal-toggle:checked ~ .streak-modal-overlay {
+.streak-modal-toggle:checked~.streak-modal-overlay {
   display: flex;
 }
 
@@ -387,8 +387,15 @@ body.dashboard-body {
 }
 
 @keyframes modalScaleIn {
-  from { opacity: 0; transform: scale(0.95) translateY(10px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .streak-modal__header {
@@ -527,7 +534,7 @@ body.dashboard-body {
   padding: 24px;
 }
 
-.level-up-modal-toggle:checked ~ .level-up-modal-overlay {
+.level-up-modal-toggle:checked~.level-up-modal-overlay {
   display: flex;
 }
 
@@ -546,9 +553,19 @@ body.dashboard-body {
 }
 
 @keyframes levelUpPop {
-  0% { opacity: 0; transform: scale(0.5) translateY(40px); }
-  70% { transform: scale(1.05) translateY(-5px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
+  0% {
+    opacity: 0;
+    transform: scale(0.5) translateY(40px);
+  }
+
+  70% {
+    transform: scale(1.05) translateY(-5px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .level-up-aura {
@@ -564,8 +581,13 @@ body.dashboard-body {
 }
 
 @keyframes auraRotate {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to { transform: translate(-50%, -50%) rotate(360deg); }
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 .level-up-content {
@@ -588,8 +610,17 @@ body.dashboard-body {
 }
 
 @keyframes iconBounce {
-  0%, 100% { transform: translateY(0); filter: brightness(1); }
-  50% { transform: translateY(-10px); filter: brightness(1.3); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+    filter: brightness(1);
+  }
+
+  50% {
+    transform: translateY(-10px);
+    filter: brightness(1.3);
+  }
 }
 
 .level-up-title {
@@ -610,7 +641,8 @@ body.dashboard-body {
   margin-bottom: 24px;
 }
 
-.old-level, .new-level {
+.old-level,
+.new-level {
   font-size: 56px;
   font-weight: 800;
   font-family: 'Exo 2', sans-serif;
@@ -1210,5 +1242,206 @@ body.light-mode .upload-dropzone {
   .creation-grid {
     grid-template-columns: 1fr;
     max-width: 400px;
+  }
+}
+
+/* ── Collection Hub Styles ── */
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  padding-bottom: 40px;
+  margin: 0px 40px;
+}
+
+.trope-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.trope-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.trope-card__img-wrap {
+  width: 100%;
+  aspect-ratio: 1.4;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+.trope-card__img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.trope-card:hover .trope-card__img-wrap img {
+  transform: scale(1.05);
+}
+
+.trope-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 12px;
+}
+
+.trope-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.trope-card__title {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.trope-card__stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.trope-card__logo {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+}
+
+.trope-card__logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Trope Specific Colors & Glows */
+.trope-card--terratrope {
+  border-color: rgba(8, 210, 193, 0.3);
+  box-shadow: 0 4px 20px rgba(8, 210, 193, 0.1);
+}
+
+.trope-card--terratrope:hover {
+  box-shadow: 0 8px 30px rgba(8, 210, 193, 0.2);
+  border-color: #08D2C1;
+}
+
+.trope-card--aquatrope {
+  border-color: rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.1);
+}
+
+.trope-card--aquatrope:hover {
+  box-shadow: 0 8px 30px rgba(37, 99, 235, 0.2);
+  border-color: #2563EB;
+}
+
+.trope-card--aerotrope {
+  border-color: rgba(14, 165, 233, 0.3);
+  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.1);
+}
+
+.trope-card--aerotrope:hover {
+  box-shadow: 0 8px 30px rgba(14, 165, 233, 0.2);
+  border-color: #0EA5E9;
+}
+
+.trope-card--pyrotrope {
+  border-color: rgba(249, 115, 22, 0.3);
+  box-shadow: 0 4px 20px rgba(249, 115, 22, 0.1);
+}
+
+.trope-card--pyrotrope:hover {
+  box-shadow: 0 8px 30px rgba(249, 115, 22, 0.2);
+  border-color: #F97316;
+}
+
+.trope-card--sonatrope {
+  border-color: rgba(79, 70, 229, 0.3);
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.1);
+}
+
+.trope-card--sonatrope:hover {
+  box-shadow: 0 8px 30px rgba(79, 70, 229, 0.2);
+  border-color: #4F46E5;
+}
+
+.trope-card--limotrope {
+  border-color: rgba(234, 179, 8, 0.3);
+  box-shadow: 0 4px 20px rgba(234, 179, 8, 0.1);
+}
+
+.trope-card--limotrope:hover {
+  box-shadow: 0 8px 30px rgba(234, 179, 8, 0.2);
+  border-color: #EAB308;
+}
+
+.trope-card--primatrope {
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
+}
+
+.trope-card--primatrope:hover {
+  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.2);
+  border-color: #10B981;
+}
+
+.trope-card--megatrope {
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1);
+}
+
+.trope-card--megatrope:hover {
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.2);
+  border-color: #8B5CF6;
+}
+
+/* Light Mode Overrides */
+body.light-mode .trope-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode .trope-card__title {
+  color: #1a1a1a;
+}
+
+body.light-mode .trope-card:hover {
+  background: #f8fafc;
+}
+
+/* Tablet / Mobile Grid */
+@media (max-width: 1200px) {
+  .collection-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .collection-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .collection-grid {
+    grid-template-columns: 1fr;
   }
 }
