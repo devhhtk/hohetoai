@@ -152,17 +152,17 @@
                     </div>
                 </div>
 
-                <!-- Limotrope -->
-                <div class="trope-card trope-card--limotrope" data-trope="lumitrope">
+                <!-- Floratrope (was Limotrope) -->
+                <div class="trope-card trope-card--limotrope" data-trope="floratrope">
                     <div class="trope-card__img-wrap">
-                        <img src="../img/col-card6.png" alt="Limotrope">
+                        <img src="../img/col-card6.png" alt="Floratrope">
                     </div>
                     <div class="trope-card__footer">
                         <div class="trope-card__logo">
-                            <img src="../img/tropes/lumitrope.png" alt="Limotrope Logo">
+                            <img src="../img/tropes/lumitrope.png" alt="Floratrope Logo">
                         </div>
                         <div class="trope-card__info">
-                            <span class="trope-card__title">Limotrope</span>
+                            <span class="trope-card__title">Floratrope</span>
                             <div class="trope-card__stats">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2">
@@ -170,23 +170,23 @@
                                         d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
                                     </path>
                                 </svg>
-                                <span id="count-lumitrope">0 Creations</span>
+                                <span id="count-floratrope">0 Creations</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Primatrope -->
-                <div class="trope-card trope-card--primatrope" data-trope="Prismatrope">
+                <!-- Prismatrope (was Primatrope) -->
+                <div class="trope-card trope-card--primatrope" data-trope="prismatrope">
                     <div class="trope-card__img-wrap">
-                        <img src="../img/col-card7.png" alt="Primatrope">
+                        <img src="../img/col-card7.png" alt="Prismatrope">
                     </div>
                     <div class="trope-card__footer">
                         <div class="trope-card__logo">
-                            <img src="../img/tropes/primatrope.png" alt="Primatrope Logo">
+                            <img src="../img/tropes/primatrope.png" alt="Prismatrope Logo">
                         </div>
                         <div class="trope-card__info">
-                            <span class="trope-card__title">Primatrope</span>
+                            <span class="trope-card__title">Prismatrope</span>
                             <div class="trope-card__stats">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2">
@@ -194,7 +194,7 @@
                                         d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
                                     </path>
                                 </svg>
-                                <span id="count-primatrope">0 Creations</span>
+                                <span id="count-prismatrope">0 Creations</span>
                             </div>
                         </div>
                     </div>
@@ -268,10 +268,10 @@
             async function loadCollectionStats() {
                 if (!window.AumageDB) return;
                 const counts = await window.AumageDB.getCreatureCountsByTrope();
-
-                // Update specific tropes
-                const tropes = ['terratrope', 'aquatrope', 'aerotrope', 'pyrotrope', 'sonatrope', 'lumitrope', 'primatrope', 'megatrope'];
-
+                
+                // Update specific tropes (aligned with mapping-v2.js + placeholders)
+                const tropes = ['terratrope', 'aquatrope', 'aerotrope', 'pyrotrope', 'sonatrope', 'floratrope', 'prismatrope', 'megatrope'];
+                
                 tropes.forEach(t => {
                     const count = counts[t] || 0;
                     const el = document.getElementById(`count-${t}`);
