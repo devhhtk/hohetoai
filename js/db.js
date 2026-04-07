@@ -626,6 +626,49 @@ const AumageDB = {
       console.error('AumageDB.claimStreakReward error:', e);
       throw e;
     }
+  },
+
+  /**
+   * Calculate user achievements based on history.
+   */
+  async getAchievements() {
+    if (!this.user) return null;
+
+    try {
+      // 1. Get creature count
+      const { count: creatureCount, error: countErr } = await this.supabase
+        .from('creatures')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', this.user.id);
+
+      if (countErr) throw countErr;
+
+      // 2. Check for rare creatures
+      const { count: rareCount, error: rareErr } = await this.supabase
+        .from('creatures')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', this.user.id)
+        .neq('base_rarity', 'common');
+
+      if (rareErr) throw rareErr;
+
+      // 3. Get profile for level and streak
+      const profileData = await this.getUserProfile();
+      const profile = profileData?.profile || {};
+
+      return {
+        success: true,
+        achievements: {
+          pioneer: creatureCount > 0,
+          elite: rareCount > 0,
+          ascended: (profile.level || 1) >= 2,
+          loyal: (profile.streak_count || 0) >= 1
+        }
+      };
+    } catch (e) {
+      console.error('AumageDB.getAchievements error:', e);
+      return null;
+    }
   }
 };
 

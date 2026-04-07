@@ -68,6 +68,64 @@
                 </div>
             </section>
 
+            <!-- Achievements -->
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <h3 class="section-title">My Achievements</h3>
+                </div>
+                <div class="achievements-grid" id="achievements-grid">
+                    <!-- Pioneer Achievement -->
+                    <div class="achievement-card" id="ach-pioneer">
+                        <div class="achievement-status">LOCKED</div>
+                        <div class="achievement-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="16"></line>
+                                <line x1="8" y1="12" x2="16" y2="12"></line>
+                            </svg>
+                        </div>
+                        <span class="achievement-title">Pioneer</span>
+                        <span class="achievement-desc">Created your first creature.</span>
+                    </div>
+
+                    <!-- Elite Summoner Achievement -->
+                    <div class="achievement-card" id="ach-elite">
+                        <div class="achievement-status">LOCKED</div>
+                        <div class="achievement-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                        </div>
+                        <span class="achievement-title">Elite Summoner</span>
+                        <span class="achievement-desc">Unlocked a Rare or higher creature.</span>
+                    </div>
+
+                    <!-- Ascended Achievement -->
+                    <div class="achievement-card" id="ach-ascended">
+                        <div class="achievement-status">LOCKED</div>
+                        <div class="achievement-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="18 15 12 9 6 15"></polyline>
+                            </svg>
+                        </div>
+                        <span class="achievement-title">Ascended</span>
+                        <span class="achievement-desc">Reached Level 2.</span>
+                    </div>
+
+                    <!-- Loyal Caller Achievement -->
+                    <div class="achievement-card" id="ach-loyal">
+                        <div class="achievement-status">LOCKED</div>
+                        <div class="achievement-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                            </svg>
+                        </div>
+                        <span class="achievement-title">Loyal Caller</span>
+                        <span class="achievement-desc">Started a login streak.</span>
+                    </div>
+                </div>
+            </section>
+
             <!-- Trending Creatures -->
             <section class="dashboard-section">
                 <div class="section-header">
@@ -207,6 +265,31 @@
                 });
             }
 
+            // --- Load Achievements ---
+            async function loadAchievements() {
+                if (!window.AumageDB) return;
+                
+                const data = await window.AumageDB.getAchievements();
+                if (!data || !data.success) return;
+
+                const { achievements } = data;
+
+                // Update UI badges
+                const updateBadge = (id, achieved) => {
+                    const el = document.getElementById(id);
+                    if (el && achieved) {
+                        el.classList.add('achievement-card--unlocked');
+                        const status = el.querySelector('.achievement-status');
+                        if (status) status.textContent = 'UNLOCKED';
+                    }
+                };
+
+                updateBadge('ach-pioneer', achievements.pioneer);
+                updateBadge('ach-elite', achievements.elite);
+                updateBadge('ach-ascended', achievements.ascended);
+                updateBadge('ach-loyal', achievements.loyal);
+            }
+
             // --- Load Popular Creatures ---
             async function loadPopularCreatures() {
                 const popularGrid = document.getElementById('popular-grid');
@@ -232,6 +315,7 @@
             }
 
             // Run initial load
+            loadAchievements();
             loadPopularCreatures();
         });
     </script>
