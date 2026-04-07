@@ -177,7 +177,7 @@
                 </div>
 
                 <!-- Primatrope -->
-                <div class="trope-card trope-card--primatrope" data-trope="primatrope">
+                <div class="trope-card trope-card--primatrope" data-trope="Prismatrope">
                     <div class="trope-card__img-wrap">
                         <img src="../img/col-card7.png" alt="Primatrope">
                     </div>
@@ -268,10 +268,10 @@
             async function loadCollectionStats() {
                 if (!window.AumageDB) return;
                 const counts = await window.AumageDB.getCreatureCountsByTrope();
-                
+
                 // Update specific tropes
                 const tropes = ['terratrope', 'aquatrope', 'aerotrope', 'pyrotrope', 'sonatrope', 'lumitrope', 'primatrope', 'megatrope'];
-                
+
                 tropes.forEach(t => {
                     const count = counts[t] || 0;
                     const el = document.getElementById(`count-${t}`);
