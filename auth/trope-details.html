@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trope Details — HoHeTo Kai</title>
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/trope_details.css">
+</head>
+
+<body class="dashboard-body">
+
+    <!-- ══ Sidebar Placeholder ══ -->
+    <div id="comp-sidebar"></div>
+
+    <!-- ══ Main Content Area ══ -->
+    <main class="main-area">
+
+        <!-- Top Navigation Bar Placeholder -->
+        <div id="comp-header"></div>
+
+        <!-- Dynamic Content View -->
+        <div class="content-view">
+
+            <div class="trope-details-container">
+                
+                <!-- Trope Banner -->
+                <div class="trope-banner" id="tropeBanner" data-trope="unknown">
+                    <a href="collection.html" class="trope-banner__back">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </a>
+                    <div class="trope-banner__logo">
+                        <img id="tropeLogo" src="../img/placeholder.png" alt="Trope Logo">
+                    </div>
+                    <div class="trope-banner__info">
+                        <h1 class="trope-banner__name" id="tropeName">Loading Trope...</h1>
+                        <div class="trope-banner__count" id="tropeCount">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                            </svg>
+                            <span>0 Creations</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Header & Filters -->
+                <div class="trope-content-header">
+                    <h2 class="trope-content-title" id="pageTitle">Collections of Trope</h2>
+                    <div class="trope-filters">
+                        <div class="search-container">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" id="searchInput" placeholder="Search creatures...">
+                        </div>
+                        <select class="filter-select" id="viewFilter">
+                            <option value="all">All View</option>
+                            <option value="cards">Cards Only</option>
+                            <option value="characters">Characters Only</option>
+                        </select>
+                        <select class="filter-select" id="sortFilter">
+                            <option value="newest">Sort: Newest First</option>
+                            <option value="oldest">Sort: Oldest First</option>
+                            <option value="rarity">Sort: By Rarity</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Grid Sections -->
+                <div class="grid-section" id="cardsSection">
+                    <h3 class="grid-section__title">Cards</h3>
+                    <div class="cards-grid" id="cardsGrid">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+
+                <div class="grid-section" id="charactersSection">
+                    <h3 class="grid-section__title">Characters</h3>
+                    <div class="characters-grid" id="charactersGrid">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer Placeholder -->
+            <div id="comp-footer"></div>
+
+        </div>
+    </main>
+
+    <!-- Supabase & DB Layer -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/db.js"></script>
+    <script src="../js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 1. Load Components
+            await ComponentLoader.loadAll([
+                { id: 'comp-sidebar', path: '../components/sidebar.html' },
+                { id: 'comp-header', path: '../components/header.html' },
+                { id: 'comp-footer', path: '../components/footer.html' }
+            ]);
+
+            // 2. Auth & DB Init
+            if (window.AumageDB) {
+                window.AumageDB.init();
+                await window.AumageDB.requireAuth();
+            }
+
+            // 3. Parse Trope from URL
+            const params = new URLSearchParams(window.location.search);
+            const tropeKey = params.get('trope') || 'terratrope';
+            
+            // 4. Update UI for specific trope
+            const tropeMap = {
+                terratrope: { name: 'Terratrope', logo: 'terratrope.png' },
+                aquatrope: { name: 'Aquatrope', logo: 'aquatrope.png' },
+                aerotrope: { name: 'Aerotrope', logo: 'aerotrope.png' },
+                pyrotrope: { name: 'Pyrotrope', logo: 'pyrotrope.png' },
+                sonatrope: { name: 'Sonatrope', logo: 'sonatrope.png' },
+                floratrope: { name: 'Floratrope', logo: 'lumitrope.png' },
+                prismatrope: { name: 'Prismatrope', logo: 'primatrope.png' },
+                megatrope: { name: 'Megatrope', logo: 'megatrope.png' }
+            };
+
+            const trope = tropeMap[tropeKey] || tropeMap.terratrope;
+            document.getElementById('tropeBanner').setAttribute('data-trope', tropeKey);
+            document.getElementById('tropeLogo').src = `../img/tropes/${trope.logo}`;
+            document.getElementById('tropeName').textContent = trope.name;
+            document.getElementById('pageTitle').textContent = `Collections of ${trope.name}`;
+            document.title = `${trope.name} Collection — HoHeTo Kai`;
+
+            // 5. Fetch Creatures
+            let allCreatures = [];
+            const loadCreatures = async () => {
+                allCreatures = await window.AumageDB.getCreaturesByTrope(tropeKey);
+                document.querySelector('#tropeCount span').textContent = `${allCreatures.length} Creation${allCreatures.length === 1 ? '' : 's'}`;
+                renderGrids(allCreatures);
+            };
+
+            const renderGrids = (creatures) => {
+                const cardsGrid = document.getElementById('cardsGrid');
+                const charsGrid = document.getElementById('charactersGrid');
+                
+                cardsGrid.innerHTML = '';
+                charsGrid.innerHTML = '';
+
+                if (creatures.length === 0) {
+                    cardsGrid.innerHTML = '<p class="empty-msg">No creatures found in this trope yet.</p>';
+                    charsGrid.innerHTML = '<p class="empty-msg">No creatures found in this trope yet.</p>';
+                    return;
+                }
+
+                creatures.forEach(c => {
+                    // Create Card
+                    const cardItem = document.createElement('div');
+                    cardItem.className = 'creature-card-item';
+                    cardItem.innerHTML = `
+                        <img src="${c.image_url}" alt="${c.creature_name || 'Creature'}">
+                        <div class="creature-card-item__info">
+                            <b>${c.creature_name || 'Unnamed Creature'}</b><br>
+                            ${c.serial_number || 'No Serial'}
+                        </div>
+                    `;
+                    cardItem.onclick = () => window.location.href = `created-creature.html?id=${c.id}`;
+                    cardsGrid.appendChild(cardItem);
+
+                    // Create Character Thumb
+                    const charThumb = document.createElement('div');
+                    charThumb.className = 'character-thumb';
+                    charThumb.innerHTML = `<img src="${c.image_url}" alt="${c.creature_name || 'Creature'}">`;
+                    charThumb.onclick = () => window.location.href = `created-creature.html?id=${c.id}`;
+                    charsGrid.appendChild(charThumb);
+                });
+            };
+
+            // 6. Search & Filters
+            const applyFilters = () => {
+                const search = document.getElementById('searchInput').value.toLowerCase();
+                const view = document.getElementById('viewFilter').value;
+                const sort = document.getElementById('sortFilter').value;
+
+                let filtered = allCreatures.filter(c => 
+                    (c.creature_name || '').toLowerCase().includes(search) || 
+                    (c.trope_class || '').toLowerCase().includes(search)
+                );
+
+                // Sorting
+                if (sort === 'oldest') filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+                else if (sort === 'newest') filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+                else if (sort === 'rarity') filtered.sort((a,b) => (b.ars || 0) - (a.ars || 0));
+
+                renderGrids(filtered);
+
+                // View Toggling
+                document.getElementById('cardsSection').style.display = (view === 'all' || view === 'cards') ? 'block' : 'none';
+                document.getElementById('charactersSection').style.display = (view === 'all' || view === 'characters') ? 'block' : 'none';
+            };
+
+            document.getElementById('searchInput').addEventListener('input', applyFilters);
+            document.getElementById('viewFilter').addEventListener('change', applyFilters);
+            document.getElementById('sortFilter').addEventListener('change', applyFilters);
+
+            // Initial load
+            loadCreatures();
+
+            // 7. Theme Initialization (from dashboard.css)
+            const themeToggle = document.getElementById('themeToggle');
+            const body = document.body;
+            if (themeToggle) {
+                const updateThemeIcon = (theme) => {
+                    const icon = themeToggle.querySelector('svg');
+                    if (!icon) return;
+                    if (theme === 'light') {
+                        icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+                    } else {
+                        icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+                    }
+                };
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'light') {
+                    body.classList.add('light-mode');
+                    updateThemeIcon('light');
+                }
+                themeToggle.addEventListener('click', () => {
+                    const isLight = body.classList.toggle('light-mode');
+                    const newTheme = isLight ? 'light' : 'dark';
+                    localStorage.setItem('theme', newTheme);
+                    updateThemeIcon(newTheme);
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

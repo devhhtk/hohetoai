@@ -311,6 +311,27 @@ const AumageDB = {
   },
 
   /**
+   * Get all creatures for the current user filtered by trope.
+   */
+  async getCreaturesByTrope(tropeKey) {
+    if (!this.supabase || !this.user) return [];
+
+    const { data, error } = await this.supabase
+      .from('creatures')
+      .select('*')
+      .eq('user_id', this.user.id)
+      .eq('trope_class', tropeKey)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('AumageDB getCreaturesByTrope error:', error);
+      return [];
+    }
+
+    return data || [];
+  },
+
+  /**
    * Get creature counts grouped by trope_class for the current user.
    */
   async getCreatureCountsByTrope() {

@@ -1,0 +1,261 @@
+/* Dedicated Styling for Trope Details Page */
+
+.trope-details-container {
+    padding: 0 40px 40px;
+}
+
+/* ── Trope Banner ── */
+.trope-banner {
+    width: 100%;
+    height: 180px;
+    border-radius: 20px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    position: relative;
+    overflow: hidden;
+    background: #111;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Background Gradients by Trope */
+.trope-banner[data-trope="terratrope"] { background: linear-gradient(135deg, #012a2a 0%, #033C41 100%); }
+.trope-banner[data-trope="aquatrope"] { background: linear-gradient(135deg, #0a214d 0%, #1e3a8a 100%); }
+.trope-banner[data-trope="aerotrope"] { background: linear-gradient(135deg, #073a52 0%, #0369a1 100%); }
+.trope-banner[data-trope="pyrotrope"] { background: linear-gradient(135deg, #4c1d05 0%, #9a3412 100%); }
+.trope-banner[data-trope="sonatrope"] { background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 100%); }
+.trope-banner[data-trope="floratrope"] { background: linear-gradient(135deg, #3f2d04 0%, #854d0e 100%); }
+.trope-banner[data-trope="prismatrope"] { background: linear-gradient(135deg, #062d1c 0%, #065f46 100%); }
+.trope-banner[data-trope="megatrope"] { background: linear-gradient(135deg, #2e1065 0%, #5b21b6 100%); }
+
+/* Animated background blur elements */
+.trope-banner::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+    filter: blur(40px);
+    z-index: 1;
+}
+
+.trope-banner__back {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-decoration: none;
+    margin-right: 32px;
+    transition: all 0.2s;
+    z-index: 2;
+}
+
+.trope-banner__back:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(-4px);
+}
+
+.trope-banner__logo {
+    width: 80px;
+    height: 80px;
+    margin-right: 24px;
+    z-index: 2;
+}
+
+.trope-banner__logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.trope-banner__info {
+    z-index: 2;
+}
+
+.trope-banner__name {
+    display: block;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.trope-banner__count {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+}
+
+/* ── Content Section ── */
+.trope-content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.trope-content-title {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.trope-filters {
+    display: flex;
+    gap: 12px;
+}
+
+.filter-select, .search-container input {
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 8px;
+    color: var(--text-main);
+    padding: 8px 16px;
+    font-size: 13px;
+    outline: none;
+}
+
+.search-container {
+    position: relative;
+    width: 240px;
+}
+
+.search-container input {
+    width: 100%;
+    padding-left: 36px;
+}
+
+.search-container svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+/* ── Grids ── */
+.grid-section {
+    margin-bottom: 48px;
+}
+
+.grid-section__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Cards Grid (Portrait Cards) */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 24px;
+}
+
+.creature-card-item {
+    aspect-ratio: 1 / 1.4;
+    background: #021a1a;
+    border: 6px solid #042d2d;
+    border-radius: 8px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+    overflow: hidden;
+}
+
+.creature-card-item:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    border-color: var(--color-primary);
+}
+
+.creature-card-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.creature-card-item__info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    color: #fff;
+    font-size: 10px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.creature-card-item:hover .creature-card-item__info {
+    opacity: 1;
+}
+
+/* Characters Grid (Square Thumbnails) */
+.characters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 20px;
+}
+
+.character-thumb {
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.character-thumb:hover {
+    transform: scale(1.05);
+    border-color: var(--color-primary);
+    background: rgba(8, 210, 193, 0.05);
+}
+
+.character-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ── Light Mode Fixes ── */
+body.light-mode .trope-banner {
+    background: #fff;
+    border-color: rgba(0,0,0,0.1);
+}
+
+body.light-mode .trope-banner__name { color: #1a1a1a; }
+body.light-mode .trope-banner__count { color: #555; }
+body.light-mode .trope-banner__back {
+    background: rgba(0,0,0,0.05);
+    color: #1a1a1a;
+}
+
+body.light-mode .character-thumb {
+    background: #fff;
+    border-color: rgba(0,0,0,0.05);
+}
+
+body.light-mode .creature-card-item {
+    background: #fff;
+    border-color: #f1f5f9;
+}

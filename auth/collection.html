@@ -284,6 +284,17 @@
             // Run count load
             loadCollectionStats();
 
+            // --- Trope Card Clicks ---
+            const tropeCards = document.querySelectorAll('.trope-card');
+            tropeCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const trope = card.getAttribute('data-trope');
+                    if (trope) {
+                        window.location.href = `trope-details.html?trope=${trope}`;
+                    }
+                });
+            });
+
             // --- Sidebar & Profile UI ---
             const profileToggle = document.getElementById('profileToggle');
             const profileDropup = document.getElementById('profileDropup');
