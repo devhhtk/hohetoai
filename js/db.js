@@ -58,6 +58,39 @@ const AumageDB = {
     });
 
     console.log('AumageDB initialized');
+    this.updateSidebarStats();
+  },
+
+  /**
+   * Fetch live profile and update sidebar XP/Level UI.
+   */
+  async updateSidebarStats() {
+    if (!this.user) return;
+
+    try {
+      const profile = await this.getUserProfile();
+      if (!profile) return;
+
+      const levelEl = document.querySelector('.xp-level');
+      const xpValueEl = document.querySelector('.xp-value');
+      const xpFillEl = document.querySelector('.xp-progress-fill');
+      const profNameEl = document.getElementById('prof-name');
+      const profAvatarEl = document.getElementById('prof-avatar');
+
+      if (levelEl) levelEl.textContent = `Lv. ${profile.level}`;
+      if (xpValueEl) xpValueEl.textContent = `${Math.floor(profile.xp)} / ${profile.next_level_xp} XP`;
+      
+      if (xpFillEl) {
+        const pct = Math.min(100, Math.max(0, (profile.xp / profile.next_level_xp) * 100));
+        xpFillEl.style.width = `${pct}%`;
+      }
+
+      if (profNameEl) profNameEl.textContent = profile.display_name || this.user.email?.split('@')[0] || 'Storyteller';
+      if (profAvatarEl && profile.avatar_url) profAvatarEl.src = profile.avatar_url;
+
+    } catch (e) {
+      console.error('AumageDB.updateSidebarStats error:', e);
+    }
   },
 
   /**
@@ -598,3 +631,155 @@ const AumageDB = {
 
 // Make globally available
 window.AumageDB = AumageDB;
+
+/**
+ * Streak System Controller
+ * Handles the UI logic for the daily streak rewards modal.
+ */
+const StreakUI = {
+  async init() {
+    const grid = document.getElementById('streakGrid');
+    if (!grid) return;
+
+    console.log('StreakUI: Initializing...');
+
+    try {
+      // Ensure AumageDB is ready
+      if (!window.AumageDB || !window.AumageDB.user) {
+        console.log('StreakUI: Waiting for AumageDB user...');
+        return;
+      }
+
+      // 1. Fetch status from API
+      const status = await window.AumageDB.getStreakStatus();
+      if (!status || !status.success) {
+        grid.innerHTML = '<p class="error-msg" style="color: #ef4444; padding: 20px; text-align: center;">Failed to load streak status.</p>';
+        return;
+      }
+
+      const { streak_count, last_reward_index, rewards } = status;
+
+      // 2. Update Header Counter
+      const countEl = document.querySelector('.streak-count');
+      if (countEl) countEl.textContent = streak_count;
+
+      // 3. Populate Grid
+      grid.innerHTML = '';
+      
+      for (let day = 1; day <= 30; day++) {
+        const xp = rewards[day] || 0;
+        const isClaimed = day <= last_reward_index;
+        const isAvailable = day === (last_reward_index + 1) && day <= streak_count;
+        
+        const item = document.createElement('div');
+        item.className = 'streak-item';
+        if (isClaimed) item.classList.add('streak-item--claimed');
+        if (isAvailable) item.classList.add('streak-item--active');
+
+        // Special styling for Day 30
+        if (day === 30) {
+          item.style.borderColor = '#ffd700';
+          if (!isClaimed) item.style.background = 'rgba(255, 215, 0, 0.05)';
+        }
+
+        item.innerHTML = `
+          <span class="streak-day" ${day === 30 ? 'style="color: #ffd700;"' : ''}>Day ${day}</span>
+          <div class="streak-icon" ${day === 30 && !isClaimed ? 'style="color: #ffd700;"' : ''}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </div>
+          <span class="streak-reward">${xp} XP</span>
+        `;
+
+        if (isAvailable) {
+          item.style.cursor = 'pointer';
+          item.title = 'Click to Claim Day ' + day + '!';
+          item.onclick = (e) => {
+            e.preventDefault();
+            this.claim(day);
+          };
+        }
+
+        grid.appendChild(item);
+      }
+    } catch (err) {
+      console.error('StreakUI.init error:', err);
+      grid.innerHTML = '<p class="error-msg" style="color: #ef4444; padding: 20px; text-align: center;">Error loading rewards.</p>';
+    }
+  },
+
+  async claim(day) {
+    try {
+      // Disable clicking while processing
+      const grid = document.getElementById('streakGrid');
+      if (grid) {
+        grid.style.pointerEvents = 'none';
+        grid.style.opacity = '0.7';
+      }
+
+      const result = await window.AumageDB.claimStreakReward();
+      
+      if (result.success) {
+        console.log('Reward claimed!', result);
+        
+        // Refresh UI
+        await this.init();
+        
+        // Update main sidebar stats
+        if (window.AumageDB.updateSidebarStats) {
+          window.AumageDB.updateSidebarStats();
+        }
+
+        // Level Up Modal
+        if (result.leveledUp) {
+          const oldLvl = document.getElementById('lvl-old');
+          const newLvl = document.getElementById('lvl-new');
+          const toggle = document.getElementById('levelUpModalToggle');
+          
+          if (oldLvl) oldLvl.textContent = result.profile.level - 1;
+          if (newLvl) newLvl.textContent = result.profile.level;
+          if (toggle) toggle.checked = true;
+        }
+      }
+    } catch (err) {
+      console.error('Claim error:', err);
+      alert(err.message || 'Failed to claim reward');
+    } finally {
+      const grid = document.getElementById('streakGrid');
+      if (grid) {
+        grid.style.pointerEvents = 'auto';
+        grid.style.opacity = '1';
+      }
+    }
+  }
+};
+
+window.StreakUI = StreakUI;
+
+// Auto-initialize when possible
+(function() {
+  const tryInit = () => {
+    if (window.AumageDB && window.AumageDB.user && document.getElementById('streakGrid')) {
+      window.StreakUI.init();
+      return true;
+    }
+    return false;
+  };
+
+  // Listen for signals that UI or data might be ready
+  document.addEventListener('componentsLoaded', tryInit);
+  
+  // Re-init on manual modal open
+  document.addEventListener('change', (e) => {
+    if (e.target.id === 'streakModalToggle' && e.target.checked) {
+      window.StreakUI.init();
+    }
+  });
+
+  // Polling fallback
+  const poll = setInterval(() => {
+    if (tryInit()) clearInterval(poll);
+  }, 1000);
+  setTimeout(() => clearInterval(poll), 15000);
+})();
