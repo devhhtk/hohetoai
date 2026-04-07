@@ -310,6 +310,31 @@ const AumageDB = {
     return data || [];
   },
 
+  /**
+   * Get creature counts grouped by trope_class for the current user.
+   */
+  async getCreatureCountsByTrope() {
+    if (!this.supabase || !this.user) return {};
+
+    const { data, error } = await this.supabase
+      .from('creatures')
+      .select('trope_class')
+      .eq('user_id', this.user.id);
+
+    if (error) {
+      console.error('AumageDB getCreatureCountsByTrope error:', error);
+      return {};
+    }
+
+    const counts = {};
+    data.forEach(c => {
+      const trope = (c.trope_class || 'unknown').toLowerCase();
+      counts[trope] = (counts[trope] || 0) + 1;
+    });
+
+    return counts;
+  },
+
   // ============================================================
   // FOLDERS
   // ============================================================
