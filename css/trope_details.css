@@ -259,3 +259,22 @@ body.light-mode .creature-card-item {
     background: #fff;
     border-color: #f1f5f9;
 }
+
+/* ── Empty State ── */
+.empty-msg {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 15px;
+    font-style: italic;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    width: 100%;
+}
+
+body.light-mode .empty-msg {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.1);
+}

@@ -177,8 +177,9 @@
                 charsGrid.innerHTML = '';
 
                 if (creatures.length === 0) {
-                    cardsGrid.innerHTML = '<p class="empty-msg">No creatures found in this trope yet.</p>';
-                    charsGrid.innerHTML = '<p class="empty-msg">No creatures found in this trope yet.</p>';
+                    const emptyHtml = `<div class="empty-msg">No creatures found in the <b>${tropeKey}</b> category yet.</div>`;
+                    cardsGrid.innerHTML = emptyHtml;
+                    charsGrid.innerHTML = emptyHtml;
                     return;
                 }
 
