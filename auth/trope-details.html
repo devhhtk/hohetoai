@@ -25,11 +25,12 @@
         <div class="content-view">
 
             <div class="trope-details-container">
-                
+
                 <!-- Trope Banner -->
                 <div class="trope-banner" id="tropeBanner" data-trope="unknown">
                     <a href="collection.html" class="trope-banner__back">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="15 18 9 12 15 6"></polyline>
                         </svg>
                     </a>
@@ -39,7 +40,8 @@
                     <div class="trope-banner__info">
                         <h1 class="trope-banner__name" id="tropeName">Loading Trope...</h1>
                         <div class="trope-banner__count" id="tropeCount">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
                                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                                 <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                                 <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
@@ -54,7 +56,8 @@
                     <h2 class="trope-content-title" id="pageTitle">Collections of Trope</h2>
                     <div class="trope-filters">
                         <div class="search-container">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
@@ -116,8 +119,8 @@
             }
 
             // 3. Parse Trope from URL
-            const params = new URLSearchParams(window.location.search);
-            const tropeKey = params.get('trope') || 'terratrope';
+            const urlParams = new URLSearchParams(window.location.search);
+            const tropeKey = (urlParams.get('trope') || 'terratrope').toLowerCase();
             
             // 4. Update UI for specific trope
             const tropeMap = {
@@ -132,24 +135,44 @@
             };
 
             const trope = tropeMap[tropeKey] || tropeMap.terratrope;
-            document.getElementById('tropeBanner').setAttribute('data-trope', tropeKey);
-            document.getElementById('tropeLogo').src = `../img/tropes/${trope.logo}`;
-            document.getElementById('tropeName').textContent = trope.name;
-            document.getElementById('pageTitle').textContent = `Collections of ${trope.name}`;
+            const bannerEl = document.getElementById('tropeBanner');
+            if (bannerEl) bannerEl.setAttribute('data-trope', tropeKey);
+            
+            const logoEl = document.getElementById('tropeLogo');
+            if (logoEl) logoEl.src = `../img/tropes/${trope.logo}`;
+            
+            const nameEl = document.getElementById('tropeName');
+            if (nameEl) nameEl.textContent = trope.name;
+            
+            const pageTitleEl = document.getElementById('pageTitle');
+            if (pageTitleEl) pageTitleEl.textContent = `Collections of ${trope.name}`;
+            
             document.title = `${trope.name} Collection — HoHeTo Kai`;
 
-            // 5. Fetch Creatures
+            // 5. Fetch & Render
             let allCreatures = [];
-            const loadCreatures = async () => {
+            
+            const initializeFetch = async () => {
+                // Ensure auth context is ready
+                if (!window.AumageDB || !window.AumageDB.user) {
+                    setTimeout(initializeFetch, 500);
+                    return;
+                }
+
                 allCreatures = await window.AumageDB.getCreaturesByTrope(tropeKey);
-                document.querySelector('#tropeCount span').textContent = `${allCreatures.length} Creation${allCreatures.length === 1 ? '' : 's'}`;
+                
+                const countContainer = document.querySelector('#tropeCount span');
+                if (countContainer) {
+                    countContainer.textContent = `${allCreatures.length} Creation${allCreatures.length === 1 ? '' : 's'}`;
+                }
+                
                 renderGrids(allCreatures);
             };
 
             const renderGrids = (creatures) => {
                 const cardsGrid = document.getElementById('cardsGrid');
                 const charsGrid = document.getElementById('charactersGrid');
-                
+
                 cardsGrid.innerHTML = '';
                 charsGrid.innerHTML = '';
 
@@ -160,11 +183,13 @@
                 }
 
                 creatures.forEach(c => {
+                    const displayUrl = c.image_url || c.video_url || '../img/placeholder.png';
+                    
                     // Create Card
                     const cardItem = document.createElement('div');
                     cardItem.className = 'creature-card-item';
                     cardItem.innerHTML = `
-                        <img src="${c.image_url}" alt="${c.creature_name || 'Creature'}">
+                        <img src="${displayUrl}" alt="${c.creature_name || 'Creature'}">
                         <div class="creature-card-item__info">
                             <b>${c.creature_name || 'Unnamed Creature'}</b><br>
                             ${c.serial_number || 'No Serial'}
@@ -176,7 +201,7 @@
                     // Create Character Thumb
                     const charThumb = document.createElement('div');
                     charThumb.className = 'character-thumb';
-                    charThumb.innerHTML = `<img src="${c.image_url}" alt="${c.creature_name || 'Creature'}">`;
+                    charThumb.innerHTML = `<img src="${displayUrl}" alt="${c.creature_name || 'Creature'}">`;
                     charThumb.onclick = () => window.location.href = `created-creature.html?id=${c.id}`;
                     charsGrid.appendChild(charThumb);
                 });
@@ -188,29 +213,31 @@
                 const view = document.getElementById('viewFilter').value;
                 const sort = document.getElementById('sortFilter').value;
 
-                let filtered = allCreatures.filter(c => 
-                    (c.creature_name || '').toLowerCase().includes(search) || 
+                let filtered = allCreatures.filter(c =>
+                    (c.creature_name || '').toLowerCase().includes(search) ||
                     (c.trope_class || '').toLowerCase().includes(search)
                 );
 
                 // Sorting
-                if (sort === 'oldest') filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
-                else if (sort === 'newest') filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-                else if (sort === 'rarity') filtered.sort((a,b) => (b.ars || 0) - (a.ars || 0));
+                if (sort === 'oldest') filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                else if (sort === 'newest') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                else if (sort === 'rarity') filtered.sort((a, b) => (b.ars || 0) - (a.ars || 0));
 
                 renderGrids(filtered);
 
                 // View Toggling
-                document.getElementById('cardsSection').style.display = (view === 'all' || view === 'cards') ? 'block' : 'none';
-                document.getElementById('charactersSection').style.display = (view === 'all' || view === 'characters') ? 'block' : 'none';
+                const cardsSection = document.getElementById('cardsSection');
+                const charactersSection = document.getElementById('charactersSection');
+                if (cardsSection) cardsSection.style.display = (view === 'all' || view === 'cards') ? 'block' : 'none';
+                if (charactersSection) charactersSection.style.display = (view === 'all' || view === 'characters') ? 'block' : 'none';
             };
 
-            document.getElementById('searchInput').addEventListener('input', applyFilters);
-            document.getElementById('viewFilter').addEventListener('change', applyFilters);
-            document.getElementById('sortFilter').addEventListener('change', applyFilters);
+            if (document.getElementById('searchInput')) document.getElementById('searchInput').addEventListener('input', applyFilters);
+            if (document.getElementById('viewFilter')) document.getElementById('viewFilter').addEventListener('change', applyFilters);
+            if (document.getElementById('sortFilter')) document.getElementById('sortFilter').addEventListener('change', applyFilters);
 
             // Initial load
-            loadCreatures();
+            initializeFetch();
 
             // 7. Theme Initialization (from dashboard.css)
             const themeToggle = document.getElementById('themeToggle');
