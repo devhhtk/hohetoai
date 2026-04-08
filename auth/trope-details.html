@@ -121,37 +121,37 @@
             // 3. Parse Trope from URL
             const urlParams = new URLSearchParams(window.location.search);
             const tropeKey = (urlParams.get('trope') || 'terratrope').toLowerCase();
-            
+
             // 4. Update UI for specific trope
             const tropeMap = {
-                terratrope: { name: 'Terratrope', logo: 'terratrope.png' },
-                aquatrope: { name: 'Aquatrope', logo: 'aquatrope.png' },
-                aerotrope: { name: 'Aerotrope', logo: 'aerotrope.png' },
-                pyrotrope: { name: 'Pyrotrope', logo: 'pyrotrope.png' },
-                sonatrope: { name: 'Sonatrope', logo: 'sonatrope.png' },
-                floratrope: { name: 'Floratrope', logo: 'lumitrope.png' },
-                prismatrope: { name: 'Prismatrope', logo: 'primatrope.png' },
-                megatrope: { name: 'Megatrope', logo: 'megatrope.png' }
+                terratrope: { name: 'Terratrope', logo: 'Terratrope.png' },
+                aquatrope: { name: 'Aquatrope', logo: 'Aquatrope.png' },
+                aerotrope: { name: 'Aerotrope', logo: 'Aerotrope.png' },
+                pyrotrope: { name: 'Pyrotrope', logo: 'Pyrotrope.png' },
+                sonatrope: { name: 'Sonatrope', logo: 'Sonatrope.png' },
+                floratrope: { name: 'Floratrope', logo: 'Floratrope.png' },
+                prismatrope: { name: 'Prismatrope', logo: 'Prismatrope.png' },
+                megatrope: { name: 'Megatrope', logo: 'Megatrope.png' }
             };
 
             const trope = tropeMap[tropeKey] || tropeMap.terratrope;
             const bannerEl = document.getElementById('tropeBanner');
             if (bannerEl) bannerEl.setAttribute('data-trope', tropeKey);
-            
+
             const logoEl = document.getElementById('tropeLogo');
-            if (logoEl) logoEl.src = `../img/tropes/${trope.logo}`;
-            
+            if (logoEl) logoEl.src = `../img/tropes-icons/${trope.logo}`;
+
             const nameEl = document.getElementById('tropeName');
             if (nameEl) nameEl.textContent = trope.name;
-            
+
             const pageTitleEl = document.getElementById('pageTitle');
             if (pageTitleEl) pageTitleEl.textContent = `Collections of ${trope.name}`;
-            
+
             document.title = `${trope.name} Collection — HoHeTo Kai`;
 
             // 5. Fetch & Render
             let allCreatures = [];
-            
+
             const initializeFetch = async () => {
                 // Ensure auth context is ready
                 if (!window.AumageDB || !window.AumageDB.user) {
@@ -160,12 +160,12 @@
                 }
 
                 allCreatures = await window.AumageDB.getCreaturesByTrope(tropeKey);
-                
+
                 const countContainer = document.querySelector('#tropeCount span');
                 if (countContainer) {
                     countContainer.textContent = `${allCreatures.length} Creation${allCreatures.length === 1 ? '' : 's'}`;
                 }
-                
+
                 renderGrids(allCreatures);
             };
 
@@ -185,7 +185,7 @@
 
                 creatures.forEach(c => {
                     const displayUrl = c.image_url || c.video_url || '../img/placeholder.png';
-                    
+
                     // Create Card
                     const cardItem = document.createElement('div');
                     cardItem.className = 'creature-card-item';
