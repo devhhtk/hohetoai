@@ -46,7 +46,7 @@
                         </div>
                     </div>
                     <!-- Tween (Age 9-12, Fun Names) -->
-                    <div class="category-card">
+                    <!-- <div class="category-card">
                         <div class="category-card__img" style="color: #4ade80;">
                             <img src="../img/dash_2.png" alt="Tween">
                         </div>
@@ -54,15 +54,15 @@
                             <span class="category-card__title">Tween</span>
                             <span class="category-card__desc">Age 9-12, Fun Names</span>
                         </div>
-                    </div>
+                    </div> -->
                     <!-- Kids (Age 5-8, Friendly & Cute) -->
                     <div class="category-card">
                         <div class="category-card__img" style="color: #60a5fa;">
                             <img src="../img/dash_1.png" alt="Kids">
                         </div>
                         <div class="category-card__info">
-                            <span class="category-card__title">Kids</span>
-                            <span class="category-card__desc">Age 5-8, Friendly & Cute</span>
+                            <span class="category-card__title">Young Explorers</span>
+                            <span class="category-card__desc">Age 5-12, Friendly & Cute</span>
                         </div>
                     </div>
                 </div>
@@ -78,7 +78,8 @@
                     <div class="achievement-card" id="ach-pioneer">
                         <div class="achievement-status">LOCKED</div>
                         <div class="achievement-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <line x1="12" y1="8" x2="12" y2="16"></line>
                                 <line x1="8" y1="12" x2="16" y2="12"></line>
@@ -92,8 +93,11 @@
                     <div class="achievement-card" id="ach-elite">
                         <div class="achievement-status">LOCKED</div>
                         <div class="achievement-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polygon
+                                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                                </polygon>
                             </svg>
                         </div>
                         <span class="achievement-title">Elite Summoner</span>
@@ -104,7 +108,8 @@
                     <div class="achievement-card" id="ach-ascended">
                         <div class="achievement-status">LOCKED</div>
                         <div class="achievement-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
                                 <polyline points="18 15 12 9 6 15"></polyline>
                             </svg>
                         </div>
@@ -116,8 +121,11 @@
                     <div class="achievement-card" id="ach-loyal">
                         <div class="achievement-status">LOCKED</div>
                         <div class="achievement-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z">
+                                </path>
                             </svg>
                         </div>
                         <span class="achievement-title">Loyal Caller</span>
@@ -268,7 +276,7 @@
             // --- Load Achievements ---
             async function loadAchievements() {
                 if (!window.AumageDB) return;
-                
+
                 const data = await window.AumageDB.getAchievements();
                 if (!data || !data.success) return;
 
