@@ -24,27 +24,10 @@
         <!-- Dynamic Content View -->
         <div class="content-view">
 
-            <div class="card-view-container" style="min-height: 80vh; flex-direction: row; gap: 40px;">
+            <div class="card-view-container" style="min-height: 80vh; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
                 
-                <!-- Left: Info & Actions -->
-                <div class="card-controls" style="max-width: 400px;">
-                    <div class="card-status-header">
-                        <h1 class="card-status-title" id="mainTitle">Card Preview</h1>
-                        <p class="card-status-desc" id="statusDesc">Review your high-fidelity schematic. Check the DNA mapping and biometrics before archiving to the vault.</p>
-                    </div>
-
-                    <div class="card-actions" id="actionPanel" style="display: none; margin-top: 30px;">
-                        <button class="btn-finalize" id="saveVaultBtn">
-                             Save to Vault
-                        </button>
-                        <button class="btn-secondary-outline" onclick="window.location.href='dashboard.html'" style="margin-top: 15px; width: 100%;">
-                             Start Over
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Right: Card Preview -->
-                <div class="card-canvas-wrapper" id="cardWrapper" style="width: 500px; max-width: 95vw;">
+                <!-- Center: Card Display -->
+                <div class="card-canvas-wrapper" id="cardWrapper" style="width: 500px; max-width: 95vw; box-shadow: 0 0 100px rgba(8, 210, 193, 0.2);">
                     <div id="cardTarget">
                          <canvas id="finalCardCanvas" style="width: 100%; display: block;"></canvas>
                     </div>
@@ -54,6 +37,13 @@
                         <div class="spinner"></div>
                         <span class="loading-text" id="loadingText">Developing Schematic...</span>
                     </div>
+                </div>
+
+                <!-- Subtle Actions -->
+                <div class="card-actions-row" id="finalActions" style="display: none; margin-top: 40px; gap: 20px;">
+                    <button class="btn-secondary-outline" onclick="window.location.href='dashboard.html'">New Creation</button>
+                    <button class="btn-primary-solid" id="saveVaultBtn">Save to Vault</button>
+                    <button class="btn-secondary-outline" onclick="window.location.href='collection.html'">My Collection</button>
                 </div>
             </div>
 
@@ -85,7 +75,7 @@
                 window.AumageDB.init();
                 await window.AumageDB.requireAuth();
             }
-
+            // Get creature ID
             const params = new URLSearchParams(window.location.search);
             const creatureId = params.get('id');
 
@@ -124,7 +114,7 @@
 
                 // 4. Show UI
                 document.getElementById('loadingOverlay').style.display = 'none';
-                document.getElementById('actionPanel').style.display = 'block';
+                document.getElementById('finalActions').style.display = 'flex';
 
                 // 5. Handle Save
                 const saveBtn = document.getElementById('saveVaultBtn');
@@ -137,21 +127,23 @@
                         const fileName = `schematic-${creatureId}`;
                         const cardImageUrl = await AumageDB.uploadCardImage(blob, fileName);
                         
-                        if (!cardImageUrl) throw new Error('Upload failed');
+                        if (!cardImageUrl) throw new Error('Vault upload failed.');
                         await AumageDB.updateCreature(creatureId, { card_image_url: cardImageUrl });
 
                         saveBtn.textContent = 'Saved to Vault!';
-                        saveBtn.classList.add('success');
-                        setTimeout(() => window.location.href = 'collection.html', 1500);
+                        saveBtn.style.background = '#08D2C1';
+                        saveBtn.style.color = '#011616';
+                        
+                        setTimeout(() => window.location.href = 'collection.html', 1200);
                     } catch (e) {
-                        alert('Storage Error: ' + e.message);
+                        alert('Error: ' + e.message);
                         saveBtn.disabled = false;
                         saveBtn.textContent = 'Save to Vault';
                     }
                 };
 
             } catch (err) {
-                console.error('Final Preview Error:', err);
+                console.error('Final View Error:', err);
                 document.getElementById('loadingText').textContent = 'Error: ' + err.message;
             }
         });
