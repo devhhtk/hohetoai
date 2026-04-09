@@ -26,22 +26,18 @@
 
             <div class="card-view-container">
                 <!-- Left: Controls -->
-                <div class="card-controls">
+                <div class="card-controls" id="controlsPanel">
                     <div class="card-status-header">
-                        <h1 class="card-status-title">Finalize Your Card</h1>
-                        <p class="card-status-desc" id="statusDesc">Review the high-fidelity schematic card. Once finalized, it will be added to your permanent collection and saved to the archives.</p>
+                        <h1 class="card-status-title" id="mainTitle">Developing Schematic...</h1>
+                        <p class="card-status-desc" id="statusDesc">Wait a moment while we process the high-fidelity DNA schematic and archive it into the vault.</p>
                     </div>
 
-                    <div class="card-actions" id="actionPanel">
-                        <button class="btn-finalize" id="finalizeBtn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                                <polyline points="7 3 7 8 15 8"></polyline>
-                            </svg>
-                            Finalize & Save to Bucket
+                    <!-- Action Panel (Initially Hidden) -->
+                    <div class="card-actions" id="actionPanel" style="display: none;">
+                        <button class="btn-finalize" onclick="window.location.href='collection.html'">
+                            View My Collection
                         </button>
-                        <a href="#" class="btn-back" onclick="history.back(); return false;">Back to Details</a>
+                        <a href="dashboard.html" class="btn-back">Return to Dashboard</a>
                     </div>
 
                     <!-- Success State (Hidden) -->
@@ -53,7 +49,6 @@
                         </div>
                         <h2 style="font-family: 'Exo 2'; font-size: 28px; margin-bottom: 10px;">Card Archived!</h2>
                         <p style="color: var(--text-muted); margin-bottom: 30px;">The schematic card has been stored in the vault and linked to your creature record.</p>
-                        <button class="btn-finalize" onclick="window.location.href='collection.html'">View My Collection</button>
                     </div>
                 </div>
 
@@ -64,7 +59,7 @@
                     <!-- Loading Overlay -->
                     <div class="card-loading-overlay" id="loadingOverlay">
                         <div class="spinner"></div>
-                        <span class="loading-text" id="loadingText">Developing Schematic...</span>
+                        <span class="loading-text" id="loadingText">Analyzing Biometrics...</span>
                     </div>
                 </div>
             </div>
@@ -110,6 +105,7 @@
 
             try {
                 // 1. Fetch Creature Data
+                document.getElementById('loadingText').textContent = 'Fetching Neural Data...';
                 const creature = await AumageAPI.getCreature(creatureId);
                 if (!creature) throw new Error('Creature not found');
 
@@ -128,6 +124,7 @@
                 };
 
                 // 3. Render Card
+                document.getElementById('loadingText').textContent = 'Rendering Schematic...';
                 const canvas = document.getElementById('finalCardCanvas');
                 const renderedCanvas = await AumageCard.render(cardData);
                 
@@ -137,46 +134,34 @@
                 canvas.height = renderedCanvas.height;
                 ctx.drawImage(renderedCanvas, 0, 0);
 
-                // 4. Hide Loading
-                document.getElementById('loadingOverlay').style.display = 'none';
+                // 4. Automatic Archiving
+                document.getElementById('loadingText').textContent = 'Archiving to Bucket...';
+                
+                // Convert to Blob
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                
+                // Upload to Bucket
+                const fileName = `schematic-${creatureId}`;
+                const cardImageUrl = await AumageDB.uploadCardImage(blob, fileName);
+                
+                if (!cardImageUrl) throw new Error('Vault upload failed. Check connection.');
 
-                // 5. Setup Finalize Logic
-                const finalizeBtn = document.getElementById('finalizeBtn');
-                finalizeBtn.addEventListener('click', async () => {
-                    finalizeBtn.disabled = true;
-                    finalizeBtn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;"></div> Archiving...';
-                    
-                    try {
-                        // Convert to Blob
-                        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                        
-                        // Upload to Bucket
-                        const fileName = `schematic-${creatureId}-${Date.now()}`;
-                        const cardImageUrl = await AumageDB.uploadCardImage(blob, fileName);
-                        
-                        if (!cardImageUrl) throw new Error('Upload failed');
-
-                        // Update DB
-                        await AumageDB.updateCreature(creatureId, {
-                            card_image_url: cardImageUrl
-                        });
-
-                        // Show Success
-                        document.getElementById('actionPanel').style.display = 'none';
-                        document.getElementById('successState').style.display = 'block';
-                        document.getElementById('statusDesc').textContent = 'Archive complete. Your digital collectible is now permanently stored.';
-                        
-                    } catch (err) {
-                        console.error('Finalize error:', err);
-                        alert('Error saving card: ' + err.message);
-                        finalizeBtn.disabled = false;
-                        finalizeBtn.textContent = 'Finalize & Save to Bucket';
-                    }
+                // Update DB
+                await AumageDB.updateCreature(creatureId, {
+                    card_image_url: cardImageUrl
                 });
 
+                // 5. Finalize UI
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('mainTitle').textContent = 'Schematic Finalized';
+                document.getElementById('statusDesc').textContent = 'Archive complete. Your digital collectible is now permanently stored in the high-fidelity vault.';
+                document.getElementById('successState').style.display = 'block';
+                document.getElementById('actionPanel').style.display = 'flex';
+
             } catch (err) {
-                console.error('Load error:', err);
-                document.getElementById('loadingText').textContent = 'Error: ' + err.message;
+                console.error('Generation/Archive error:', err);
+                document.getElementById('loadingText').textContent = 'System Failure: ' + err.message;
+                document.getElementById('loadingText').style.color = '#ff4444';
             }
         });
     </script>
