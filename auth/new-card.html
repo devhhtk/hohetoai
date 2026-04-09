@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finalize Card — HoHeTo Kyle</title>
+    <title>Schematic Generated — HoHeTo Kyle</title>
     <!-- CSS Dependencies -->
     <link rel="stylesheet" href="../css/dashboard.css">
     <link rel="stylesheet" href="../css/cardview.css">
@@ -24,26 +24,81 @@
         <!-- Dynamic Content View -->
         <div class="content-view">
 
-            <div class="card-view-container" style="min-height: 80vh; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
-                
-                <!-- Center: Card Display -->
-                <div class="card-canvas-wrapper" id="cardWrapper" style="width: 500px; max-width: 95vw; box-shadow: 0 0 100px rgba(8, 210, 193, 0.2);">
-                    <div id="cardTarget">
-                         <canvas id="finalCardCanvas" style="width: 100%; display: block;"></canvas>
-                    </div>
+            <div class="card-view-container">
+                <div class="generated-container">
                     
-                    <!-- Loading Overlay -->
-                    <div class="card-loading-overlay" id="loadingOverlay">
-                        <div class="spinner"></div>
-                        <span class="loading-text" id="loadingText">Developing Schematic...</span>
-                    </div>
-                </div>
+                    <!-- Left Column: Stats & Metadata -->
+                    <div class="generated-left">
+                        <h1 class="generated-title" id="mainTitle">Your Attractive Card Generated</h1>
+                        
+                        <!-- Tags -->
+                        <div class="tool-tabs" id="tagList">
+                            <span class="tool-tab tool-tab--active" id="tagGen">Audio Born</span>
+                            <span class="tool-tab" id="tagSpecies">Species</span>
+                            <span class="tool-tab" id="tagElement">Element</span>
+                        </div>
 
-                <!-- Subtle Actions -->
-                <div class="card-actions-row" id="finalActions" style="display: none; margin-top: 40px; gap: 20px;">
-                    <button class="btn-secondary-outline" onclick="window.location.href='dashboard.html'">New Creation</button>
-                    <button class="btn-primary-solid" id="saveVaultBtn">Save to Vault</button>
-                    <button class="btn-secondary-outline" onclick="window.location.href='collection.html'">My Collection</button>
+                        <!-- Visualizer Box -->
+                        <div class="visualizer-box">
+                            <div class="visualizer-header">
+                                <span>Harmony <b id="valHarmonyHeader">50%</b></span>
+                                <span>Complexity <b id="valComplexityHeader">30%</b></span>
+                                <span>Intensity <b id="valIntensityHeader">38%</b></span>
+                            </div>
+                            <div class="waveform-mock" id="waveformContainer">
+                                <!-- Bars generated via JS -->
+                            </div>
+                            <div class="audio-player-mock">
+                                <button class="play-btn">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                </button>
+                                <div class="audio-progress">
+                                    <div class="audio-progress-fill"></div>
+                                </div>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 5L6 9H2V15H6L11 19V5Z"></path>
+                                    <path d="M19.07 4.93C20.94 6.8 22 9.33 22 12C22 14.67 20.94 17.2 19.07 19.07"></path>
+                                    <path d="M15.54 8.46C16.48 9.4 17 10.67 17 12C17 13.33 16.48 14.6 15.54 15.54"></path>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="dna-title">Audio DNA</div>
+                        <div class="dna-grid" id="dnaGrid">
+                            <!-- DNA Rows generated via JS -->
+                        </div>
+
+                        <div class="cat-title">Categories Tags</div>
+                        <div class="cat-grid" id="catGrid">
+                            <!-- Category Chips generated via JS -->
+                        </div>
+
+                        <div class="action-btns">
+                            <button class="btn-secondary-outline" id="saveImageBtn">Save Image</button>
+                            <button class="btn-secondary-outline" onclick="window.location.href='dashboard.html'">New Sound</button>
+                            <button class="btn-primary-solid" id="saveVaultBtn" style="display:none;">Save to Vault</button>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Card -->
+                    <div class="generated-right">
+                        <div class="card-canvas-wrapper" id="cardWrapper">
+                            <canvas id="finalCardCanvas"></canvas>
+                            
+                            <!-- Loading Overlay -->
+                            <div class="card-loading-overlay" id="loadingOverlay">
+                                <div class="spinner"></div>
+                                <span class="loading-text" id="loadingText">Developing Schematic...</span>
+                            </div>
+                        </div>
+                        <div class="flavor-box" id="flavorBox">
+                            <!-- Flavor text populated here -->
+                        </div>
+                        <p class="footer-note">Save the creature art or turn into a schematic card with naming, classification and scoring.</p>
+                    </div>
+
                 </div>
             </div>
 
@@ -75,7 +130,7 @@
                 window.AumageDB.init();
                 await window.AumageDB.requireAuth();
             }
-            // Get creature ID
+
             const params = new URLSearchParams(window.location.search);
             const creatureId = params.get('id');
 
@@ -89,21 +144,78 @@
                 const creature = await AumageAPI.getCreature(creatureId);
                 if (!creature) throw new Error('Creature not found');
 
-                // 2. Prepare Card Data
+                // 2. Populate Metadata UI
+                document.getElementById('tagGen').textContent = creature.gen_type || 'Audio Born';
+                document.getElementById('tagSpecies').textContent = creature.morphology || 'Unknown';
+                document.getElementById('tagElement').textContent = creature.element || 'Shadow';
+
+                const stats = creature.variant_tags || {};
+                document.getElementById('valHarmonyHeader').textContent = (stats.harmony || 50) + '%';
+                document.getElementById('valComplexityHeader').textContent = (stats.complexity || 30) + '%';
+                document.getElementById('valIntensityHeader').textContent = (stats.intensity || 38) + '%';
+
+                // DNA Grid
+                const dnaMetrics = [
+                    { label: 'Complexity', key: 'complexity', color: '#f97316' },
+                    { label: 'Intensity', key: 'intensity', color: '#ec4899' },
+                    { label: 'Harmony', key: 'harmony', color: '#3b82f6' },
+                    { label: 'Warmth', key: 'warmth', color: '#f59e0b' },
+                    { label: 'Roughness', key: 'roughness', color: '#ef4444' },
+                    { label: 'Brightness', key: 'brightness', color: '#eab308' }
+                ];
+
+                const dnaGrid = document.getElementById('dnaGrid');
+                dnaMetrics.forEach(m => {
+                    const val = stats[m.key] || 20;
+                    dnaGrid.innerHTML += `
+                        <div class="dna-row">
+                            <span class="dna-label">${m.label}:</span>
+                            <div class="dna-track">
+                                <div class="dna-fill" style="width: ${val}%; background: ${m.color};"></div>
+                            </div>
+                            <span class="dna-val">${val}%</span>
+                        </div>
+                    `;
+                });
+
+                // Category Grid
+                const catGrid = document.getElementById('catGrid');
+                const categories = [
+                    { label: 'Trope', val: creature.trope_class || 'Terratrope' },
+                    { label: 'Element', val: creature.element || 'Shadow' },
+                    { label: 'Intelligence', val: creature.intelligence || 'Basic' },
+                    { label: 'Platte', val: creature.platte || 'Warm' },
+                    { label: 'Evaluation', val: creature.evaluation || 'Basic' },
+                    { label: 'Style', val: creature.style || 'Plushie' }
+                ];
+                categories.forEach(c => {
+                    catGrid.innerHTML += `<div class="cat-chip">${c.label} <b>${c.val}</b></div>`;
+                });
+
+                // Flavor text
+                document.getElementById('flavorBox').textContent = creature.short_flavor || 'A high-fidelity DNA schematic derived from biological audio signals.';
+
+                // Generate Waveform bars
+                const waveContainer = document.getElementById('waveformContainer');
+                for (let i = 0; i < 40; i++) {
+                    const h = 20 + Math.random() * 40;
+                    waveContainer.innerHTML += `<div class="waveform-bar" style="height:${h}px"></div>`;
+                }
+
+                // 3. Render High-Fidelity Card
                 const cardData = {
-                    name: creature.creature_name || 'Experiment #' + creatureId.substring(0,4),
+                    name: (creature.creature_name || 'Experiment').toUpperCase(),
                     creatureUrl: creature.card_url || creature.creature_url || '../img/placeholder.png',
                     gen: creature.gen_type || 'Resogen',
                     trope: creature.trope_class || 'Terratrope',
                     rarity: creature.base_rarity || 'Abundant',
                     species: creature.morphology || 'Unknown',
                     element: creature.element || 'Shadow',
-                    stats: creature.variant_tags || { power: 50, agility: 50, defense: 50, arcana: 50 },
+                    stats: stats,
                     specimenId: creature.serial_number || 'SPEC-' + creatureId.substring(0,8),
                     geneSequence: creature.waveform_hash?.substring(0, 16) || 'AGCT-TCGA-GATC-CTAG'
                 };
 
-                // 3. Render Card for Preview
                 const canvas = document.getElementById('finalCardCanvas');
                 const renderedCanvas = await AumageCard.render(cardData);
                 
@@ -112,34 +224,15 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(renderedCanvas, 0, 0);
 
-                // 4. Show UI
+                // 4. Hide Loading Overlay
                 document.getElementById('loadingOverlay').style.display = 'none';
-                document.getElementById('finalActions').style.display = 'flex';
 
-                // 5. Handle Save
-                const saveBtn = document.getElementById('saveVaultBtn');
-                saveBtn.onclick = async () => {
-                    saveBtn.disabled = true;
-                    saveBtn.textContent = 'Archiving...';
-                    
-                    try {
-                        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                        const fileName = `schematic-${creatureId}`;
-                        const cardImageUrl = await AumageDB.uploadCardImage(blob, fileName);
-                        
-                        if (!cardImageUrl) throw new Error('Vault upload failed.');
-                        await AumageDB.updateCreature(creatureId, { card_image_url: cardImageUrl });
-
-                        saveBtn.textContent = 'Saved to Vault!';
-                        saveBtn.style.background = '#08D2C1';
-                        saveBtn.style.color = '#011616';
-                        
-                        setTimeout(() => window.location.href = 'collection.html', 1200);
-                    } catch (e) {
-                        alert('Error: ' + e.message);
-                        saveBtn.disabled = false;
-                        saveBtn.textContent = 'Save to Vault';
-                    }
+                // Save Image logic
+                document.getElementById('saveImageBtn').onclick = () => {
+                    const link = document.createElement('a');
+                    link.download = `card-${creature.creature_name || creatureId}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
                 };
 
             } catch (err) {
