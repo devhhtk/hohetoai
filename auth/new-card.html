@@ -24,43 +24,25 @@
         <!-- Dynamic Content View -->
         <div class="content-view">
 
-            <div class="card-view-container">
-                <!-- Left: Controls -->
-                <div class="card-controls" id="controlsPanel">
-                    <div class="card-status-header">
-                        <h1 class="card-status-title" id="mainTitle">Developing Schematic...</h1>
-                        <p class="card-status-desc" id="statusDesc">Wait a moment while we process the high-fidelity DNA schematic and archive it into the vault.</p>
+            <div class="card-view-container" style="min-height: 80vh;">
+                <!-- Card Display -->
+                <div class="card-canvas-wrapper" id="cardWrapper" style="width: 500px; max-width: 95vw;">
+                    <!-- Final PNG will be injected here as an <img> for best quality/sharing -->
+                    <div id="cardTarget">
+                         <canvas id="finalCardCanvas" style="display: none;"></canvas>
                     </div>
-
-                    <!-- Action Panel (Initially Hidden) -->
-                    <div class="card-actions" id="actionPanel" style="display: none;">
-                        <button class="btn-finalize" onclick="window.location.href='collection.html'">
-                            View My Collection
-                        </button>
-                        <a href="dashboard.html" class="btn-back">Return to Dashboard</a>
-                    </div>
-
-                    <!-- Success State (Hidden) -->
-                    <div id="successState" style="display: none; text-align: center;">
-                        <div class="success-check">
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                        </div>
-                        <h2 style="font-family: 'Exo 2'; font-size: 28px; margin-bottom: 10px;">Card Archived!</h2>
-                        <p style="color: var(--text-muted); margin-bottom: 30px;">The schematic card has been stored in the vault and linked to your creature record.</p>
-                    </div>
-                </div>
-
-                <!-- Right: Card Preview -->
-                <div class="card-canvas-wrapper" id="cardWrapper">
-                    <canvas id="finalCardCanvas"></canvas>
                     
                     <!-- Loading Overlay -->
                     <div class="card-loading-overlay" id="loadingOverlay">
                         <div class="spinner"></div>
-                        <span class="loading-text" id="loadingText">Analyzing Biometrics...</span>
+                        <span class="loading-text" id="loadingText">Accessing Vault...</span>
                     </div>
+                </div>
+
+                <!-- Subtle Actions -->
+                <div class="card-actions-row" id="finalActions" style="display: none; margin-top: 30px; gap: 20px;">
+                    <button class="btn-secondary-outline" onclick="window.location.href='collection.html'">Collection</button>
+                    <button class="btn-primary-solid" onclick="window.location.href='dashboard.html'">New Creation</button>
                 </div>
             </div>
 
@@ -93,23 +75,31 @@
                 await window.AumageDB.requireAuth();
             }
 
-            // Init Card
+            // Get creature ID
             const params = new URLSearchParams(window.location.search);
             const creatureId = params.get('id');
 
             if (!creatureId) {
-                document.getElementById('loadingText').textContent = 'No Creature ID found.';
-                document.getElementById('loadingText').style.color = '#ff4444';
+                document.getElementById('loadingText').textContent = 'No Creature ID.';
                 return;
             }
 
             try {
                 // 1. Fetch Creature Data
-                document.getElementById('loadingText').textContent = 'Fetching Neural Data...';
                 const creature = await AumageAPI.getCreature(creatureId);
                 if (!creature) throw new Error('Creature not found');
 
-                // 2. Prepare Card Data
+                const target = document.getElementById('cardTarget');
+
+                // 2. Check if Card already exists
+                if (creature.card_image_url) {
+                    showFinalCard(creature.card_image_url);
+                    return;
+                }
+
+                // 3. Otherwise, Render and Save Automatically
+                document.getElementById('loadingText').textContent = 'Rendering Schematic...';
+                
                 const cardData = {
                     name: creature.creature_name || 'Experiment #' + creatureId.substring(0,4),
                     creatureUrl: creature.card_url || creature.creature_url || '../img/placeholder.png',
@@ -123,45 +113,37 @@
                     geneSequence: creature.waveform_hash?.substring(0, 16) || 'AGCT-TCGA-GATC-CTAG'
                 };
 
-                // 3. Render Card
-                document.getElementById('loadingText').textContent = 'Rendering Schematic...';
-                const canvas = document.getElementById('finalCardCanvas');
-                const renderedCanvas = await AumageCard.render(cardData);
+                const canvas = await AumageCard.render(cardData);
                 
-                // Copy to visible canvas
-                const ctx = canvas.getContext('2d');
-                canvas.width = renderedCanvas.width;
-                canvas.height = renderedCanvas.height;
-                ctx.drawImage(renderedCanvas, 0, 0);
-
-                // 4. Automatic Archiving
                 document.getElementById('loadingText').textContent = 'Archiving to Bucket...';
-                
-                // Convert to Blob
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                
-                // Upload to Bucket
                 const fileName = `schematic-${creatureId}`;
                 const cardImageUrl = await AumageDB.uploadCardImage(blob, fileName);
                 
-                if (!cardImageUrl) throw new Error('Vault upload failed. Check connection.');
+                if (!cardImageUrl) throw new Error('Upload failed');
 
                 // Update DB
-                await AumageDB.updateCreature(creatureId, {
-                    card_image_url: cardImageUrl
-                });
+                await AumageDB.updateCreature(creatureId, { card_image_url: cardImageUrl });
 
-                // 5. Finalize UI
-                document.getElementById('loadingOverlay').style.display = 'none';
-                document.getElementById('mainTitle').textContent = 'Schematic Finalized';
-                document.getElementById('statusDesc').textContent = 'Archive complete. Your digital collectible is now permanently stored in the high-fidelity vault.';
-                document.getElementById('successState').style.display = 'block';
-                document.getElementById('actionPanel').style.display = 'flex';
+                showFinalCard(cardImageUrl);
 
             } catch (err) {
-                console.error('Generation/Archive error:', err);
-                document.getElementById('loadingText').textContent = 'System Failure: ' + err.message;
-                document.getElementById('loadingText').style.color = '#ff4444';
+                console.error('Final Viewer Error:', err);
+                document.getElementById('loadingText').textContent = 'Error: ' + err.message;
+            }
+
+            function showFinalCard(url) {
+                const target = document.getElementById('cardTarget');
+                const img = new Image();
+                img.src = url;
+                img.style.width = '100%';
+                img.style.display = 'block';
+                img.onload = () => {
+                    target.innerHTML = '';
+                    target.appendChild(img);
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    document.getElementById('finalActions').style.display = 'flex';
+                };
             }
         });
     </script>

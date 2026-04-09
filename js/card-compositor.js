@@ -29,10 +29,13 @@ var AumageCard = {
     canvas.height = this.FH;
     const ctx = canvas.getContext('2d');
 
+    // 0. Proxy the creature URL
+    const creatureUrl = this._proxyUrl(data.creatureUrl);
+
     // 1. Load Assets
     const [frameImg, creatureImg] = await Promise.all([
       this._loadImg('../img/frame.png'),
-      this._loadImg(data.creatureUrl)
+      this._loadImg(creatureUrl)
     ]);
 
     // 2. Clear & Draw Frame
@@ -45,9 +48,9 @@ var AumageCard = {
     }
 
     // 3. Draw Creature in Viewport (Main box)
-    // Box approx: x=120, y=200, w=690, h=550 (estimated from frame.png)
+    // Adjusted box based on screenshot feedback
     if (creatureImg) {
-      const vpx = 125, vpy = 225, vpw = 675, vph = 530;
+      const vpx = 125, vpy = 285, vpw = 675, vph = 500;
       this._drawCoverImg(ctx, creatureImg, vpx, vpy, vpw, vph);
     }
 
@@ -68,8 +71,13 @@ var AumageCard = {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
+    // Auto-scale font size for long names
+    let fontSize = 52;
+    if (name.length > 12) fontSize = 42;
+    if (name.length > 18) fontSize = 32;
+
     // Positioned in the top title slot
-    ctx.font = '800 52px "Exo 2", sans-serif';
+    ctx.font = `800 ${fontSize}px "Exo 2", sans-serif`;
     ctx.fillStyle = '#ffffff';
     ctx.shadowBlur = 15;
     ctx.shadowColor = this.C.cyanGlow;
@@ -103,14 +111,14 @@ var AumageCard = {
     ctx.textAlign = 'left';
     ctx.font = '800 28px "Exo 2", sans-serif';
     ctx.fillStyle = this.C.gold;
-    ctx.fillText(hertz, 410, 845);
+    ctx.fillText(hertz, 180, 1265);
 
     // Gene sequence at bottom right
     const gene = data.geneSequence || 'AGCT-TCGA-GATC-CTAG';
     ctx.textAlign = 'left';
     ctx.font = '600 14px monospace';
     ctx.fillStyle = this.C.cyan;
-    ctx.fillText(gene, 550, 845);
+    ctx.fillText(gene, 730, 1265);
   },
 
   _drawDnaBars(ctx, data) {
@@ -150,8 +158,8 @@ var AumageCard = {
       });
     };
 
-    drawSlots(leftSlots, 142, 695);
-    drawSlots(rightSlots, 510, 695);
+    drawSlots(leftSlots, 142, 1035);
+    drawSlots(rightSlots, 510, 1035);
   },
 
   _drawCoverImg(ctx, img, x, y, w, h) {
@@ -172,6 +180,16 @@ var AumageCard = {
     }
 
     ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+  },
+
+  _proxyUrl(url) {
+    if (!url) return url;
+    // Proxy B2 URLs to avoid CORS issues
+    if (url.includes('backblazeb2.com') || url.includes('cards.aumage.ai')) {
+      const match = url.match(/aumage-cards\/(.+)$/) || url.match(/cards\.aumage\.ai\/(.+)$/);
+      if (match) return 'https://hohetai-api.devhhtk.workers.dev/api/image/' + match[1];
+    }
+    return url;
   },
 
   _loadImg(src) {
