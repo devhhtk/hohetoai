@@ -24,25 +24,36 @@
         <!-- Dynamic Content View -->
         <div class="content-view">
 
-            <div class="card-view-container" style="min-height: 80vh;">
-                <!-- Card Display -->
+            <div class="card-view-container" style="min-height: 80vh; flex-direction: row; gap: 40px;">
+                
+                <!-- Left: Info & Actions -->
+                <div class="card-controls" style="max-width: 400px;">
+                    <div class="card-status-header">
+                        <h1 class="card-status-title" id="mainTitle">Card Preview</h1>
+                        <p class="card-status-desc" id="statusDesc">Review your high-fidelity schematic. Check the DNA mapping and biometrics before archiving to the vault.</p>
+                    </div>
+
+                    <div class="card-actions" id="actionPanel" style="display: none; margin-top: 30px;">
+                        <button class="btn-finalize" id="saveVaultBtn">
+                             Save to Vault
+                        </button>
+                        <button class="btn-secondary-outline" onclick="window.location.href='dashboard.html'" style="margin-top: 15px; width: 100%;">
+                             Start Over
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Card Preview -->
                 <div class="card-canvas-wrapper" id="cardWrapper" style="width: 500px; max-width: 95vw;">
-                    <!-- Final PNG will be injected here as an <img> for best quality/sharing -->
                     <div id="cardTarget">
-                         <canvas id="finalCardCanvas" style="display: none;"></canvas>
+                         <canvas id="finalCardCanvas" style="width: 100%; display: block;"></canvas>
                     </div>
                     
                     <!-- Loading Overlay -->
                     <div class="card-loading-overlay" id="loadingOverlay">
                         <div class="spinner"></div>
-                        <span class="loading-text" id="loadingText">Accessing Vault...</span>
+                        <span class="loading-text" id="loadingText">Developing Schematic...</span>
                     </div>
-                </div>
-
-                <!-- Subtle Actions -->
-                <div class="card-actions-row" id="finalActions" style="display: none; margin-top: 30px; gap: 20px;">
-                    <button class="btn-secondary-outline" onclick="window.location.href='collection.html'">Collection</button>
-                    <button class="btn-primary-solid" onclick="window.location.href='dashboard.html'">New Creation</button>
                 </div>
             </div>
 
@@ -75,7 +86,6 @@
                 await window.AumageDB.requireAuth();
             }
 
-            // Get creature ID
             const params = new URLSearchParams(window.location.search);
             const creatureId = params.get('id');
 
@@ -89,17 +99,7 @@
                 const creature = await AumageAPI.getCreature(creatureId);
                 if (!creature) throw new Error('Creature not found');
 
-                const target = document.getElementById('cardTarget');
-
-                // 2. Check if Card already exists
-                if (creature.card_image_url) {
-                    showFinalCard(creature.card_image_url);
-                    return;
-                }
-
-                // 3. Otherwise, Render and Save Automatically
-                document.getElementById('loadingText').textContent = 'Rendering Schematic...';
-                
+                // 2. Prepare Card Data
                 const cardData = {
                     name: creature.creature_name || 'Experiment #' + creatureId.substring(0,4),
                     creatureUrl: creature.card_url || creature.creature_url || '../img/placeholder.png',
@@ -113,37 +113,46 @@
                     geneSequence: creature.waveform_hash?.substring(0, 16) || 'AGCT-TCGA-GATC-CTAG'
                 };
 
-                const canvas = await AumageCard.render(cardData);
+                // 3. Render Card for Preview
+                const canvas = document.getElementById('finalCardCanvas');
+                const renderedCanvas = await AumageCard.render(cardData);
                 
-                document.getElementById('loadingText').textContent = 'Archiving to Bucket...';
-                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                const fileName = `schematic-${creatureId}`;
-                const cardImageUrl = await AumageDB.uploadCardImage(blob, fileName);
-                
-                if (!cardImageUrl) throw new Error('Upload failed');
+                canvas.width = renderedCanvas.width;
+                canvas.height = renderedCanvas.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(renderedCanvas, 0, 0);
 
-                // Update DB
-                await AumageDB.updateCreature(creatureId, { card_image_url: cardImageUrl });
+                // 4. Show UI
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('actionPanel').style.display = 'block';
 
-                showFinalCard(cardImageUrl);
+                // 5. Handle Save
+                const saveBtn = document.getElementById('saveVaultBtn');
+                saveBtn.onclick = async () => {
+                    saveBtn.disabled = true;
+                    saveBtn.textContent = 'Archiving...';
+                    
+                    try {
+                        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                        const fileName = `schematic-${creatureId}`;
+                        const cardImageUrl = await AumageDB.uploadCardImage(blob, fileName);
+                        
+                        if (!cardImageUrl) throw new Error('Upload failed');
+                        await AumageDB.updateCreature(creatureId, { card_image_url: cardImageUrl });
+
+                        saveBtn.textContent = 'Saved to Vault!';
+                        saveBtn.classList.add('success');
+                        setTimeout(() => window.location.href = 'collection.html', 1500);
+                    } catch (e) {
+                        alert('Storage Error: ' + e.message);
+                        saveBtn.disabled = false;
+                        saveBtn.textContent = 'Save to Vault';
+                    }
+                };
 
             } catch (err) {
-                console.error('Final Viewer Error:', err);
+                console.error('Final Preview Error:', err);
                 document.getElementById('loadingText').textContent = 'Error: ' + err.message;
-            }
-
-            function showFinalCard(url) {
-                const target = document.getElementById('cardTarget');
-                const img = new Image();
-                img.src = url;
-                img.style.width = '100%';
-                img.style.display = 'block';
-                img.onload = () => {
-                    target.innerHTML = '';
-                    target.appendChild(img);
-                    document.getElementById('loadingOverlay').style.display = 'none';
-                    document.getElementById('finalActions').style.display = 'flex';
-                };
             }
         });
     </script>

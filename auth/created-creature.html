@@ -704,88 +704,20 @@
                 });
             }
 
-            // --- DIRECT GENERATE & SAVE LOGIC ---
-            const generateAndSaveCard = async () => {
-                if (!creatureId) {
-                    alert('No creature ID found.');
-                    return;
-                }
-
-                // Show processing overlay
-                const overlay = document.createElement('div');
-                overlay.className = 'card-processing-overlay';
-                overlay.innerHTML = `
-                    <div class="processing-content">
-                        <div class="spinner"></div>
-                        <h3>Developing Schematic...</h3>
-                        <p>Mapping DNA biometrics and archiving to vault.</p>
-                    </div>
-                `;
-                document.body.appendChild(overlay);
-
-                try {
-                    // 1. Fetch Creature Data (if not already held)
-                    const creature = await AumageAPI.getCreature(creatureId);
-                    if (!creature) throw new Error('Creature record not found');
-
-                    // 2. Prepare Card Data
-                    const cardData = {
-                        name: creature.creature_name || 'Experiment #' + creatureId.substring(0,4),
-                        creatureUrl: creature.card_url || creature.creature_url || '../img/placeholder.png',
-                        gen: creature.gen_type || 'Resogen',
-                        trope: creature.trope_class || 'Terratrope',
-                        rarity: creature.base_rarity || 'Abundant',
-                        species: creature.morphology || 'Unknown',
-                        element: creature.element || 'Shadow',
-                        stats: creature.variant_tags || { power: 50, agility: 50, defense: 50, arcana: 50 },
-                        specimenId: creature.serial_number || 'SPEC-' + creatureId.substring(0,8),
-                        geneSequence: creature.waveform_hash?.substring(0, 16) || 'AGCT-TCGA-GATC-CTAG'
-                    };
-
-                    // 3. Render Card
-                    console.log('[Aumage] Rendering high-fidelity schematic...');
-                    const canvas = await AumageCard.render(cardData);
-                    
-                    // 4. Archive to Bucket
-                    console.log('[Aumage] Archiving to vault...');
-                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                    const fileName = `schematic-${creatureId}`;
-                    const cardImageUrl = await AumageDB.uploadCardImage(blob, fileName);
-                    
-                    if (!cardImageUrl) throw new Error('Vault upload failed.');
-
-                    // 5. Update DB
-                    await AumageDB.updateCreature(creatureId, {
-                        card_image_url: cardImageUrl
-                    });
-
-                    // 6. Success -> Redirect to View
-                    overlay.innerHTML = `
-                        <div class="processing-content success">
-                             <div class="success-check">✓</div>
-                             <h3>Schematic Archived!</h3>
-                             <p>Your collectible has been stored in the vault.</p>
-                             <button class="btn-primary-solid" onclick="window.location.href='new-card.html?id=${creatureId}'">View Final Card</button>
-                        </div>
-                    `;
-
-                } catch (err) {
-                    console.error('Direct Save Error:', err);
-                    overlay.innerHTML = `
-                        <div class="processing-content error">
-                             <h3>System Failure</h3>
-                             <p>${err.message}</p>
-                             <button class="btn-secondary-outline" onclick="this.parentElement.parentElement.remove()">Dismiss</button>
-                        </div>
-                    `;
+            // --- REDIRECT TO PREVIEW CARD ---
+            const redirectToPreview = () => {
+                if (creatureId) {
+                    window.location.href = `new-card.html?id=${creatureId}`;
+                } else {
+                    alert('No creature ID found to generate card.');
                 }
             };
 
             const collectBtnTop = document.getElementById('makeCollectibleBtnTop');
             const collectBtnBottom = document.getElementById('makeCollectibleBtnBottom');
 
-            if (collectBtnTop) collectBtnTop.addEventListener('click', generateAndSaveCard);
-            if (collectBtnBottom) collectBtnBottom.addEventListener('click', generateAndSaveCard);
+            if (collectBtnTop) collectBtnTop.addEventListener('click', redirectToPreview);
+            if (collectBtnBottom) collectBtnBottom.addEventListener('click', redirectToPreview);
         });
     </script>
 </body>
