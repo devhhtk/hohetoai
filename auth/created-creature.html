@@ -452,7 +452,7 @@
                         <button class="btn-secondary-outline" id="saveImageBtn">Save Image</button>
                         <button class="btn-secondary-outline" onclick="window.location.href='create-creature.html'">New
                             Sound</button>
-                        <button class="btn-primary-solid">Make Collectible Card</button>
+                        <button class="btn-primary-solid" id="makeCollectibleBtnTop">Make Collectible Card</button>
                     </div>
                 </div>
 
@@ -464,7 +464,7 @@
                         style="margin-top: 20px; font-style: italic; color: var(--text-muted); text-align: center; max-width: 400px; line-height: 1.6;">
                         <!-- Flavor text populated here -->
                     </div>
-                    <button class="btn-primary-solid make-collectible-btn">Make Collectible Card</button>
+                    <button class="btn-primary-solid make-collectible-btn" id="makeCollectibleBtnBottom">Make Collectible Card</button>
                     <p class="footer-note">Save the creature art or turn into a schematic card with nameing,
                         classification and scoring.</p>
                 </div>
@@ -703,6 +703,21 @@
                     }
                 });
             }
+
+            // --- REDIRECT TO COLLECTIBLE CARD LOGIC ---
+            const redirectToCard = () => {
+                if (creatureId) {
+                    window.location.href = `new-card.html?id=${creatureId}`;
+                } else {
+                    alert('No creature ID found to generate card.');
+                }
+            };
+
+            const collectBtnTop = document.getElementById('makeCollectibleBtnTop');
+            const collectBtnBottom = document.getElementById('makeCollectibleBtnBottom');
+
+            if (collectBtnTop) collectBtnTop.addEventListener('click', redirectToCard);
+            if (collectBtnBottom) collectBtnBottom.addEventListener('click', redirectToCard);
         });
     </script>
 </body>

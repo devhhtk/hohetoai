@@ -465,6 +465,39 @@ const AumageDB = {
   },
 
   // ============================================================
+  // CARD IMAGE UPLOAD
+  // ============================================================
+
+  /**
+   * Upload final collectible card image to Supabase Storage.
+   * Returns the public URL or null on failure.
+   */
+  async uploadCardImage(blob, filename) {
+    if (!this.supabase) return null;
+
+    // Use specific path for schematic cards
+    const path = `cards/${this.user?.id || 'anon'}/${filename}.png`;
+
+    const { error } = await this.supabase.storage
+      .from('aumage-cards')
+      .upload(path, blob, {
+        contentType: 'image/png',
+        upsert: true // Allow overwriting if user re-generates
+      });
+
+    if (error) {
+      console.error('AumageDB uploadCardImage error:', error);
+      return null;
+    }
+
+    const { data: urlData } = this.supabase.storage
+      .from('aumage-cards')
+      .getPublicUrl(path);
+
+    return urlData?.publicUrl || null;
+  },
+
+  // ============================================================
   // SHARE HELPERS
   // ============================================================
 

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalize Card — HoHeTo Kyle</title>
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/cardview.css">
+</head>
+
+<body class="dashboard-body">
+
+    <!-- ══ Sidebar Placeholder ══ -->
+    <div id="comp-sidebar"></div>
+
+    <!-- ══ Main Content Area ══ -->
+    <main class="main-area">
+
+        <!-- Top Navigation Bar Placeholder -->
+        <div id="comp-header"></div>
+
+        <!-- Dynamic Content View -->
+        <div class="content-view">
+
+            <div class="card-view-container">
+                <!-- Left: Controls -->
+                <div class="card-controls">
+                    <div class="card-status-header">
+                        <h1 class="card-status-title">Finalize Your Card</h1>
+                        <p class="card-status-desc" id="statusDesc">Review the high-fidelity schematic card. Once finalized, it will be added to your permanent collection and saved to the archives.</p>
+                    </div>
+
+                    <div class="card-actions" id="actionPanel">
+                        <button class="btn-finalize" id="finalizeBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                <polyline points="7 3 7 8 15 8"></polyline>
+                            </svg>
+                            Finalize & Save to Bucket
+                        </button>
+                        <a href="#" class="btn-back" onclick="history.back(); return false;">Back to Details</a>
+                    </div>
+
+                    <!-- Success State (Hidden) -->
+                    <div id="successState" style="display: none; text-align: center;">
+                        <div class="success-check">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <h2 style="font-family: 'Exo 2'; font-size: 28px; margin-bottom: 10px;">Card Archived!</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 30px;">The schematic card has been stored in the vault and linked to your creature record.</p>
+                        <button class="btn-finalize" onclick="window.location.href='collection.html'">View My Collection</button>
+                    </div>
+                </div>
+
+                <!-- Right: Card Preview -->
+                <div class="card-canvas-wrapper" id="cardWrapper">
+                    <canvas id="finalCardCanvas"></canvas>
+                    
+                    <!-- Loading Overlay -->
+                    <div class="card-loading-overlay" id="loadingOverlay">
+                        <div class="spinner"></div>
+                        <span class="loading-text" id="loadingText">Developing Schematic...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Placeholder -->
+            <div id="comp-footer"></div>
+
+        </div>
+    </main>
+
+    <!-- JS Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/db.js"></script>
+    <script src="../js/card-compositor.js"></script>
+    <script src="../js/components.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load Components
+            await ComponentLoader.loadAll([
+                { id: 'comp-sidebar', path: '../components/sidebar.html' },
+                { id: 'comp-header', path: '../components/header.html' },
+                { id: 'comp-footer', path: '../components/footer.html' }
+            ]);
+
+            // Database & Auth Initialization
+            if (window.AumageDB) {
+                window.AumageDB.init();
+                await window.AumageDB.requireAuth();
+            }
+
+            // Init Card
+            const params = new URLSearchParams(window.location.search);
+            const creatureId = params.get('id');
+
+            if (!creatureId) {
+                document.getElementById('loadingText').textContent = 'No Creature ID found.';
+                document.getElementById('loadingText').style.color = '#ff4444';
+                return;
+            }
+
+            try {
+                // 1. Fetch Creature Data
+                const creature = await AumageAPI.getCreature(creatureId);
+                if (!creature) throw new Error('Creature not found');
+
+                // 2. Prepare Card Data
+                const cardData = {
+                    name: creature.creature_name || 'Experiment #' + creatureId.substring(0,4),
+                    creatureUrl: creature.card_url || creature.creature_url || '../img/placeholder.png',
+                    gen: creature.gen_type || 'Resogen',
+                    trope: creature.trope_class || 'Terratrope',
+                    rarity: creature.base_rarity || 'Abundant',
+                    species: creature.morphology || 'Unknown',
+                    element: creature.element || 'Shadow',
+                    stats: creature.variant_tags || { power: 50, agility: 50, defense: 50, arcana: 50 },
+                    specimenId: creature.serial_number || 'SPEC-' + creatureId.substring(0,8),
+                    geneSequence: creature.waveform_hash?.substring(0, 16) || 'AGCT-TCGA-GATC-CTAG'
+                };
+
+                // 3. Render Card
+                const canvas = document.getElementById('finalCardCanvas');
+                const renderedCanvas = await AumageCard.render(cardData);
+                
+                // Copy to visible canvas
+                const ctx = canvas.getContext('2d');
+                canvas.width = renderedCanvas.width;
+                canvas.height = renderedCanvas.height;
+                ctx.drawImage(renderedCanvas, 0, 0);
+
+                // 4. Hide Loading
+                document.getElementById('loadingOverlay').style.display = 'none';
+
+                // 5. Setup Finalize Logic
+                const finalizeBtn = document.getElementById('finalizeBtn');
+                finalizeBtn.addEventListener('click', async () => {
+                    finalizeBtn.disabled = true;
+                    finalizeBtn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;"></div> Archiving...';
+                    
+                    try {
+                        // Convert to Blob
+                        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                        
+                        // Upload to Bucket
+                        const fileName = `schematic-${creatureId}-${Date.now()}`;
+                        const cardImageUrl = await AumageDB.uploadCardImage(blob, fileName);
+                        
+                        if (!cardImageUrl) throw new Error('Upload failed');
+
+                        // Update DB
+                        await AumageDB.updateCreature(creatureId, {
+                            card_image_url: cardImageUrl
+                        });
+
+                        // Show Success
+                        document.getElementById('actionPanel').style.display = 'none';
+                        document.getElementById('successState').style.display = 'block';
+                        document.getElementById('statusDesc').textContent = 'Archive complete. Your digital collectible is now permanently stored.';
+                        
+                    } catch (err) {
+                        console.error('Finalize error:', err);
+                        alert('Error saving card: ' + err.message);
+                        finalizeBtn.disabled = false;
+                        finalizeBtn.textContent = 'Finalize & Save to Bucket';
+                    }
+                });
+
+            } catch (err) {
+                console.error('Load error:', err);
+                document.getElementById('loadingText').textContent = 'Error: ' + err.message;
+            }
+        });
+    </script>
+</body>
+
+</html>

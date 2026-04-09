@@ -1,0 +1,192 @@
+/* Premium Card View Styles — HoHeTo Kyle */
+
+.card-view-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    gap: 60px;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    min-height: calc(100vh - 100px);
+}
+
+/* --- Card Frame & Canvas --- */
+.card-canvas-wrapper {
+    position: relative;
+    width: 450px;
+    aspect-ratio: 426 / 778;
+    background: #011616;
+    border-radius: 20px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 20px var(--color-primary-glow);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.card-canvas-wrapper:hover {
+    transform: translateY(-10px) scale(1.02);
+}
+
+canvas#finalCardCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* --- Control Panel (Left) --- */
+.card-controls {
+    flex: 1;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.card-status-header {
+    margin-bottom: 20px;
+}
+
+.card-status-title {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff 0%, var(--color-primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.card-status-desc {
+    font-size: 16px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* --- Action Buttons --- */
+.card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.btn-finalize {
+    background: var(--color-primary);
+    color: #011616;
+    border: none;
+    padding: 18px 32px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-shadow: 0 10px 20px var(--color-primary-glow);
+}
+
+.btn-finalize:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px var(--color-primary-glow);
+    filter: brightness(1.1);
+}
+
+.btn-finalize:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-finalize svg {
+    width: 24px;
+    height: 24px;
+}
+
+.btn-back {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-back:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* --- Progress / Loading State --- */
+.card-loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(1, 22, 22, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(8, 210, 193, 0.1);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    font-family: 'Exo 2', sans-serif;
+    color: var(--color-primary);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+/* --- Success Animation --- */
+.success-check {
+    width: 80px;
+    height: 80px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #011616;
+    margin-bottom: 20px;
+    box-shadow: 0 0 30px var(--color-primary-glow);
+    animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .card-view-container {
+        flex-direction: column-reverse;
+        gap: 40px;
+        padding: 20px;
+    }
+    
+    .card-canvas-wrapper {
+        width: 100%;
+        max-width: 400px;
+    }
+}
