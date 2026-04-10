@@ -3,13 +3,13 @@
 .card-view-container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 40px 20px;
-    min-height: calc(100vh - 100px);
+    padding: 20px 15px;
+    min-height: calc(100vh - 80px);
 }
 
 .generated-container {
     display: flex;
-    gap: 60px;
+    gap: 30px;
     align-items: flex-start;
     justify-content: center;
 }
@@ -20,29 +20,29 @@
     max-width: 600px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
 }
 
 .generated-title {
     font-family: 'Exo 2', sans-serif;
-    font-size: 38px;
+    font-size: 28px;
     font-weight: 800;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 /* Tool Tabs / Tags */
 .tool-tabs {
     display: flex;
-    gap: 12px;
-    margin-bottom: 10px;
+    gap: 10px;
+    margin-bottom: 8px;
 }
 
 .tool-tab {
-    padding: 8px 16px;
+    padding: 6px 14px;
     border: 1px solid var(--color-primary);
     color: var(--color-primary);
     border-radius: 30px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     display: flex;
     align-items: center;
@@ -60,15 +60,15 @@
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 10px;
+    padding: 15px;
+    margin-bottom: 8px;
 }
 
 .visualizer-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
-    font-size: 13px;
+    margin-bottom: 15px;
+    font-size: 11px;
     color: var(--text-muted);
 }
 
@@ -78,12 +78,12 @@
 }
 
 .waveform-mock {
-    height: 80px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 3px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .waveform-bar {
@@ -96,7 +96,7 @@
 .audio-player-mock {
     background: rgba(0, 0, 0, 0.3);
     border-radius: 30px;
-    padding: 8px 20px;
+    padding: 6px 16px;
     display: flex;
     align-items: center;
     gap: 15px;
@@ -128,48 +128,48 @@
 /* DNA Grid */
 .dna-title, .cat-title {
     font-family: 'Exo 2', sans-serif;
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--text-muted);
     text-align: center;
-    margin: 10px 0;
+    margin: 5px 0;
 }
 
 .dna-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px 40px;
-    margin-bottom: 20px;
+    gap: 8px 24px;
+    margin-bottom: 15px;
 }
 
 .dna-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .dna-label {
-    width: 85px;
-    font-size: 13px;
+    width: 70px;
+    font-size: 11px;
     color: var(--text-muted);
 }
 
 .dna-track {
     flex: 1;
-    height: 6px;
+    height: 4px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
+    border-radius: 2px;
     overflow: hidden;
 }
 
 .dna-fill {
     height: 100%;
-    border-radius: 3px;
+    border-radius: 2px;
 }
 
 .dna-val {
     width: 35px;
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 600;
 }
 
@@ -177,16 +177,16 @@
 .cat-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 30px;
+    gap: 8px;
+    margin-bottom: 20px;
 }
 
 .cat-chip {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 30px;
-    padding: 8px 16px;
-    font-size: 13px;
+    padding: 5px 10px;
+    font-size: 11px;
     color: var(--text-muted);
     text-align: center;
     transition: all 0.2s;
@@ -209,7 +209,7 @@
 .card-canvas-wrapper {
     position: relative;
     width: 100%;
-    max-width: 500px;
+    max-width: 420px;
     aspect-ratio: 929 / 1348;
     background: #011616;
     border-radius: 12px;
@@ -228,22 +228,22 @@ canvas#finalCardCanvas {
     color: var(--text-muted);
     text-align: center;
     max-width: 450px;
-    line-height: 1.6;
-    font-size: 14px;
+    line-height: 1.4;
+    font-size: 13px;
 }
 
 .footer-note {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-muted);
     opacity: 0.6;
-    margin-top: 10px;
+    margin-top: 5px;
 }
 
 /* Action Buttons */
 .action-btns {
     display: flex;
-    gap: 16px;
-    margin-top: 10px;
+    gap: 10px;
+    margin-top: 8px;
 }
 
 .btn-secondary-outline {
@@ -251,10 +251,11 @@ canvas#finalCardCanvas {
     background: var(--bg-card);
     border: 1px solid var(--color-primary);
     color: var(--color-primary);
-    padding: 12px;
+    padding: 10px;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
+    font-size: 13px;
     transition: all 0.2s;
 }
 
@@ -267,10 +268,11 @@ canvas#finalCardCanvas {
     background: var(--color-primary);
     color: #011616;
     border: none;
-    padding: 12px;
+    padding: 10px;
     border-radius: 8px;
     font-weight: 800;
     cursor: pointer;
+    font-size: 13px;
     transition: all 0.2s;
 }
 
