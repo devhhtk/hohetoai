@@ -5,7 +5,7 @@
 
 var AumageCard = {
   // Dimension constants based on img/frame.png
-  FW: 929, 
+  FW: 929,
   FH: 1348,
   SCALE: 1.0,
 
@@ -38,7 +38,7 @@ var AumageCard = {
     // 1. Load Assets
     const [frameImg, creatureImg] = await Promise.all([
       this._loadImg('../img/frame.png'),
-      this._loadImg(proxiedUrl)
+      this._loadImg(creatureImg)
     ]);
 
     if (frameImg) console.log('[AumageCard] Frame loaded successfully.');
@@ -85,7 +85,7 @@ var AumageCard = {
     const name = (data.name || 'UNNAMED SPECIMEN').toUpperCase();
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    
+
     // Auto-scale font size for long names
     let fontSize = 52;
     if (name.length > 12) fontSize = 42;
@@ -105,7 +105,7 @@ var AumageCard = {
     ctx.font = '700 24px "Instrument Sans", sans-serif';
     ctx.fillStyle = this.C.cyan;
     ctx.fillText(tax, this.FW / 2, 155);
-    
+
     const subTax = `${data.gen || 'RESOGEN'} — ${data.element || 'SHADOW'}`.toUpperCase();
     ctx.font = '600 18px "Instrument Sans", sans-serif';
     ctx.fillStyle = this.C.textMuted;
@@ -159,11 +159,11 @@ var AumageCard = {
         const y = startY + (i * 35.5);
         const w = 310;
         const h = 8;
-        
+
         // Label (optional on card? No, usually just the bar)
         // Check image: the labels might be embedded in the frame. Yes they are!
         // We just draw the bar fill.
-        
+
         ctx.fillStyle = s.color;
         ctx.shadowBlur = 10;
         ctx.shadowColor = s.color;
