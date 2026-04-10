@@ -43,7 +43,8 @@ var AumageCard = {
     // ]);
 
     console.log('[AumageCard] Loading creature image first:', originalUrl);
-    const creatureImg = await this._loadImg(originalUrl);
+    const proxiedUrl = this._proxyUrl(originalUrl);
+    const creatureImg = await this._loadImg(proxiedUrl);
     const frameImg = null; // Loading frame later (commented out)
 
     if (frameImg) console.log('[AumageCard] Frame loaded successfully.');
@@ -204,11 +205,12 @@ var AumageCard = {
 
   _proxyUrl(url) {
     if (!url) return url;
-    // Proxy B2 URLs to avoid CORS issues
-    if (url.includes('backblazeb2.com') || url.includes('cards.aumage.ai')) {
-      const match = url.match(/aumage-cards\/(.+)$/) || url.match(/cards\.aumage\.ai\/(.+)$/);
-      if (match) return 'https://hohetai-api.devhhtk.workers.dev/api/image/' + match[1];
+
+    if (url.includes('backblazeb2.com')) {
+      const path = url.split('.com/')[1];
+      return `https://hohetai-api.devhhtk.workers.dev/api/image/${path}`;
     }
+
     return url;
   },
 
