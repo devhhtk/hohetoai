@@ -184,8 +184,8 @@ var AumageCard = {
       });
     };
 
-    drawSlots(leftSlots, 142, 920);
-    drawSlots(rightSlots, 510, 920);
+    drawSlots(leftSlots, 142, 940);
+    drawSlots(rightSlots, 510, 940);
   },
 
   _drawCoverImg(ctx, img, x, y, w, h, zoom = 1.0, offset = { x: 0, y: 0 }) {
