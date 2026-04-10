@@ -30,17 +30,26 @@ var AumageCard = {
     const ctx = canvas.getContext('2d');
 
     // 0. Proxy the creature URL
-    const creatureUrl = this._proxyUrl(data.creatureUrl);
+    const originalUrl = data.creatureUrl;
+    const proxiedUrl = this._proxyUrl(originalUrl);
+    console.log('[AumageCard] Original URL:', originalUrl);
+    console.log('[AumageCard] Proxied URL:', proxiedUrl);
 
     // 1. Load Assets
     const [frameImg, creatureImg] = await Promise.all([
       this._loadImg('../img/frame.png'),
-      this._loadImg(creatureUrl)
+      this._loadImg(proxiedUrl)
     ]);
+
+    if (frameImg) console.log('[AumageCard] Frame loaded successfully.');
+    else console.warn('[AumageCard] Frame failed to load: ../img/frame.png');
+
+    if (creatureImg) console.log('[AumageCard] Creature loaded successfully.');
+    else console.warn('[AumageCard] Creature failed to load:', proxiedUrl);
 
     // 2. Clear Canvas
     ctx.clearRect(0, 0, this.FW, this.FH);
-    console.log('[AumageCard] Starting render. Creature:', data.creatureUrl);
+    console.log('[AumageCard] Canvas cleared, size:', this.FW, 'x', this.FH);
 
     // 3. Draw Creature in Viewport (Behind Frame)
     if (creatureImg) {
