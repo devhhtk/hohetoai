@@ -829,19 +829,34 @@ var Aumage = {
         if (audioStoragePath) console.log('Audio uploaded:', audioStoragePath);
       }
 
-      const record = await AumageDB.saveCreature({
-        imageUrl, videoUrl,
-        audioSource: this.audioSource,
-        audioStoragePath,
-        linkUrl: this.linkUrl || null,
+      const updateData = {
+        image_url: imageUrl,
+        video_url: videoUrl,
+        audio_source: this.audioSource,
+        audio_storage_path: audioStoragePath,
+        link_url: this.link_url || null,
         fingerprint, seed,
         mode: this.selectedMode,
         style: this.selectedStyle,
-        features, visuals, promptText
-      });
+        features, visuals, 
+        prompt_text: promptText
+      };
+
+      // Check if we have an existing ID from Stage A to update instead of inserting
+      const existingId = this.stageAResult?.creature_id;
+      let record;
+
+      if (existingId) {
+        console.log('[DB] Updating existing record:', existingId);
+        record = await AumageDB.updateCreature(existingId, updateData);
+      } else {
+        console.log('[DB] Creating new record (fallback)');
+        record = await AumageDB.saveCreature(updateData);
+      }
+
       if (record) {
         this.lastCreatureRecord = record;
-        console.log('Creature saved, slug:', record.share_slug);
+        console.log('Creature record ready, slug:', record.share_slug);
         
         // Refresh sidebar stats to show new XP gain
         if (window.AumageDB) AumageDB.updateSidebarStats();

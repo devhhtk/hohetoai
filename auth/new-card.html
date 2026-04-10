@@ -223,7 +223,15 @@
                 canvas.width = renderedCanvas.width;
                 canvas.height = renderedCanvas.height;
                 const ctx = canvas.getContext('2d');
-                ctx.drawImage(renderedCanvas, 0, 0);
+                                ctx.drawImage(renderedCanvas, 0, 0);
+                
+                // 3.1 NEW: Automatically save schematic card to bucket & update database
+                console.log('[Card] Triggering schematic upload...');
+                AumageCard.saveToBucket(cardData, CONFIG.API_BASE_URL).then(res => {
+                    console.log('[Card] Schematic successfully saved to:', res.card_url);
+                }).catch(err => {
+                    console.warn('[Card] Automatic schematic upload failed:', err);
+                });
 
                 // 4. Hide Loading Overlay
                 document.getElementById('loadingOverlay').style.display = 'none';
