@@ -35,7 +35,7 @@ var AumageCard = {
     // 1. Load Assets
     console.log('[AumageCard] Loading assets:', originalUrl);
     const proxiedUrl = this._proxyUrl(originalUrl);
-    
+
     const [frameImg, creatureImg] = await Promise.all([
       this._loadImg('../img/frame.png'),
       this._loadImg(proxiedUrl)
@@ -58,8 +58,8 @@ var AumageCard = {
       const vpy = data.vpy !== undefined ? data.vpy : 285;
       const vpw = data.vpw !== undefined ? data.vpw : 675;
       const vph = data.vph !== undefined ? data.vph : 500;
-      
-      const vzoom = data.vzoom || 1.0;
+
+      const vzoom = data.vzoom || 0.5;
       const voffset = data.voffset || { x: 0, y: 0 };
 
       this._drawCoverImg(ctx, creatureImg, vpx, vpy, vpw, vph, vzoom, voffset);
