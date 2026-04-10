@@ -31,6 +31,7 @@ var AumageCard = {
 
     // 0. Proxy the creature URL (Commented out for debugging)
     const originalUrl = data.creatureUrl;
+    console.log(originalUrl);
     // const proxiedUrl = this._proxyUrl(originalUrl);
     // console.log('[AumageCard] Original URL:', originalUrl);
     // console.log('[AumageCard] Proxied URL:', proxiedUrl);
