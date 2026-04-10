@@ -59,7 +59,7 @@ var AumageCard = {
       const vpw = data.vpw !== undefined ? data.vpw : 675;
       const vph = data.vph !== undefined ? data.vph : 600;
 
-      const vzoom = data.vzoom || 0.9;
+      const vzoom = data.vzoom || 1.0;
       const voffset = data.voffset || { x: 0, y: 0 };
 
       this._drawCoverImg(ctx, creatureImg, vpx, vpy, vpw, vph, vzoom, voffset);
