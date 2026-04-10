@@ -57,7 +57,7 @@ var AumageCard = {
       const vpx = data.vpx !== undefined ? data.vpx : 125;
       const vpy = data.vpy !== undefined ? data.vpy : 285;
       const vpw = data.vpw !== undefined ? data.vpw : 675;
-      const vph = data.vph !== undefined ? data.vph : 500;
+      const vph = data.vph !== undefined ? data.vph : 450;
 
       const vzoom = data.vzoom || 0.9;
       const voffset = data.voffset || { x: 0, y: 0 };
