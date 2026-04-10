@@ -32,26 +32,20 @@ var AumageCard = {
     // 0. Proxy the creature URL (Commented out for debugging)
     const originalUrl = data.creatureUrl;
     console.log(originalUrl);
-    // const proxiedUrl = this._proxyUrl(originalUrl);
-    // console.log('[AumageCard] Original URL:', originalUrl);
-    // console.log('[AumageCard] Proxied URL:', proxiedUrl);
-
     // 1. Load Assets
-    // const [frameImg, creatureImg] = await Promise.all([
-    //   this._loadImg('../img/frame.png'),
-    //   this._loadImg(proxiedUrl)
-    // ]);
-
-    console.log('[AumageCard] Loading creature image first:', originalUrl);
+    console.log('[AumageCard] Loading assets:', originalUrl);
     const proxiedUrl = this._proxyUrl(originalUrl);
-    const creatureImg = await this._loadImg(proxiedUrl);
-    const frameImg = null; // Loading frame later (commented out)
+    
+    const [frameImg, creatureImg] = await Promise.all([
+      this._loadImg('../img/frame.png'),
+      this._loadImg(proxiedUrl)
+    ]);
 
     if (frameImg) console.log('[AumageCard] Frame loaded successfully.');
-    else console.warn('[AumageCard] Frame skipped or failed to load.');
+    else console.warn('[AumageCard] Frame failed to load: ../img/frame.png');
 
     if (creatureImg) console.log('[AumageCard] Creature loaded successfully.');
-    else console.warn('[AumageCard] Creature failed to load:', originalUrl);
+    else console.warn('[AumageCard] Creature failed to load:', proxiedUrl);
 
     // 2. Clear Canvas
     ctx.clearRect(0, 0, this.FW, this.FH);
