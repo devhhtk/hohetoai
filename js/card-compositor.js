@@ -38,7 +38,7 @@ var AumageCard = {
     // 1. Load Assets
     const [frameImg, creatureImg] = await Promise.all([
       this._loadImg('../img/frame.png'),
-      this._loadImg(creatureImg)
+      this._loadImg(proxiedUrl)
     ]);
 
     if (frameImg) console.log('[AumageCard] Frame loaded successfully.');
