@@ -164,14 +164,17 @@ var AumageCard = {
 
     const drawSlots = (slots, startX, startY) => {
       slots.forEach((s, i) => {
-        const y = startY + (i * 35.5);
+        const y = startY + (i * 45); // Increased spacing for labels
         const w = 310;
         const h = 8;
 
-        // Label (optional on card? No, usually just the bar)
-        // Check image: the labels might be embedded in the frame. Yes they are!
-        // We just draw the bar fill.
+        // Label
+        ctx.fillStyle = this.C.textMuted;
+        ctx.font = '700 14px "Instrument Sans", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(s.label, startX, y - 10);
 
+        // Bar Fill
         ctx.fillStyle = s.color;
         ctx.shadowBlur = 10;
         ctx.shadowColor = s.color;
@@ -181,8 +184,8 @@ var AumageCard = {
       });
     };
 
-    drawSlots(leftSlots, 142, 1035);
-    drawSlots(rightSlots, 510, 1035);
+    drawSlots(leftSlots, 142, 980);
+    drawSlots(rightSlots, 510, 980);
   },
 
   _drawCoverImg(ctx, img, x, y, w, h, zoom = 1.0, offset = { x: 0, y: 0 }) {
