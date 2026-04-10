@@ -53,8 +53,16 @@ var AumageCard = {
 
     // 3. Draw Creature in Viewport (Behind Frame)
     if (creatureImg) {
-      const vpx = 125, vpy = 285, vpw = 675, vph = 500;
-      this._drawCoverImg(ctx, creatureImg, vpx, vpy, vpw, vph);
+      // Allow per-card adjustment of viewport and zoom
+      const vpx = data.vpx !== undefined ? data.vpx : 125;
+      const vpy = data.vpy !== undefined ? data.vpy : 285;
+      const vpw = data.vpw !== undefined ? data.vpw : 675;
+      const vph = data.vph !== undefined ? data.vph : 500;
+      
+      const vzoom = data.vzoom || 1.0;
+      const voffset = data.voffset || { x: 0, y: 0 };
+
+      this._drawCoverImg(ctx, creatureImg, vpx, vpy, vpw, vph, vzoom, voffset);
     } else {
       console.warn('[AumageCard] No creature image to draw.');
       // Optional: Draw placeholder background
@@ -177,11 +185,12 @@ var AumageCard = {
     drawSlots(rightSlots, 510, 1035);
   },
 
-  _drawCoverImg(ctx, img, x, y, w, h) {
+  _drawCoverImg(ctx, img, x, y, w, h, zoom = 1.0, offset = { x: 0, y: 0 }) {
     const imgRatio = img.width / img.height;
     const boxRatio = w / h;
     let sx, sy, sw, sh;
 
+    // Initial "Cover" calculation
     if (imgRatio > boxRatio) {
       sh = img.height;
       sw = sh * boxRatio;
@@ -193,6 +202,20 @@ var AumageCard = {
       sx = 0;
       sy = (img.height - sh) / 2;
     }
+
+    // Apply Zoom (relative to center)
+    if (zoom !== 1.0) {
+      const oldSw = sw;
+      const oldSh = sh;
+      sw /= zoom;
+      sh /= zoom;
+      sx += (oldSw - sw) / 2;
+      sy += (oldSh - sh) / 2;
+    }
+
+    // Apply Manual Offset (in pixels relative to the image source)
+    sx -= offset.x;
+    sy -= offset.y;
 
     ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
   },
