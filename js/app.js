@@ -894,6 +894,14 @@ var Aumage = {
         const cardCanvas = await AumageCard.render(d);
         this._cardCanvas = cardCanvas;
 
+        // 🔥 Trigger background upload to B2
+        console.log('[Card] Triggering schematic upload...');
+        AumageCard.saveToBucket(d, this.PIPELINE_URL).then(res => {
+          if (res.card_url && this.lastCreatureRecord) {
+            this.lastCreatureRecord.card_image_url = res.card_url;
+          }
+        }).catch(err => console.warn('[Card] Background upload failed:', err));
+
         card.innerHTML = `
           <div style="max-width:620px;margin:0 auto;">
             <div id="card-canvas-container" style="text-align:center;margin-bottom:24px;"></div>

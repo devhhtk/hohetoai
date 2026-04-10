@@ -251,5 +251,37 @@ var AumageCard = {
   async renderToBlob(data) {
     const canvas = await this.render(data);
     return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  },
+
+  /**
+   * Render and upload the card image to the B2 bucket via the backend API.
+   * @param {Object} data - The card data used for rendering.
+   * @param {string} apiBase - The base URL for the API.
+   */
+  async saveToBucket(data, apiBase = '') {
+    try {
+      console.log('[AumageCard] Starting save to bucket for:', data.specimenId);
+      const blob = await this.renderToBlob(data);
+      if (!blob) throw new Error('Failed to generate card blob');
+
+      const formData = new FormData();
+      formData.append('card', blob, `card-${data.specimenId}.png`);
+      formData.append('creature_id', data.specimenId);
+      formData.append('creature_name', data.name || '');
+
+      const response = await fetch(`${apiBase}/api/save-card`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Upload failed');
+
+      console.log('[AumageCard] Card uploaded successfully:', result.card_url);
+      return result;
+    } catch (err) {
+      console.error('[AumageCard] Save to bucket failed:', err);
+      throw err;
+    }
   }
 };
