@@ -38,23 +38,29 @@ var AumageCard = {
       this._loadImg(creatureUrl)
     ]);
 
-    // 2. Clear & Draw Frame
+    // 2. Clear Canvas
     ctx.clearRect(0, 0, this.FW, this.FH);
-    if (frameImg) {
-      ctx.drawImage(frameImg, 0, 0, this.FW, this.FH);
-    } else {
-      ctx.fillStyle = '#011616';
-      ctx.fillRect(0, 0, this.FW, this.FH);
-    }
+    console.log('[AumageCard] Starting render. Creature:', data.creatureUrl);
 
-    // 3. Draw Creature in Viewport (Main box)
-    // Adjusted box based on screenshot feedback
+    // 3. Draw Creature in Viewport (Behind Frame)
     if (creatureImg) {
       const vpx = 125, vpy = 285, vpw = 675, vph = 500;
       this._drawCoverImg(ctx, creatureImg, vpx, vpy, vpw, vph);
+    } else {
+      console.warn('[AumageCard] No creature image to draw.');
+      // Optional: Draw placeholder background
+      ctx.fillStyle = '#011616';
+      ctx.fillRect(125, 285, 675, 500);
     }
 
-    // 4. Render Text Components
+    // 4. Draw Frame (Overlay)
+    if (frameImg) {
+      ctx.drawImage(frameImg, 0, 0, this.FW, this.FH);
+    } else {
+      console.warn('[AumageCard] No frame image to draw.');
+    }
+
+    // 5. Render Text & Components (on top)
     this._drawMainText(ctx, data);
     this._drawTaxonomy(ctx, data);
     this._drawSpecimenID(ctx, data);
