@@ -258,37 +258,19 @@ var AumageCard = {
    * @param {Object} data - The card data used for rendering.
    * @param {string} apiBase - The base URL for the API.
    */
-  async saveToBucket(data, apiBase = '') {
+  async saveToBucket(data) {
     try {
       console.log('[AumageCard] Starting save to bucket for:', data.specimenId);
       const blob = await this.renderToBlob(data);
       if (!blob) throw new Error('Failed to generate card blob');
 
-      const formData = new FormData();
-      formData.append('card', blob, `card-${data.specimenId}.png`);
-      formData.append('creature_id', data.specimenId);
-      formData.append('creature_name', data.name || '');
+      const filename = `card-${data.specimenId}`;
+      const cardUrl = await window.AumageDB?.uploadCardImage(blob, filename);
 
-      // Get auth token if available via AumageDB
-      let token = null;
-      if (window.AumageDB?.supabase) {
-        const session = await window.AumageDB.supabase.auth.getSession();
-        token = session?.data?.session?.access_token;
-      }
+      if (!cardUrl) throw new Error('Upload failed');
 
-      const response = await fetch(`${apiBase}/api/save-card`, {
-        method: 'POST',
-        headers: {
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
-        body: formData
-      });
-
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'Upload failed');
-
-      console.log('[AumageCard] Card uploaded successfully:', result.card_url);
-      return result;
+      console.log('[AumageCard] Card uploaded successfully:', cardUrl);
+      return { card_url: cardUrl };
     } catch (err) {
       console.error('[AumageCard] Save to bucket failed:', err);
       throw err;

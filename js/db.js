@@ -475,8 +475,8 @@ const AumageDB = {
   async uploadCardImage(blob, filename) {
     if (!this.supabase) return null;
 
-    // Use specific path for schematic cards
-    const path = `cards/${this.user?.id || 'anon'}/${filename}.png`;
+    // Use specific path matching the creature image pattern
+    const path = `creatures/${filename}.png`;
 
     const { error } = await this.supabase.storage
       .from('aumage-cards')
@@ -586,6 +586,7 @@ const AumageDB = {
       const token = session?.data?.session?.access_token;
 
       // Extract PIPELINE_URL from Aumage if available, or use default
+
       const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
 
       const resp = await fetch(`${apiBase}/api/profile`, {
