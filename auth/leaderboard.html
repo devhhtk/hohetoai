@@ -53,7 +53,7 @@
                     <!-- Top 1 Showcase -->
                     <div class="leaderboard-showcase">
                         <div class="showcase-content">
-                            <div class="top-badge">TOP #1</div>
+                            <div class="top-badge">★★★</div>
                             <div class="top-creature-info">
                                 <h4 id="top-ranker-name">---</h4>
                                 <p>Latest Discovery</p>
@@ -191,7 +191,7 @@
 
                     // Add click listeners to items
                     const items = list.querySelectorAll('.leaderboard-item');
-                    
+
                     items.forEach(item => {
                         item.addEventListener('click', async () => {
                             // UI Feedback
@@ -200,17 +200,17 @@
 
                             const uID = item.getAttribute('data-user-id');
                             const uName = item.getAttribute('data-user-name');
-                            
+
                             // Update UI
                             topName.textContent = uName;
-                            
+
                             // Visual feedback (start loading)
                             topImg.classList.add('image-changing');
                             if (showcaseLoader) showcaseLoader.classList.add('loader-active');
 
                             try {
                                 const card = await window.AumageDB.getUserRecentCard(uID);
-                                
+
                                 // Preload image to avoid jumpy transitions
                                 if (card && card.card_image_url) {
                                     const imgPreload = new Image();
@@ -231,22 +231,38 @@
                         });
                     });
 
-                    // Populate Your Rank (Mocked based on current user)
-                    const currentUser = leaderboard.find(u => u.id === 'current-user-id') || leaderboard[3]; // Mocked fallback
-                    if (currentUser) {
+                    // Populate Your Rank (Dynamic)
+                    if (window.AumageDB.user) {
+                        const currentUserId = window.AumageDB.user.id;
+                        const userIndex = leaderboard.findIndex(u => u.id === currentUserId);
+                        
+                        // Get user profile for level and display name
+                        const profileData = await window.AumageDB.getUserProfile();
+                        const profile = profileData?.profile || {};
+                        const displayName = profile.display_name || window.AumageDB.user.email?.split('@')[0] || 'You';
+                        
+                        // Get user creature count (since leaderboard only counts cards, let's be consistent)
+                        // Actually leaderboard counts creatures with cards.
+                        const { count: cardCount } = await window.AumageDB.supabase
+                            .from('creatures')
+                            .select('*', { count: 'exact', head: true })
+                            .eq('user_id', currentUserId)
+                            .neq('card_image_url', '')
+                            .not('card_image_url', 'is', null);
+
                         const yourRankEl = document.getElementById('yourRank');
                         if (yourRankEl) {
                             yourRankEl.innerHTML = `
                                 <div class="leaderboard-footer">
                                     <div class="leaderboard-item" style="margin-bottom: 0; background: transparent; border: none; padding: 0;">
-                                        <div class="item-rank">4</div>
+                                        <div class="item-rank">${userIndex !== -1 ? userIndex + 1 : '>20'}</div>
                                         <div class="item-avatar">
-                                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=you" alt="avatar">
+                                            <img src="${profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUserId}`}" alt="avatar">
                                         </div>
                                         <div class="item-info">
                                             <div class="user-meta">
-                                                <span class="item-name">You (Storyteller)</span>
-                                                <span class="item-level">Level 4</span>
+                                                <span class="item-name">${displayName} (You)</span>
+                                                <span class="item-level">Level ${profile.level || 1}</span>
                                             </div>
                                             <div class="user-badges">
                                                 <span class="badge-icon">🔥</span>
@@ -256,7 +272,7 @@
                                         <div class="item-count">
                                             <div class="count-with-icon">
                                                 <span class="count-icon">🎴</span>
-                                                <span class="count-val">37</span>
+                                                <span class="count-val">${cardCount || 0}</span>
                                             </div>
                                             <span class="count-label">Cards</span>
                                         </div>
