@@ -611,6 +611,28 @@ const AumageDB = {
     return data || [];
   },
 
+  /**
+   * Get the most recent creature for a specific user ID.
+   */
+  async getUserRecentCreature(userId) {
+    if (!this.supabase || !userId) return null;
+
+    const { data, error } = await this.supabase
+      .from('creatures')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('is_public', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error) {
+      console.warn('AumageDB getUserRecentCreature warning:', error.message);
+      return null;
+    }
+    return data;
+  },
+
   // ============================================================
   // UTILS
   // ============================================================
