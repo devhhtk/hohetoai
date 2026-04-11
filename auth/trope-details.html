@@ -51,14 +51,6 @@
                     </div>
                 </div>
 
-                <!-- Trending Community Cards for this Trope -->
-                <div class="grid-section" id="trendingTropeSection">
-                    <h3 class="grid-section__title">Community Trending Cards</h3>
-                    <div class="cards-grid" id="trendingTropeGrid">
-                        <!-- Populated via JS -->
-                    </div>
-                </div>
-
                 <!-- Header & Filters -->
                 <div class="trope-content-header">
                     <h2 class="trope-content-title" id="pageTitle">Collections of Trope</h2>
@@ -176,28 +168,6 @@
                 }
 
                 renderGrids(allCreatures);
-                loadTrendingTropeCards();
-            };
-
-            const loadTrendingTropeCards = async () => {
-                const trendingGrid = document.getElementById('trendingTropeGrid');
-                if (!trendingGrid || !window.AumageDB) return;
-
-                const trending = await window.AumageDB.getTrendingCardsByTrope(tropeKey, 5);
-                if (trending.length === 0) {
-                    document.getElementById('trendingTropeSection').style.display = 'none';
-                    return;
-                }
-
-                trendingGrid.innerHTML = trending.map(c => `
-                    <a href="../c/${c.share_slug}" class="creature-card-item">
-                        <img src="${c.card_image_url || c.card_url || c.image_url}" alt="${c.creature_name || 'Card'}">
-                        <div class="creature-card-item__info">
-                            <b>${c.creature_name || 'Unnamed'}</b><br>
-                            ${c.serial_number || 'Official Card'}
-                        </div>
-                    </a>
-                `).join('');
             };
 
             const renderGrids = (creatures) => {
@@ -214,26 +184,32 @@
                     return;
                 }
 
+                // --- 1. Filter for Cards (Those with generated schematics) ---
+                const specializedCards = creatures.filter(c => c.card_image_url || c.card_url);
+                if (specializedCards.length > 0) {
+                    specializedCards.forEach(c => {
+                        const cardItem = document.createElement('div');
+                        cardItem.className = 'creature-card-item';
+                        cardItem.innerHTML = `
+                            <img src="${c.card_image_url || c.card_url}" alt="${c.creature_name || 'Card'}">
+                            <div class="creature-card-item__info">
+                                <b>${c.creature_name || 'Unnamed Creature'}</b><br>
+                                ${c.serial_number || 'No Serial'}
+                            </div>
+                        `;
+                        cardItem.onclick = () => window.location.href = `created-creature.html?id=${c.id}`;
+                        cardsGrid.appendChild(cardItem);
+                    });
+                } else {
+                    cardsGrid.innerHTML = `<div class="empty-msg">No schematic cards generated for this trope yet.</div>`;
+                }
+
+                // --- 2. Populate Characters (All creatures in this category) ---
                 creatures.forEach(c => {
-                    const displayUrl = c.image_url || c.video_url || '../img/placeholder.png';
-
-                    // Create Card
-                    const cardItem = document.createElement('div');
-                    cardItem.className = 'creature-card-item';
-                    cardItem.innerHTML = `
-                        <img src="${displayUrl}" alt="${c.creature_name || 'Creature'}">
-                        <div class="creature-card-item__info">
-                            <b>${c.creature_name || 'Unnamed Creature'}</b><br>
-                            ${c.serial_number || 'No Serial'}
-                        </div>
-                    `;
-                    cardItem.onclick = () => window.location.href = `created-creature.html?id=${c.id}`;
-                    cardsGrid.appendChild(cardItem);
-
-                    // Create Character Thumb
+                    const creatureUrl = c.image_url || c.video_url || '../img/placeholder.png';
                     const charThumb = document.createElement('div');
                     charThumb.className = 'character-thumb';
-                    charThumb.innerHTML = `<img src="${displayUrl}" alt="${c.creature_name || 'Creature'}">`;
+                    charThumb.innerHTML = `<img src="${creatureUrl}" alt="${c.creature_name || 'Creature'}">`;
                     charThumb.onclick = () => window.location.href = `created-creature.html?id=${c.id}`;
                     charsGrid.appendChild(charThumb);
                 });
