@@ -662,6 +662,41 @@ const AumageDB = {
   },
 
   /**
+   * Get global leaderboard (users with most creatures).
+   */
+  async getLeaderboard(limit = 6) {
+    if (!this.supabase) return [];
+
+    try {
+      // 1. Get profiles with levels
+      const { data: profiles, error: profErr } = await this.supabase
+        .from('profiles')
+        .select('id, level, display_name')
+        .order('level', { ascending: false })
+        .limit(20); 
+
+      if (profErr) throw profErr;
+
+      const leaderboard = await Promise.all(profiles.map(async (p) => {
+        const { count, error } = await this.supabase
+          .from('creatures')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', p.id);
+        
+        return {
+          ...p,
+          creature_count: count || 0
+        };
+      }));
+
+      return leaderboard.sort((a, b) => b.creature_count - a.creature_count).slice(0, limit);
+    } catch (e) {
+      console.error('AumageDB.getLeaderboard error:', e);
+      return [];
+    }
+  },
+
+  /**
    * Fetch login streak status and rewards.
    */
   async getStreakStatus() {

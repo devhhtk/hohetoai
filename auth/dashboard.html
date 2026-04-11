@@ -29,110 +29,94 @@
                 <p class="welcome-subtitle">Turn sound, images, or video into creatures.</p>
             </div>
 
-            <!-- Who's This For? -->
-            <section class="dashboard-section">
-                <div class="section-header">
-                    <h3 class="section-title">Who's This For?</h3>
-                </div>
-                <div class="categories-grid">
-                    <!-- Standard (Default - All Ages) -->
-                    <div class="category-card">
-                        <div class="category-card__img" style="color: #08D2C1;">
-                            <img src="../img/dash_3.png" alt="Standard">
+            <!-- Top Grid Wrapper -->
+            <div class="dashboard-top-grid">
+                
+                <!-- Left Panel: Categories & Achievements -->
+                <div class="top-left-panel">
+                    <!-- Who's This For? -->
+                    <section class="dashboard-section" style="margin-bottom: 0;">
+                        <div class="section-header">
+                            <h3 class="section-title">Who's This For?</h3>
                         </div>
-                        <div class="category-card__info">
-                            <span class="category-card__title">Standard</span>
-                            <span class="category-card__desc">Default - All Ages</span>
+                        <div class="categories-grid">
+                            <div class="category-card" style="flex: 1;">
+                                <div class="category-card__img" style="color: #08D2C1;">
+                                    <img src="../img/dash_3.png" alt="Standard">
+                                </div>
+                                <div class="category-card__info">
+                                    <span class="category-card__title">Standard</span>
+                                    <span class="category-card__desc">Default - All Ages</span>
+                                </div>
+                            </div>
+                            <div class="category-card" style="flex: 1;">
+                                <div class="category-card__img" style="color: #60a5fa;">
+                                    <img src="../img/dash_1.png" alt="Kids">
+                                </div>
+                                <div class="category-card__info">
+                                    <span class="category-card__title">Young Explorers</span>
+                                    <span class="category-card__desc">Age 5-12, Friendly & Cute</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <!-- Tween (Age 9-12, Fun Names) -->
-                    <!-- <div class="category-card">
-                        <div class="category-card__img" style="color: #4ade80;">
-                            <img src="../img/dash_2.png" alt="Tween">
-                        </div>
-                        <div class="category-card__info">
-                            <span class="category-card__title">Tween</span>
-                            <span class="category-card__desc">Age 9-12, Fun Names</span>
-                        </div>
-                    </div> -->
-                    <!-- Kids (Age 5-8, Friendly & Cute) -->
-                    <div class="category-card">
-                        <div class="category-card__img" style="color: #60a5fa;">
-                            <img src="../img/dash_1.png" alt="Kids">
-                        </div>
-                        <div class="category-card__info">
-                            <span class="category-card__title">Young Explorers</span>
-                            <span class="category-card__desc">Age 5-12, Friendly & Cute</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                    </section>
 
-            <!-- Achievements -->
-            <section class="dashboard-section">
-                <div class="section-header">
-                    <h3 class="section-title">My Achievements</h3>
+                    <!-- Achievements -->
+                    <section class="dashboard-section" style="margin-bottom: 0;">
+                        <div class="section-header">
+                            <h3 class="section-title">My Achievements</h3>
+                        </div>
+                        <div class="achievements-grid" id="achievements-grid">
+                            <div class="achievement-card" id="ach-pioneer">
+                                <div class="achievement-status">LOCKED</div>
+                                <div class="achievement-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                                </div>
+                                <span class="achievement-title">Pioneer</span>
+                                <span class="achievement-desc">Created first creature.</span>
+                            </div>
+                            <div class="achievement-card" id="ach-elite">
+                                <div class="achievement-status">LOCKED</div>
+                                <div class="achievement-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                </div>
+                                <span class="achievement-title">Elite</span>
+                                <span class="achievement-desc">Unlocked Rare+.</span>
+                            </div>
+                            <div class="achievement-card" id="ach-ascended">
+                                <div class="achievement-status">LOCKED</div>
+                                <div class="achievement-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                                </div>
+                                <span class="achievement-title">Ascended</span>
+                                <span class="achievement-desc">Reached Lv. 2.</span>
+                            </div>
+                            <div class="achievement-card" id="ach-loyal">
+                                <div class="achievement-status">LOCKED</div>
+                                <div class="achievement-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+                                </div>
+                                <span class="achievement-title">Loyal</span>
+                                <span class="achievement-desc">Login streak.</span>
+                            </div>
+                        </div>
+                    </section>
                 </div>
-                <div class="achievements-grid" id="achievements-grid">
-                    <!-- Pioneer Achievement -->
-                    <div class="achievement-card" id="ach-pioneer">
-                        <div class="achievement-status">LOCKED</div>
-                        <div class="achievement-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="12" y1="8" x2="12" y2="16"></line>
-                                <line x1="8" y1="12" x2="16" y2="12"></line>
-                            </svg>
-                        </div>
-                        <span class="achievement-title">Pioneer</span>
-                        <span class="achievement-desc">Created your first creature.</span>
-                    </div>
 
-                    <!-- Elite Summoner Achievement -->
-                    <div class="achievement-card" id="ach-elite">
-                        <div class="achievement-status">LOCKED</div>
-                        <div class="achievement-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <polygon
-                                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-                                </polygon>
-                            </svg>
+                <!-- Right Panel: Leaderboard -->
+                <aside class="top-right-panel">
+                    <div class="leaderboard-container">
+                        <div class="leaderboard-header">
+                            <h3 class="section-title">Global Leaderboard</h3>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
                         </div>
-                        <span class="achievement-title">Elite Summoner</span>
-                        <span class="achievement-desc">Unlocked a Rare or higher creature.</span>
-                    </div>
-
-                    <!-- Ascended Achievement -->
-                    <div class="achievement-card" id="ach-ascended">
-                        <div class="achievement-status">LOCKED</div>
-                        <div class="achievement-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <polyline points="18 15 12 9 6 15"></polyline>
-                            </svg>
+                        <div class="leaderboard-list" id="leaderboardList">
+                            <!-- Populated via JS -->
+                            <div class="streak-loading"></div>
                         </div>
-                        <span class="achievement-title">Ascended</span>
-                        <span class="achievement-desc">Reached Level 2.</span>
                     </div>
-
-                    <!-- Loyal Caller Achievement -->
-                    <div class="achievement-card" id="ach-loyal">
-                        <div class="achievement-status">LOCKED</div>
-                        <div class="achievement-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path
-                                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z">
-                                </path>
-                            </svg>
-                        </div>
-                        <span class="achievement-title">Loyal Caller</span>
-                        <span class="achievement-desc">Started a login streak.</span>
-                    </div>
-                </div>
-            </section>
+                </aside>
+            </div>
 
             <!-- Trending Creatures -->
             <section class="dashboard-section">
@@ -310,10 +294,39 @@
                 }
             }
 
+            // --- Load Leaderboard ---
+            async function loadLeaderboard() {
+                const list = document.getElementById('leaderboardList');
+                if (!list || !window.AumageDB) return;
+
+                const leaderboard = await window.AumageDB.getLeaderboard(6);
+                if (leaderboard && leaderboard.length > 0) {
+                    list.innerHTML = leaderboard.map((user, index) => `
+                        <div class="leaderboard-item">
+                            <div class="item-rank">${index + 1}</div>
+                            <div class="item-avatar">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}" alt="avatar">
+                            </div>
+                            <div class="item-info">
+                                <span class="item-name">${user.display_name || user.id.substring(0, 8)}</span>
+                                <span class="item-level">Level ${user.level || 1}</span>
+                            </div>
+                            <div class="item-count">
+                                <span class="count-val">${user.creature_count}</span>
+                                <span class="count-label">Cards</span>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    list.innerHTML = '<div class="empty-msg">No legendaries yet.</div>';
+                }
+            }
+
             // Run initial load
             loadAchievements();
             loadPopularCreatures();
             loadTrendingCards();
+            loadLeaderboard();
         });
     </script>
 </body>

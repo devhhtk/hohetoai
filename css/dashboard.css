@@ -1596,3 +1596,138 @@ body.light-mode .trope-card:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Dashboard Top Grid ── */
+.dashboard-top-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 32px;
+  margin-bottom: 40px;
+}
+
+.top-left-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Leaderboard */
+.leaderboard-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.leaderboard-header {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.leaderboard-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.item-rank {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.leaderboard-item:nth-child(1) .item-rank {
+  background: #FFD700;
+  color: #000;
+}
+.leaderboard-item:nth-child(2) .item-rank {
+  background: #C0C0C0;
+  color: #000;
+}
+.leaderboard-item:nth-child(3) .item-rank {
+  background: #CD7F32;
+  color: #000;
+}
+
+.item-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #1e293b;
+  overflow: hidden;
+}
+
+.item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-level {
+  font-size: 10px;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.item-count {
+  text-align: right;
+}
+
+.count-val {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Exo 2', sans-serif;
+}
+
+.count-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-top-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .leaderboard-container {
+    height: auto;
+  }
+}
