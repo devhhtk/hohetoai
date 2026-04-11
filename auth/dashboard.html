@@ -289,7 +289,7 @@
 
                     if (validCreatures.length > 0) {
                         popularGrid.innerHTML = validCreatures.map(c => `
-                            <a href="../c/${c.share_slug}" class="creature-card--rounded">
+                            <a href="creature-details.html?s=${c.share_slug}" class="creature-card--rounded">
                                 <img src="${c.image_url}" alt="${c.creature_name || 'Generated Creature'}" title="${c.creature_name || 'Creature'}">
                             </a>
                         `).join('');
@@ -305,7 +305,7 @@
                 const creatures = await window.AumageDB.getTrendingCards(5);
                 if (creatures && creatures.length > 0) {
                     grid.innerHTML = creatures.map(c => `
-                        <a href="../c/${c.share_slug}" class="creature-card--tall">
+                        <a href="creature-details.html?s=${c.share_slug}" class="creature-card--tall">
                             <img src="${c.card_image_url || c.card_url}" alt="${c.creature_name || 'Generated Card'}" title="${c.creature_name || 'Card'}">
                         </a>
                     `).join('');

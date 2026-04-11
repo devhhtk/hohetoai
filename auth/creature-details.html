@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creature Details — HoHeTo Kai</title>
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/creature-details.css">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+</head>
+
+<body class="dashboard-body">
+
+    <!-- ══ Sidebar Placeholder ══ -->
+    <div id="comp-sidebar"></div>
+
+    <!-- ══ Main Content Area ══ -->
+    <main class="main-area">
+
+        <!-- Top Navigation Bar Placeholder -->
+        <div id="comp-header"></div>
+
+        <!-- Dynamic Content View -->
+        <div class="content-view">
+            
+            <div id="loading-state" style="text-align: center; padding: 100px 0;">
+                <div class="loader-spinner"></div>
+                <p style="color: var(--text-muted); margin-top: 20px;">Retrieving biological archives...</p>
+            </div>
+
+            <div id="error-state" style="display: none; text-align: center; padding: 100px 20px;">
+                <h2 style="color: #ff4444; margin-bottom: 10px;">Biological Fragment Lost</h2>
+                <p style="color: var(--text-muted); margin-bottom: 30px;">We couldn't find the creature record you're looking for.</p>
+                <a href="dashboard.html" class="btn-primary-solid">Return to Dashboard</a>
+            </div>
+
+            <div id="details-view" class="details-container" style="display: none;">
+                <!-- Left Column: Visuals -->
+                <div class="details-visuals">
+                    <div class="creature-hero-card">
+                        <img id="creature-img" src="../img/placeholder.png" alt="Creature">
+                    </div>
+                    <div class="creature-actions">
+                        <button class="btn-secondary-outline" id="downloadImageBtn" style="flex: 1;">Save Image</button>
+                        <button class="btn-primary-solid" id="shareBtn" style="flex: 1;">Share Link</button>
+                    </div>
+                </div>
+
+                <!-- Right Column: Info -->
+                <div class="details-info">
+                    <div class="creature-header">
+                        <h1 class="creature-name" id="creature-name">---</h1>
+                        <div class="creature-meta">
+                            <span class="rarity-badge" id="creature-rarity">COMMON</span>
+                            <span class="serial-tag" id="creature-serial">SN-000000</span>
+                        </div>
+                    </div>
+
+                    <!-- Flavor Text -->
+                    <div class="info-section">
+                        <span class="section-label">Lore & Description</span>
+                        <p class="flavor-text" id="creature-flavor">---</p>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="info-section">
+                        <span class="section-label">Attributes</span>
+                        <div class="stats-grid" id="stats-grid">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Taxonomy / Tags -->
+                    <div class="info-section">
+                        <span class="section-label">Taxonomy & Origin</span>
+                        <div class="tags-flex" id="tags-flex">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Placeholder -->
+            <div id="comp-footer"></div>
+
+        </div>
+    </main>
+
+    <!-- Supabase & Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/db.js"></script>
+    <script src="../js/components.js"></script>
+    <script src="../js/theme.js"></script>
+    <script src="../js/creature-details.js"></script>
+</body>
+
+</html>

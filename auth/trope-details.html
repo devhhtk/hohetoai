@@ -197,7 +197,7 @@
                                 ${c.serial_number || 'No Serial'}
                             </div>
                         `;
-                        cardItem.onclick = () => window.location.href = `created-creature.html?id=${c.id}`;
+                        cardItem.onclick = () => window.location.href = `creature-details.html?id=${c.id}`;
                         cardsGrid.appendChild(cardItem);
                     });
                 } else {
@@ -210,7 +210,7 @@
                     const charThumb = document.createElement('div');
                     charThumb.className = 'character-thumb';
                     charThumb.innerHTML = `<img src="${creatureUrl}" alt="${c.creature_name || 'Creature'}">`;
-                    charThumb.onclick = () => window.location.href = `created-creature.html?id=${c.id}`;
+                    charThumb.onclick = () => window.location.href = `creature-details.html?id=${c.id}`;
                     charsGrid.appendChild(charThumb);
                 });
             };
