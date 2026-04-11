@@ -225,23 +225,41 @@
                 const ctx = canvas.getContext('2d');
                                 ctx.drawImage(renderedCanvas, 0, 0);
                 
-                // 3.1 NEW: Save schematic card to bucket & print link
+                // 3.1 NEW: Save schematic card to bucket (via API) & print link
                 console.log('[Card] Preparing schematic upload...');
                 renderedCanvas.toBlob(async (blob) => {
-                    if (blob && window.AumageDB) {
+                    if (blob) {
                         try {
-                            const cardUrl = await window.AumageDB.uploadCardImage(blob, `card-${creatureId}`);
-                            if (cardUrl) {
+                            const formData = new FormData();
+                            formData.append('card', blob, `card-${creatureId}.png`);
+                            formData.append('creature_id', creatureId);
+                            formData.append('creature_name', cardData.name || '');
+
+                            const response = await fetch(`${CONFIG.API_BASE_URL}/api/save-card`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            const result = await response.json();
+                            if (response.ok && result.card_url) {
                                 console.log('[Card] Schematic successfully saved to bucket!');
-                                console.log('[Card] Public URL:', cardUrl);
+                                console.log('[Card] Public URL:', result.card_url);
+                                
+                                // Update database record with the new card URL
+                                if (window.AumageDB) {
+                                    await window.AumageDB.updateCreature(creatureId, { 
+                                        card_url: result.card_url 
+                                    });
+                                    console.log('[Card] Database record updated.');
+                                }
                             } else {
-                                console.warn('[Card] Schematic upload returned null URL');
+                                console.warn('[Card] Schematic upload failed:', result.error || 'Unknown error');
                             }
                         } catch (err) {
-                            console.error('[Card] Schematic upload failed:', err);
+                            console.error('[Card] Schematic upload error:', err);
                         }
                     } else {
-                        console.error('[Card] Blob generation failed or AumageDB not initialized');
+                        console.error('[Card] Blob generation failed');
                     }
                 }, 'image/png');
 
