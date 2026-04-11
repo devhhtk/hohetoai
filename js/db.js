@@ -570,6 +570,28 @@ const AumageDB = {
   },
 
   /**
+   * Get creatures of a specific trope that have generated schematic cards.
+   */
+  async getTrendingCardsByTrope(tropeKey, limit = 8) {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('creatures')
+      .select('*')
+      .neq('card_image_url', '')
+      .not('card_image_url', 'is', null)
+      .eq('is_public', true)
+      .ilike('trope_class', tropeKey)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error('AumageDB getTrendingCardsByTrope error:', error);
+      return [];
+    }
+    return data || [];
+  },
+
+  /**
    * Get popular creatures (for now, fetching a mixed sample).
    */
   async getPopularCreatures(limit = 20) {

@@ -51,6 +51,14 @@
                     </div>
                 </div>
 
+                <!-- Trending Community Cards for this Trope -->
+                <div class="grid-section" id="trendingTropeSection">
+                    <h3 class="grid-section__title">Community Trending Cards</h3>
+                    <div class="cards-grid" id="trendingTropeGrid">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+
                 <!-- Header & Filters -->
                 <div class="trope-content-header">
                     <h2 class="trope-content-title" id="pageTitle">Collections of Trope</h2>
@@ -168,6 +176,28 @@
                 }
 
                 renderGrids(allCreatures);
+                loadTrendingTropeCards();
+            };
+
+            const loadTrendingTropeCards = async () => {
+                const trendingGrid = document.getElementById('trendingTropeGrid');
+                if (!trendingGrid || !window.AumageDB) return;
+
+                const trending = await window.AumageDB.getTrendingCardsByTrope(tropeKey, 5);
+                if (trending.length === 0) {
+                    document.getElementById('trendingTropeSection').style.display = 'none';
+                    return;
+                }
+
+                trendingGrid.innerHTML = trending.map(c => `
+                    <a href="../c/${c.share_slug}" class="creature-card-item">
+                        <img src="${c.card_image_url || c.card_url || c.image_url}" alt="${c.creature_name || 'Card'}">
+                        <div class="creature-card-item__info">
+                            <b>${c.creature_name || 'Unnamed'}</b><br>
+                            ${c.serial_number || 'Official Card'}
+                        </div>
+                    </a>
+                `).join('');
             };
 
             const renderGrids = (creatures) => {
