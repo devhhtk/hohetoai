@@ -140,26 +140,26 @@
                     <h3 class="section-title">Our Trending Creatures Cards</h3>
                     <a href="#" class="btn-see-all">See all</a>
                 </div>
-                <div class="creatures-grid">
+                <div id="trending-cards-grid" class="creatures-grid">
                     <!-- Glimmerwisp -->
                     <div class="creature-card--tall">
-                        <img src="../img/card1.png" alt="Glimmerwisp">
+                        <img src="../img/placeholder.png" alt="Glimmerwisp">
                     </div>
                     <!-- Flamecurl -->
                     <div class="creature-card--tall">
-                        <img src="../img/card5.png" alt="Flamecurl">
+                        <img src="../img/placeholder.png" alt="Flamecurl">
                     </div>
                     <!-- Gloomseraph -->
                     <div class="creature-card--tall">
-                        <img src="../img/card4.png" alt="Gloomseraph">
+                        <img src="../img/placeholder.png" alt="Gloomseraph">
                     </div>
                     <!-- Gloomfizz -->
                     <div class="creature-card--tall">
-                        <img src="../img/card3.png" alt="Gloomfizz">
+                        <img src="../img/placeholder.png" alt="Gloomfizz">
                     </div>
                     <!-- Frostclaw -->
                     <div class="creature-card--tall">
-                        <img src="../img/card2.png" alt="Frostclaw">
+                        <img src="../img/placeholder.png" alt="Frostclaw">
                     </div>
                 </div>
             </section>
@@ -295,9 +295,25 @@
                 }
             }
 
+            // --- Load Trending Cards ---
+            async function loadTrendingCards() {
+                const grid = document.getElementById('trending-cards-grid');
+                if (!grid || !window.AumageDB) return;
+
+                const creatures = await window.AumageDB.getTrendingCards(5);
+                if (creatures && creatures.length > 0) {
+                    grid.innerHTML = creatures.map(c => `
+                        <a href="../c/${c.share_slug}" class="creature-card--tall">
+                            <img src="${c.card_image_url || c.card_url}" alt="${c.creature_name || 'Generated Card'}" title="${c.creature_name || 'Card'}">
+                        </a>
+                    `).join('');
+                }
+            }
+
             // Run initial load
             loadAchievements();
             loadPopularCreatures();
+            loadTrendingCards();
         });
     </script>
 </body>

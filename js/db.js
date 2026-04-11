@@ -548,6 +548,28 @@ const AumageDB = {
   },
 
   /**
+   * Get creatures that have generated schematic cards.
+   */
+  async getTrendingCards(limit = 8) {
+    if (!this.supabase) return [];
+    // We check for card_image_url presence
+    const { data, error } = await this.supabase
+      .from('creatures')
+      .select('*')
+      .neq('card_image_url', '')
+      .not('card_image_url', 'is', null)
+      .eq('is_public', true)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error('AumageDB getTrendingCards error:', error);
+      return [];
+    }
+    return data || [];
+  },
+
+  /**
    * Get popular creatures (for now, fetching a mixed sample).
    */
   async getPopularCreatures(limit = 20) {
