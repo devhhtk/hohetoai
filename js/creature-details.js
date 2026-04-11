@@ -146,7 +146,10 @@ function renderCreature(c) {
     const shareBtn = document.getElementById('shareBtn');
     if (shareBtn) {
         shareBtn.onclick = () => {
-            const url = window.location.origin + '/c/' + (c.share_slug || c.id);
+            const slug = c.share_slug;
+            const id = c.id;
+            const param = slug ? `s=${slug}` : `id=${id}`;
+            const url = `${window.location.origin}/auth/creature-details.html?${param}`;
             navigator.clipboard.writeText(url).then(() => {
                 const originalText = shareBtn.textContent;
                 shareBtn.textContent = 'Link Copied!';

@@ -242,10 +242,12 @@
 
                     // Copy functionality
                     const shareBtn = charThumb.querySelector('.share-card-btn');
-                    shareBtn.onclick = (e) => {
-                        e.stopPropagation();
-                        copyShareLink(c, shareBtn);
-                    };
+                    if (shareBtn) {
+                        shareBtn.onclick = (e) => {
+                            e.stopPropagation();
+                            copyShareLink(c, shareBtn);
+                        };
+                    }
 
                     charThumb.onclick = () => window.location.href = `creature-details.html?id=${c.id}`;
                     charsGrid.appendChild(charThumb);
@@ -253,8 +255,10 @@
             };
 
             const copyShareLink = (creature, btn) => {
-                const slug = creature.share_slug || creature.id;
-                const path = window.location.origin + '/c/' + slug;
+                const slug = creature.share_slug;
+                const id = creature.id;
+                const param = slug ? `s=${slug}` : `id=${id}`;
+                const path = `${window.location.origin}/auth/creature-details.html?${param}`;
                 
                 navigator.clipboard.writeText(path).then(() => {
                     const originalInner = btn.innerHTML;
