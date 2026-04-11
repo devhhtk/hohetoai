@@ -184,14 +184,14 @@
                     return;
                 }
 
-                // --- 1. Filter for Cards (Those with generated schematics) ---
-                const specializedCards = creatures.filter(c => c.card_image_url || c.card_url);
+                // --- 1. Filter for Cards (Those with generated schematics via the new card_image_url field) ---
+                const specializedCards = creatures.filter(c => c.card_image_url && c.card_image_url.trim() !== '');
                 if (specializedCards.length > 0) {
                     specializedCards.forEach(c => {
                         const cardItem = document.createElement('div');
                         cardItem.className = 'creature-card-item';
                         cardItem.innerHTML = `
-                            <img src="${c.card_image_url || c.card_url}" alt="${c.creature_name || 'Card'}">
+                            <img src="${c.card_image_url}" alt="${c.creature_name || 'Card'}">
                             <div class="creature-card-item__info">
                                 <b>${c.creature_name || 'Unnamed Creature'}</b><br>
                                 ${c.serial_number || 'No Serial'}
