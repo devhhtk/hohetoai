@@ -225,13 +225,25 @@
                 const ctx = canvas.getContext('2d');
                                 ctx.drawImage(renderedCanvas, 0, 0);
                 
-                // 3.1 NEW: Automatically save schematic card to bucket & update database
-                console.log('[Card] Triggering schematic upload...');
-                AumageCard.saveToBucket(cardData, CONFIG.API_BASE_URL).then(res => {
-                    console.log('[Card] Schematic successfully saved to:', res.card_url);
-                }).catch(err => {
-                    console.warn('[Card] Automatic schematic upload failed:', err);
-                });
+                // 3.1 NEW: Save schematic card to bucket & print link
+                console.log('[Card] Preparing schematic upload...');
+                renderedCanvas.toBlob(async (blob) => {
+                    if (blob && window.AumageDB) {
+                        try {
+                            const cardUrl = await window.AumageDB.uploadCardImage(blob, `card-${creatureId}`);
+                            if (cardUrl) {
+                                console.log('[Card] Schematic successfully saved to bucket!');
+                                console.log('[Card] Public URL:', cardUrl);
+                            } else {
+                                console.warn('[Card] Schematic upload returned null URL');
+                            }
+                        } catch (err) {
+                            console.error('[Card] Schematic upload failed:', err);
+                        }
+                    } else {
+                        console.error('[Card] Blob generation failed or AumageDB not initialized');
+                    }
+                }, 'image/png');
 
                 // 4. Hide Loading Overlay
                 document.getElementById('loadingOverlay').style.display = 'none';
