@@ -159,13 +159,13 @@ const AumageDB = {
 
     const { profile, target_level, base_xp } = data;
 
-    const levelEl = document.querySelector('.xp-level');
-    const valueEl = document.querySelector('.xp-value');
-    const progressFill = document.querySelector('.xp-progress-fill');
+    const levelEls = document.querySelectorAll('.xp-level');
+    const valueEls = document.querySelectorAll('.xp-value');
+    const progressFills = document.querySelectorAll('.xp-progress-fill');
 
-    if (levelEl) levelEl.textContent = `Lv. ${profile.level}`;
+    levelEls.forEach(el => el.textContent = `Lv. ${profile.level}`);
 
-    if (valueEl || progressFill) {
+    if (valueEls.length > 0 || progressFills.length > 0) {
       const currentXP = profile.total_xp;
       const requiredXP = target_level.xp_required;
       const thresholdXP = base_xp;
@@ -175,21 +175,34 @@ const AumageDB = {
       const rangeInLevel = requiredXP - thresholdXP;
       const progressPct = Math.min(100, Math.max(0, (xpInLevel / rangeInLevel) * 100));
 
-      if (valueEl) {
-        valueEl.textContent = `${currentXP.toLocaleString()} / ${requiredXP.toLocaleString()} XP`;
-      }
-      if (progressFill) {
-        progressFill.style.width = `${progressPct}%`;
-      }
+      valueEls.forEach(el => {
+        el.textContent = `${currentXP.toLocaleString()} / ${requiredXP.toLocaleString()} XP`;
+      });
+      progressFills.forEach(el => {
+        el.style.width = `${progressPct}%`;
+      });
     }
 
     // Also update profile card if it exists
     const profName = document.getElementById('prof-name');
+    const profUID = document.getElementById('prof-uid');
+    const profAvatar = document.getElementById('prof-avatar');
     const greetName = document.getElementById('dash-greeting-name');
-    const name = this.user.email?.split('@')[0] || 'Storyteller';
+    
+    const name = profile.display_name || this.user.email?.split('@')[0] || 'Storyteller';
+    const uidTruncated = this.user.id.substring(0, 12).toUpperCase() + '...';
 
     if (profName) profName.textContent = name;
+    if (profUID) profUID.textContent = `UID: ${uidTruncated}`;
     if (greetName) greetName.textContent = name;
+    
+    if (profAvatar) {
+      if (profile.avatar_url) {
+        profAvatar.src = profile.avatar_url;
+      } else {
+        profAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=08D2C1&color=fff&size=128`;
+      }
+    }
   },
 
   // ============================================================
@@ -714,17 +727,17 @@ const AumageDB = {
     if (!this.supabase) return [];
 
     try {
-      // 1. Get profiles with levels
+      // 1. Get profiles with levels and XP
       const { data: profiles, error: profErr } = await this.supabase
         .from('profiles')
-        .select('id, level, display_name')
-        .order('level', { ascending: false })
-        .limit(20); 
+        .select('id, level, display_name, total_xp')
+        .order('total_xp', { ascending: false })
+        .limit(40); // Fetch more to allow count-based sorting if preferred
 
       if (profErr) throw profErr;
 
       const leaderboard = await Promise.all(profiles.map(async (p) => {
-        const { count, error } = await this.supabase
+        const { count } = await this.supabase
           .from('creatures')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', p.id)
@@ -737,7 +750,15 @@ const AumageDB = {
         };
       }));
 
-      return leaderboard.sort((a, b) => b.creature_count - a.creature_count).slice(0, limit);
+      // Sort by creature count primarily, then XP
+      return leaderboard
+        .sort((a, b) => {
+          if (b.creature_count !== a.creature_count) {
+            return b.creature_count - a.creature_count;
+          }
+          return (b.total_xp || 0) - (a.total_xp || 0);
+        })
+        .slice(0, limit);
     } catch (e) {
       console.error('AumageDB.getLeaderboard error:', e);
       return [];

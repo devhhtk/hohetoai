@@ -39,8 +39,9 @@
                             </div>
                             <div class="leaderboard-table-header">
                                 <span class="col-rank">RANK</span>
-                                <span class="col-user">USERNAME</span>
-                                <span class="col-creatures">CARDS</span>
+                                <span class="col-user">STORYTELLER</span>
+                                <span class="col-progress">PROGRESS</span>
+                                <span class="col-cards">CARDS</span>
                             </div>
                             <div class="leaderboard-list" id="leaderboardList">
                                 <!-- Populated via JS -->
@@ -159,32 +160,47 @@
 
                     list.innerHTML = leaderboard.map((user, index) => {
                         const displayName = user.display_name || user.id.substring(0, 8);
+                        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random&color=fff&size=128`;
+
+                        // Progress calculation (Mock or based on profile data if available)
+                        // For leaderboard, we show total XP as the major value
+                        const totalXP = user.total_xp || 0;
+                        const level = user.level || 1;
+
+                        // Simple placeholder for progress bar width
+                        // Ideally we'd fetch actual level thresholds, but for 'structure' we show the bar
+                        const progressPct = 65;
+
                         return `
                         <div class="leaderboard-item ${index === 0 ? 'leaderboard-item--active' : ''}" 
                              data-user-id="${user.id}" 
                              data-user-name="${displayName}">
+                            
                             <div class="item-rank">${index + 1}</div>
-                            <div class="item-avatar">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}" alt="avatar">
-                            </div>
-                            <div class="item-info">
+                            
+                            <div class="item-profile">
+                                <div class="item-avatar">
+                                    <img src="${avatarUrl}" alt="avatar">
+                                </div>
                                 <div class="user-meta">
                                     <span class="item-name">${displayName}</span>
-                                    <span class="item-level">Level ${user.level || 1}</span>
-                                </div>
-                                <div class="user-badges">
-                                    ${index < 3 ? '<span class="badge-icon">🎖️</span>' : ''}
-                                    <span class="badge-icon">🔥</span>
-                                    <span class="badge-icon">⚡</span>
+                                    <span class="item-level">Level ${level}</span>
                                 </div>
                             </div>
-                                <div class="item-count">
-                                    <div class="count-with-icon">
-                                        <span class="count-icon">🎴</span>
-                                        <span class="count-val">${user.creature_count}</span>
-                                    </div>
-                                    <span class="count-label">Cards</span>
+                            
+                            <div class="item-progress">
+                                <span class="progress-label">${totalXP.toLocaleString()} XP</span>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" style="width: ${progressPct}%"></div>
                                 </div>
+                            </div>
+
+                            <div class="item-cards-stack">
+                                <div class="cards-icon">
+                                    <img src="../img/dragon.png" alt="cards">
+                                    <span class="cards-val">${user.creature_count}</span>
+                                </div>
+                            </div>
                         </div>
                     `;
                     }).join('');
@@ -235,12 +251,41 @@
                     if (window.AumageDB.user) {
                         const currentUserId = window.AumageDB.user.id;
                         const userIndex = leaderboard.findIndex(u => u.id === currentUserId);
-                        
+
                         // Get user profile for level and display name
-                        const profileData = await window.AumageDB.getUserProfile();
-                        const profile = profileData?.profile || {};
+                        // 1. Check if user is already in the leaderboard array
+                        const inLeaderboard = userIndex !== -1 ? leaderboard[userIndex] : null;
+
+                        let profile = {};
+                        let profileData = null;
+
+                        if (inLeaderboard) {
+                            profile = {
+                                level: inLeaderboard.level,
+                                total_xp: inLeaderboard.total_xp,
+                                display_name: inLeaderboard.display_name,
+                                avatar_url: inLeaderboard.avatar_url
+                            };
+                        } else {
+                            // 2. Fallback to live profile fetch
+                            profileData = await window.AumageDB.getUserProfile();
+                            profile = profileData?.profile || {};
+                        }
+
+                        const targetLevel = profileData?.target_level || { xp_required: (profile.level || 1) * 1000 };
+                        const baseXP = profileData?.base_xp || 0;
+
+                        // Calculate actual progress for your bar
+                        const currentXP = profile.total_xp || 0;
+                        const reqXP = targetLevel.xp_required || 1000;
+                        const threshXP = baseXP;
+                        const xpInLevel = currentXP - threshXP;
+                        const rangeInLevel = reqXP - threshXP;
+                        const myProgressPct = Math.min(100, Math.max(0, (xpInLevel / rangeInLevel) * 100));
+
                         const displayName = profile.display_name || window.AumageDB.user.email?.split('@')[0] || 'You';
-                        
+                        const avatarUrl = profile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=08D2C1&color=fff&size=128`;
+
                         // Get user creature count (since leaderboard only counts cards, let's be consistent)
                         // Actually leaderboard counts creatures with cards.
                         const { count: cardCount } = await window.AumageDB.supabase
@@ -254,27 +299,31 @@
                         if (yourRankEl) {
                             yourRankEl.innerHTML = `
                                 <div class="leaderboard-footer">
-                                    <div class="leaderboard-item" style="margin-bottom: 0; background: transparent; border: none; padding: 0;">
+                                    <div class="leaderboard-item your-rank-item" style="margin-bottom: 0;">
                                         <div class="item-rank">${userIndex !== -1 ? userIndex + 1 : '>20'}</div>
-                                        <div class="item-avatar">
-                                            <img src="${profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUserId}`}" alt="avatar">
-                                        </div>
-                                        <div class="item-info">
+                                        
+                                        <div class="item-profile">
+                                            <div class="item-avatar">
+                                                <img src="${avatarUrl}" alt="avatar">
+                                            </div>
                                             <div class="user-meta">
                                                 <span class="item-name">${displayName} (You)</span>
                                                 <span class="item-level">Level ${profile.level || 1}</span>
                                             </div>
-                                            <div class="user-badges">
-                                                <span class="badge-icon">🔥</span>
-                                                <span class="badge-icon">⚡</span>
+                                        </div>
+                                        
+                                        <div class="item-progress">
+                                            <span class="progress-label">${(profile.total_xp || 0).toLocaleString()} XP</span>
+                                            <div class="progress-bar-container">
+                                                <div class="progress-bar-fill" style="width: ${myProgressPct}%"></div>
                                             </div>
                                         </div>
-                                        <div class="item-count">
-                                            <div class="count-with-icon">
-                                                <span class="count-icon">🎴</span>
-                                                <span class="count-val">${cardCount || 0}</span>
+
+                                        <div class="item-cards-stack">
+                                            <div class="cards-icon">
+                                                <span class="cards-val">${cardCount || 0}</span>
                                             </div>
-                                            <span class="count-label">Cards</span>
+                                            <span class="cards-label">CARDS</span>
                                         </div>
                                     </div>
                                 </div>
