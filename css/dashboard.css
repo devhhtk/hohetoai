@@ -1744,8 +1744,15 @@ body.light-mode .trope-card:hover {
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
 }
 
 .showcase-decor {
@@ -1823,9 +1830,19 @@ body.light-mode .trope-card:hover {
   border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-.col-rank { width: 28px; text-align: center; }
-.col-user { flex: 1; }
-.col-creatures { width: 90px; text-align: right; }
+.col-rank {
+  width: 28px;
+  text-align: center;
+}
+
+.col-user {
+  flex: 1;
+}
+
+.col-creatures {
+  width: 90px;
+  text-align: right;
+}
 
 .leaderboard-list {
   display: flex;
@@ -1851,7 +1868,6 @@ body.light-mode .trope-card:hover {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   margin-bottom: 4px;
   position: relative;
-  overflow: hidden;
 }
 
 .leaderboard-item::before {
@@ -1903,6 +1919,7 @@ body.light-mode .trope-card:hover {
   background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent);
   border-left: 3px solid #FFD700;
 }
+
 .leaderboard-item:nth-child(1) .item-rank {
   background: linear-gradient(135deg, #FFD700, #FFA500);
   color: #000;
@@ -1913,6 +1930,7 @@ body.light-mode .trope-card:hover {
   background: linear-gradient(90deg, rgba(192, 192, 192, 0.1), transparent);
   border-left: 3px solid #C0C0C0;
 }
+
 .leaderboard-item:nth-child(2) .item-rank {
   background: linear-gradient(135deg, #C0C0C0, #808080);
   color: #000;
@@ -1922,6 +1940,7 @@ body.light-mode .trope-card:hover {
   background: linear-gradient(90deg, rgba(205, 127, 50, 0.1), transparent);
   border-left: 3px solid #CD7F32;
 }
+
 .leaderboard-item:nth-child(3) .item-rank {
   background: linear-gradient(135deg, #CD7F32, #8B4513);
   color: #000;
@@ -2020,13 +2039,72 @@ body.light-mode .trope-card:hover {
   .leaderboard-wrapper {
     flex-direction: column;
   }
+
   .leaderboard-showcase {
     height: 400px;
   }
+
   .categories-grid {
-      grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
+
   .achievements-grid {
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+}
+
+/* Page-Specific Overrides for Leaderboard (No Main Scroll) */
+.page-leaderboard .content-view {
+  height: calc(100vh - var(--topbar-height));
+  overflow: hidden;
+  padding-bottom: 16px;
+}
+
+.page-leaderboard .dashboard-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin-bottom: 8px;
+  /* Compact */
+}
+
+.page-leaderboard .leaderboard-wrapper {
+  flex: 1;
+  min-height: 0;
+}
+
+.page-leaderboard .leaderboard-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.page-leaderboard .leaderboard-showcase {
+  flex: 0 0 450px;
+  /* Fixed width showcase */
+  height: auto;
+}
+
+.page-leaderboard .leaderboard-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.page-leaderboard .leaderboard-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+  /* Space for hidden/thin scrollbar */
+}
+
+/* For small screens, restore standard behavior if needed, but for now enforcing compact scroll */
+@media (max-width: 1024px) {
+  .page-leaderboard .content-view {
+    overflow-y: auto;
+    height: auto;
   }
 }
