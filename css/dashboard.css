@@ -803,7 +803,8 @@ body.dashboard-body {
 }
 
 .welcome-section {
-  margin-bottom: 32px;
+  margin-bottom: 40px;
+  text-align: center;
 }
 
 .welcome-header-flex {

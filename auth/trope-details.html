@@ -192,11 +192,28 @@
                         cardItem.className = 'creature-card-item';
                         cardItem.innerHTML = `
                             <img src="${c.card_image_url}" alt="${c.creature_name || 'Card'}">
+                            <button class="share-card-btn" title="Copy Share Link">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="18" cy="5" r="3"></circle>
+                                    <circle cx="6" cy="12" r="3"></circle>
+                                    <circle cx="18" cy="19" r="3"></circle>
+                                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                </svg>
+                            </button>
                             <div class="creature-card-item__info">
                                 <b>${c.creature_name || 'Unnamed Creature'}</b><br>
                                 ${c.serial_number || 'No Serial'}
                             </div>
                         `;
+                        
+                        // Copy functionality
+                        const shareBtn = cardItem.querySelector('.share-card-btn');
+                        shareBtn.onclick = (e) => {
+                            e.stopPropagation();
+                            copyShareLink(c, shareBtn);
+                        };
+
                         cardItem.onclick = () => window.location.href = `creature-details.html?id=${c.id}`;
                         cardsGrid.appendChild(cardItem);
                     });
@@ -208,10 +225,51 @@
                 creatures.forEach(c => {
                     const creatureUrl = c.image_url || c.video_url || '../img/placeholder.png';
                     const charThumb = document.createElement('div');
+                    charThumb.style.position = 'relative'; // Ensure button positioning works
                     charThumb.className = 'character-thumb';
-                    charThumb.innerHTML = `<img src="${creatureUrl}" alt="${c.creature_name || 'Creature'}">`;
+                    charThumb.innerHTML = `
+                        <img src="${creatureUrl}" alt="${c.creature_name || 'Creature'}">
+                        <button class="share-card-btn" title="Copy Share Link">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="18" cy="5" r="3"></circle>
+                                <circle cx="6" cy="12" r="3"></circle>
+                                <circle cx="18" cy="19" r="3"></circle>
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                            </svg>
+                        </button>
+                    `;
+
+                    // Copy functionality
+                    const shareBtn = charThumb.querySelector('.share-card-btn');
+                    shareBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        copyShareLink(c, shareBtn);
+                    };
+
                     charThumb.onclick = () => window.location.href = `creature-details.html?id=${c.id}`;
                     charsGrid.appendChild(charThumb);
+                });
+            };
+
+            const copyShareLink = (creature, btn) => {
+                const slug = creature.share_slug || creature.id;
+                const path = window.location.origin + '/c/' + slug;
+                
+                navigator.clipboard.writeText(path).then(() => {
+                    const originalInner = btn.innerHTML;
+                    btn.classList.add('copied');
+                    btn.innerHTML = `
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    `;
+                    setTimeout(() => {
+                        btn.classList.remove('copied');
+                        btn.innerHTML = originalInner;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Copy failed:', err);
                 });
             };
 

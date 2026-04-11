@@ -232,6 +232,44 @@
     opacity: 1;
 }
 
+/* Share Button on Hover */
+.share-card-btn {
+    position: absolute;
+    top: 10px;
+    right: -40px; /* Initially hidden to the right */
+    width: 32px;
+    height: 32px;
+    background: rgba(8, 210, 193, 0.9);
+    border: none;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #011616;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 5;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.share-card-btn:hover {
+    transform: scale(1.1);
+    background: #fff;
+}
+
+.creature-card-item:hover .share-card-btn,
+.character-thumb:hover .share-card-btn {
+    right: 10px; /* Slide in on hover */
+}
+
+.share-card-btn.copied {
+    background: #fff;
+}
+
+.share-card-btn.copied svg {
+    color: #000;
+}
+
 /* Characters Grid (Square Thumbnails) */
 .characters-grid {
     display: grid;
