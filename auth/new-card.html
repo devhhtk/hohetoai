@@ -230,6 +230,10 @@
                 renderedCanvas.toBlob(async (blob) => {
                     if (blob) {
                         try {
+                            // Get auth token if available
+                            const session = await window.AumageDB?.supabase?.auth.getSession();
+                            const token = session?.data?.session?.access_token;
+
                             const formData = new FormData();
                             formData.append('card', blob, `card-${creatureId}.png`);
                             formData.append('creature_id', creatureId);
@@ -237,6 +241,9 @@
 
                             const response = await fetch(`${CONFIG.API_BASE_URL}/api/save-card`, {
                                 method: 'POST',
+                                headers: {
+                                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                                },
                                 body: formData
                             });
                             

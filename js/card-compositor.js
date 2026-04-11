@@ -269,8 +269,18 @@ var AumageCard = {
       formData.append('creature_id', data.specimenId);
       formData.append('creature_name', data.name || '');
 
+      // Get auth token if available via AumageDB
+      let token = null;
+      if (window.AumageDB?.supabase) {
+        const session = await window.AumageDB.supabase.auth.getSession();
+        token = session?.data?.session?.access_token;
+      }
+
       const response = await fetch(`${apiBase}/api/save-card`, {
         method: 'POST',
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: formData
       });
 
