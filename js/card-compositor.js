@@ -264,8 +264,7 @@ var AumageCard = {
       const blob = await this.renderToBlob(data);
       if (!blob) throw new Error('Failed to generate card blob');
 
-      const filename = `card-${data.specimenId}`;
-      const cardUrl = await window.AumageDB?.uploadCardImage(blob, filename);
+      const cardUrl = await window.AumageDB?.uploadCardImage(blob, data.specimenId, data.name);
 
       if (!cardUrl) throw new Error('Upload failed');
 

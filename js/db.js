@@ -469,32 +469,44 @@ const AumageDB = {
   // ============================================================
 
   /**
-   * Upload final collectible card image to Supabase Storage.
+   * Upload final collectible card image to Backblaze B2 via Backend API.
    * Returns the public URL or null on failure.
    */
-  async uploadCardImage(blob, filename) {
+  async uploadCardImage(blob, creatureId, creatureName = '') {
     if (!this.supabase) return null;
 
-    // Use specific path matching the creature image pattern
-    const path = `creatures/${filename}.png`;
+    try {
+      const formData = new FormData();
+      formData.append('card', blob, `card-${creatureId}.png`);
+      formData.append('creature_id', creatureId);
+      formData.append('creature_name', creatureName);
 
-    const { error } = await this.supabase.storage
-      .from('aumage-cards')
-      .upload(path, blob, {
-        contentType: 'image/png',
-        upsert: true // Allow overwriting if user re-generates
+      // Get auth token if available via Supabase session
+      const session = await this.supabase.auth.getSession();
+      const token = session?.data?.session?.access_token;
+
+      const apiBase = window.CONFIG?.API_BASE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+
+      const response = await fetch(`${apiBase}/api/save-card`, {
+        method: 'POST',
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: formData
       });
 
-    if (error) {
-      console.error('AumageDB uploadCardImage error:', error);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Upload failed: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('AumageDB: Card uploaded to B2 via Worker:', result.card_url);
+      return result.card_url;
+    } catch (error) {
+      console.error('AumageDB.uploadCardImage error:', error.message);
       return null;
     }
-
-    const { data: urlData } = this.supabase.storage
-      .from('aumage-cards')
-      .getPublicUrl(path);
-
-    return urlData?.publicUrl || null;
   },
 
   // ============================================================

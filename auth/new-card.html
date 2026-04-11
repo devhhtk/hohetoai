@@ -230,7 +230,7 @@
                 renderedCanvas.toBlob(async (blob) => {
                     if (blob && window.AumageDB) {
                         try {
-                            const cardUrl = await window.AumageDB.uploadCardImage(blob, `card-${creatureId}`);
+                            const cardUrl = await window.AumageDB.uploadCardImage(blob, creatureId, cardData.name);
                             if (cardUrl) {
                                 console.log('[Card] Schematic successfully saved to bucket!');
                                 console.log('[Card] Public URL:', cardUrl);
