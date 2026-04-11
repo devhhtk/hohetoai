@@ -233,6 +233,13 @@
 
                 // 3.1 NEW: Save schematic card to bucket (Supabase) & print link
                 console.log('[Card] Preparing schematic upload to Supabase...');
+
+                // Show saving status
+                const overlay = document.getElementById('loadingOverlay');
+                const loadingText = document.getElementById('loadingText');
+                overlay.style.display = 'flex';
+                loadingText.textContent = "Saving the card, don't close the window...";
+
                 renderedCanvas.toBlob(async (blob) => {
                     if (blob && window.AumageDB) {
                         try {
@@ -251,14 +258,15 @@
                             }
                         } catch (err) {
                             console.error('[Card] Schematic upload error:', err);
+                        } finally {
+                            // Hide loading overlay regardless of success or failure
+                            overlay.style.display = 'none';
                         }
                     } else {
                         console.error('[Card] Blob generation failed or AumageDB not initialized');
+                        overlay.style.display = 'none';
                     }
                 }, 'image/png');
-
-                // 4. Hide Loading Overlay
-                document.getElementById('loadingOverlay').style.display = 'none';
 
                 // Save Image logic
                 document.getElementById('saveImageBtn').onclick = () => {
