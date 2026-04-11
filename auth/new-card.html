@@ -232,16 +232,10 @@
                         try {
                             const cardUrl = await window.AumageDB.uploadCardImage(blob, creatureId, cardData.name);
                             if (cardUrl) {
-                                console.log('[Card] Schematic successfully saved to bucket!');
+                                console.log('[Card] Schematic successfully saved to B2!');
                                 console.log('[Card] Public URL:', cardUrl);
-                                
-                                // Update database record with the new card URL
-                                await window.AumageDB.updateCreature(creatureId, { 
-                                    card_url: cardUrl 
-                                });
-                                console.log('[Card] Database record updated.');
                             } else {
-                                console.warn('[Card] Schematic upload failed: check Supabase logs');
+                                console.warn('[Card] Schematic upload failed: check backend logs');
                             }
                         } catch (err) {
                             console.error('[Card] Schematic upload error:', err);
