@@ -633,6 +633,30 @@ const AumageDB = {
     return data;
   },
 
+  /**
+   * Get the most recent creature CARD for a specific user ID.
+   */
+  async getUserRecentCard(userId) {
+    if (!this.supabase || !userId) return null;
+
+    const { data, error } = await this.supabase
+      .from('creatures')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('is_public', true)
+      .neq('card_image_url', '')
+      .not('card_image_url', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error) {
+      console.warn('AumageDB getUserRecentCard warning:', error.message);
+      return null;
+    }
+    return data;
+  },
+
   // ============================================================
   // UTILS
   // ============================================================
@@ -703,7 +727,9 @@ const AumageDB = {
         const { count, error } = await this.supabase
           .from('creatures')
           .select('*', { count: 'exact', head: true })
-          .eq('user_id', p.id);
+          .eq('user_id', p.id)
+          .neq('card_image_url', '')
+          .not('card_image_url', 'is', null);
         
         return {
           ...p,

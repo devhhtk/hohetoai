@@ -31,7 +31,7 @@
 
             <!-- Top Grid Wrapper -->
             <div class="dashboard-top-full">
-                
+
                 <!-- Who's This For? -->
                 <section class="dashboard-section">
                     <div class="section-header">
@@ -68,7 +68,12 @@
                         <div class="achievement-card" id="ach-pioneer">
                             <div class="achievement-status">LOCKED</div>
                             <div class="achievement-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                </svg>
                             </div>
                             <span class="achievement-title">Pioneer</span>
                             <span class="achievement-desc">Created first creature.</span>
@@ -76,7 +81,12 @@
                         <div class="achievement-card" id="ach-elite">
                             <div class="achievement-status">LOCKED</div>
                             <div class="achievement-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polygon
+                                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                                    </polygon>
+                                </svg>
                             </div>
                             <span class="achievement-title">Elite</span>
                             <span class="achievement-desc">Unlocked Rare+.</span>
@@ -84,7 +94,10 @@
                         <div class="achievement-card" id="ach-ascended">
                             <div class="achievement-status">LOCKED</div>
                             <div class="achievement-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
                             </div>
                             <span class="achievement-title">Ascended</span>
                             <span class="achievement-desc">Reached Lv. 2.</span>
@@ -92,7 +105,12 @@
                         <div class="achievement-card" id="ach-loyal">
                             <div class="achievement-status">LOCKED</div>
                             <div class="achievement-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z">
+                                    </path>
+                                </svg>
                             </div>
                             <span class="achievement-title">Loyal</span>
                             <span class="achievement-desc">Login streak.</span>
@@ -107,16 +125,12 @@
                             <div class="leaderboard-container">
                                 <div class="leaderboard-header">
                                     <h3 class="section-title">Global Leaderboard</h3>
-                                    <div class="leaderboard-tabs">
-                                        <span class="l-tab active">GLOBAL</span>
-                                        <span class="l-tab">REGION</span>
-                                        <span class="l-tab">FRIENDS</span>
-                                    </div>
+
                                 </div>
                                 <div class="leaderboard-table-header">
-                                     <span class="col-rank">RANK</span>
-                                     <span class="col-user">USERNAME</span>
-                                     <span class="col-creatures">CREATURES</span>
+                                    <span class="col-rank">RANK</span>
+                                    <span class="col-user">USERNAME</span>
+                                    <span class="col-creatures">CARDS</span>
                                 </div>
                                 <div class="leaderboard-list" id="leaderboardList">
                                     <!-- Populated via JS -->
@@ -125,16 +139,17 @@
                                 <div id="yourRank"></div>
                             </div>
                         </div>
-                        
+
                         <!-- Top 1 Showcase -->
                         <div class="leaderboard-showcase">
                             <div class="showcase-content">
                                 <div class="top-badge">TOP #1</div>
                                 <div class="top-creature-info">
                                     <h4 id="top-ranker-name">---</h4>
-                                    <p>Recent Legend</p>
+                                    <p>Latest Discovery</p>
                                 </div>
                                 <div class="top-image-container">
+                                    <div class="image-loader" id="showcase-loader"></div>
                                     <img id="top-creature-img" src="../img/placeholder.png" alt="Top Ranker Creature">
                                 </div>
                                 <div class="showcase-decor"></div>
@@ -325,7 +340,8 @@
                 const list = document.getElementById('leaderboardList');
                 const topName = document.getElementById('top-ranker-name');
                 const topImg = document.getElementById('top-creature-img');
-                
+                const showcaseLoader = document.getElementById('showcase-loader');
+
                 if (!list || !window.AumageDB) return;
 
                 const leaderboard = await window.AumageDB.getLeaderboard(7);
@@ -334,23 +350,43 @@
                     const top1 = leaderboard[0];
                     if (top1) {
                         topName.textContent = top1.display_name || top1.id.substring(0, 8);
-                        
-                        // Fetch their most recent creature image
-                        const topCreature = await window.AumageDB.getUserRecentCreature(top1.id);
-                        if (topCreature && topCreature.image_url) {
-                            topImg.src = topCreature.image_url;
+
+                        // Start loading visual
+                        topImg.classList.add('image-changing');
+                        if (showcaseLoader) showcaseLoader.classList.add('loader-active');
+
+                        try {
+                            const topCard = await window.AumageDB.getUserRecentCard(top1.id);
+                            if (topCard && topCard.card_image_url) {
+                                // Preload
+                                const imgPreload = new Image();
+                                imgPreload.src = topCard.card_image_url;
+                                await imgPreload.decode();
+                                topImg.src = topCard.card_image_url;
+                            } else {
+                                topImg.src = '../img/placeholder.png';
+                            }
+                        } catch (e) {
+                            topImg.src = '../img/placeholder.png';
+                        } finally {
+                            topImg.classList.remove('image-changing');
+                            if (showcaseLoader) showcaseLoader.classList.remove('loader-active');
                         }
                     }
 
-                    list.innerHTML = leaderboard.map((user, index) => `
-                        <div class="leaderboard-item">
+                    list.innerHTML = leaderboard.map((user, index) => {
+                        const displayName = user.display_name || user.id.substring(0, 8);
+                        return `
+                        <div class="leaderboard-item ${index === 0 ? 'leaderboard-item--active' : ''}" 
+                             data-user-id="${user.id}" 
+                             data-user-name="${displayName}">
                             <div class="item-rank">${index + 1}</div>
                             <div class="item-avatar">
                                 <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}" alt="avatar">
                             </div>
                             <div class="item-info">
                                 <div class="user-meta">
-                                    <span class="item-name">${user.display_name || user.id.substring(0, 8)}</span>
+                                    <span class="item-name">${displayName}</span>
                                     <span class="item-level">Level ${user.level || 1}</span>
                                 </div>
                                 <div class="user-badges">
@@ -359,15 +395,58 @@
                                     <span class="badge-icon">⚡</span>
                                 </div>
                             </div>
-                            <div class="item-count">
-                                <div class="count-with-icon">
-                                    <span class="count-icon">🐲</span>
-                                    <span class="count-val">${user.creature_count}</span>
+                                <div class="item-count">
+                                    <div class="count-with-icon">
+                                        <span class="count-icon">🎴</span>
+                                        <span class="count-val">${user.creature_count}</span>
+                                    </div>
+                                    <span class="count-label">Cards</span>
                                 </div>
-                                <span class="count-label">Creatures</span>
-                            </div>
                         </div>
-                    `).join('');
+                    `;
+                    }).join('');
+
+                    // Add click listeners to items
+                    const items = list.querySelectorAll('.leaderboard-item');
+                    
+                    items.forEach(item => {
+                        item.addEventListener('click', async () => {
+                            // UI Feedback
+                            items.forEach(i => i.classList.remove('leaderboard-item--active'));
+                            item.classList.add('leaderboard-item--active');
+
+                            const uID = item.getAttribute('data-user-id');
+                            const uName = item.getAttribute('data-user-name');
+                            
+                            // Update UI
+                            topName.textContent = uName;
+                            
+                            // Visual feedback (start loading)
+                            topImg.classList.add('image-changing');
+                            if (showcaseLoader) showcaseLoader.classList.add('loader-active');
+
+                            try {
+                                const card = await window.AumageDB.getUserRecentCard(uID);
+                                
+                                // Preload image to avoid jumpy transitions
+                                if (card && card.card_image_url) {
+                                    const imgPreload = new Image();
+                                    imgPreload.src = card.card_image_url;
+                                    await imgPreload.decode();
+                                    topImg.src = card.card_image_url;
+                                } else {
+                                    topImg.src = '../img/placeholder.png'; // Fallback
+                                }
+                            } catch (err) {
+                                console.error("Error loading card:", err);
+                                topImg.src = '../img/placeholder.png';
+                            } finally {
+                                // End loading juice
+                                topImg.classList.remove('image-changing');
+                                if (showcaseLoader) showcaseLoader.classList.remove('loader-active');
+                            }
+                        });
+                    });
 
                     // Populate Your Rank (Mocked based on current user)
                     const currentUser = leaderboard.find(u => u.id === 'current-user-id') || leaderboard[3]; // Mocked fallback
@@ -393,10 +472,10 @@
                                         </div>
                                         <div class="item-count">
                                             <div class="count-with-icon">
-                                                <span class="count-icon">🐲</span>
+                                                <span class="count-icon">🎴</span>
                                                 <span class="count-val">37</span>
                                             </div>
-                                            <span class="count-label">Creatures</span>
+                                            <span class="count-label">Cards</span>
                                         </div>
                                     </div>
                                 </div>
