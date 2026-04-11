@@ -35,7 +35,7 @@
                         </svg>
                     </a>
                     <div class="trope-banner__logo">
-                        <img id="tropeLogo" src="../img/placeholder.png" alt="Trope Logo">
+                        <img id="tropeLogo" src="../img/placeholder2.png" alt="Trope Logo">
                     </div>
                     <div class="trope-banner__info">
                         <h1 class="trope-banner__name" id="tropeName">Loading Trope...</h1>
@@ -215,7 +215,7 @@
                                 ${c.serial_number || 'No Serial'}
                             </div>
                         `;
-                        
+
                         // Copy functionality
                         const shareBtn = cardItem.querySelector('.share-card-btn');
                         shareBtn.onclick = (e) => {
@@ -275,7 +275,7 @@
                 const id = creature.id;
                 const param = slug ? `s=${slug}` : `id=${id}`;
                 const path = `${window.location.origin}/auth/creature-details.html?${param}`;
-                
+
                 navigator.clipboard.writeText(path).then(() => {
                     const originalInner = btn.innerHTML;
                     btn.classList.add('copied');
