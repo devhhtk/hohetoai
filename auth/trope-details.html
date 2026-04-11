@@ -201,6 +201,15 @@
                                     <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                                 </svg>
                             </button>
+                            <button class="trade-card-btn" title="Pay to Trade">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="16 3 21 3 21 8"></polyline>
+                                    <line x1="4" y1="20" x2="21" y2="3"></line>
+                                    <polyline points="21 16 21 21 16 21"></polyline>
+                                    <line x1="15" y1="15" x2="21" y2="21"></line>
+                                    <line x1="4" y1="4" x2="9" y2="9"></line>
+                                </svg>
+                            </button>
                             <div class="creature-card-item__info">
                                 <b>${c.creature_name || 'Unnamed Creature'}</b><br>
                                 ${c.serial_number || 'No Serial'}
@@ -212,6 +221,13 @@
                         shareBtn.onclick = (e) => {
                             e.stopPropagation();
                             copyShareLink(c, shareBtn);
+                        };
+
+                        // Trade functionality
+                        const tradeBtn = cardItem.querySelector('.trade-card-btn');
+                        tradeBtn.onclick = (e) => {
+                            e.stopPropagation();
+                            alert('Trading System: Coming Soon in a future protocol update.');
                         };
 
                         cardItem.onclick = () => window.location.href = `creature-details.html?id=${c.id}`;

@@ -262,6 +262,35 @@
     right: 10px; /* Slide in on hover */
 }
 
+/* Trade Button (Only on Cards) */
+.trade-card-btn {
+    position: absolute;
+    top: 50px; /* Positioned below share button */
+    right: -40px;
+    width: 32px;
+    height: 32px;
+    background: #ff4757; /* Trade orange/red */
+    border: none;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 5;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.trade-card-btn:hover {
+    transform: scale(1.1);
+    background: #ff6b81;
+}
+
+.creature-card-item:hover .trade-card-btn {
+    right: 10px;
+}
+
 .share-card-btn.copied {
     background: #fff;
 }
