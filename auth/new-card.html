@@ -26,11 +26,11 @@
 
             <div class="card-view-container">
                 <div class="generated-container">
-                    
+
                     <!-- Left Column: Stats & Metadata -->
                     <div class="generated-left">
                         <h1 class="generated-title" id="mainTitle">Your Attractive Card Generated</h1>
-                        
+
                         <!-- Tags -->
                         <div class="tool-tabs" id="tagList">
                             <span class="tool-tab tool-tab--active" id="tagGen">Audio Born</span>
@@ -57,10 +57,13 @@
                                 <div class="audio-progress">
                                     <div class="audio-progress-fill"></div>
                                 </div>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
                                     <path d="M11 5L6 9H2V15H6L11 19V5Z"></path>
-                                    <path d="M19.07 4.93C20.94 6.8 22 9.33 22 12C22 14.67 20.94 17.2 19.07 19.07"></path>
-                                    <path d="M15.54 8.46C16.48 9.4 17 10.67 17 12C17 13.33 16.48 14.6 15.54 15.54"></path>
+                                    <path d="M19.07 4.93C20.94 6.8 22 9.33 22 12C22 14.67 20.94 17.2 19.07 19.07">
+                                    </path>
+                                    <path d="M15.54 8.46C16.48 9.4 17 10.67 17 12C17 13.33 16.48 14.6 15.54 15.54">
+                                    </path>
                                 </svg>
                             </div>
                         </div>
@@ -77,8 +80,10 @@
 
                         <div class="action-btns">
                             <button class="btn-secondary-outline" id="saveImageBtn">Save Image</button>
-                            <button class="btn-secondary-outline" onclick="window.location.href='dashboard.html'">New Sound</button>
-                            <button class="btn-primary-solid" id="saveVaultBtn" style="display:none;">Save to Vault</button>
+                            <button class="btn-secondary-outline" onclick="window.location.href='dashboard.html'">New
+                                Sound</button>
+                            <button class="btn-primary-solid" id="saveVaultBtn" style="display:none;">Save to
+                                Vault</button>
                         </div>
                     </div>
 
@@ -86,7 +91,7 @@
                     <div class="generated-right">
                         <div class="card-canvas-wrapper" id="cardWrapper">
                             <canvas id="finalCardCanvas"></canvas>
-                            
+
                             <!-- Loading Overlay -->
                             <div class="card-loading-overlay" id="loadingOverlay">
                                 <div class="spinner"></div>
@@ -96,7 +101,8 @@
                         <div class="flavor-box" id="flavorBox">
                             <!-- Flavor text populated here -->
                         </div>
-                        <p class="footer-note">Save the creature art or turn into a schematic card with naming, classification and scoring.</p>
+                        <p class="footer-note">Save the creature art or turn into a schematic card with naming,
+                            classification and scoring.</p>
                     </div>
 
                 </div>
@@ -213,18 +219,18 @@
                     species: creature.morphology || 'Unknown',
                     element: creature.element || 'Shadow',
                     stats: stats,
-                    specimenId: creature.serial_number || 'SPEC-' + creatureId.substring(0,8),
+                    specimenId: creature.serial_number || 'SPEC-' + creatureId.substring(0, 8),
                     geneSequence: creature.waveform_hash?.substring(0, 16) || 'AGCT-TCGA-GATC-CTAG'
                 };
 
                 const canvas = document.getElementById('finalCardCanvas');
                 const renderedCanvas = await AumageCard.render(cardData);
-                
+
                 canvas.width = renderedCanvas.width;
                 canvas.height = renderedCanvas.height;
                 const ctx = canvas.getContext('2d');
-                                ctx.drawImage(renderedCanvas, 0, 0);
-                
+                ctx.drawImage(renderedCanvas, 0, 0);
+
                 // 3.1 NEW: Save schematic card to bucket (Supabase) & print link
                 console.log('[Card] Preparing schematic upload to Supabase...');
                 renderedCanvas.toBlob(async (blob) => {
@@ -232,10 +238,16 @@
                         try {
                             const cardUrl = await window.AumageDB.uploadCardImage(blob, creatureId, cardData.name);
                             if (cardUrl) {
-                                console.log('[Card] Schematic successfully saved to B2!');
+                                console.log('[Card] Schematic successfully saved to bucket!');
                                 console.log('[Card] Public URL:', cardUrl);
+
+                                // Update database record with the new card URL
+                                await window.AumageDB.updateCreature(creatureId, {
+                                    card_url: cardUrl
+                                });
+                                console.log('[Card] Database record updated.');
                             } else {
-                                console.warn('[Card] Schematic upload failed: check backend logs');
+                                console.warn('[Card] Schematic upload failed: check Supabase logs');
                             }
                         } catch (err) {
                             console.error('[Card] Schematic upload error:', err);
