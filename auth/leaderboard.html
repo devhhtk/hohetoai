@@ -171,12 +171,26 @@
                         // Ideally we'd fetch actual level thresholds, but for 'structure' we show the bar
                         const progressPct = 65;
 
+                        const rank = index + 1;
+                        let rankClass = '';
+                        let rankDisplay = rank;
+                        if (rank === 1) {
+                            rankClass = 'rank-1';
+                            rankDisplay = `<img src="../img/1st.png" alt="1st" class="rank-img">`;
+                        } else if (rank === 2) {
+                            rankClass = 'rank-2';
+                            rankDisplay = `<img src="../img/2nd.png" alt="2nd" class="rank-img">`;
+                        } else if (rank === 3) {
+                            rankClass = 'rank-3';
+                            rankDisplay = `<img src="../img/3rd.png" alt="3rd" class="rank-img">`;
+                        }
+
                         return `
-                        <div class="leaderboard-item ${index === 0 ? 'leaderboard-item--active' : ''}" 
+                        <div class="leaderboard-item ${rankClass} ${index === 0 ? 'leaderboard-item--active' : ''}" 
                              data-user-id="${user.id}" 
                              data-user-name="${displayName}">
                             
-                            <div class="item-rank">${index + 1}</div>
+                            <div class="item-rank">${rankDisplay}</div>
                             
                             <div class="item-profile">
                                 <div class="item-avatar">
@@ -297,10 +311,24 @@
 
                         const yourRankEl = document.getElementById('yourRank');
                         if (yourRankEl) {
+                            const r = userIndex + 1;
+                            let rClass = '';
+                            if (r === 1) rClass = 'rank-1';
+                            else if (r === 2) rClass = 'rank-2';
+                            else if (r === 3) rClass = 'rank-3';
+
                             yourRankEl.innerHTML = `
                                 <div class="leaderboard-footer">
-                                    <div class="leaderboard-item your-rank-item" style="margin-bottom: 0;">
-                                        <div class="item-rank">${userIndex !== -1 ? userIndex + 1 : '>20'}</div>
+                                    <div class="leaderboard-item your-rank-item ${rClass}" style="margin-bottom: 0;">
+                                        <div class="item-rank">
+                                            ${(function () {
+                                    const r = userIndex + 1;
+                                    if (r === 1) return `<img src="../img/1st.png" alt="1st" class="rank-img">`;
+                                    if (r === 2) return `<img src="../img/2nd.png" alt="2nd" class="rank-img">`;
+                                    if (r === 3) return `<img src="../img/3rd.png" alt="3rd" class="rank-img">`;
+                                    return userIndex !== -1 ? r : '>20';
+                                })()}
+                                        </div>
                                         
                                         <div class="item-profile">
                                             <div class="item-avatar">
@@ -321,6 +349,7 @@
 
                                         <div class="item-cards-stack">
                                             <div class="cards-icon">
+                                                <img src="../img/dragon.png" alt="card">          
                                                 <span class="cards-val">${cardCount || 0}</span>
                                             </div>
                                             <span class="cards-label">CARDS</span>

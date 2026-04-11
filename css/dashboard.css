@@ -1898,8 +1898,7 @@ body.light-mode .trope-card:hover {
   padding: 8px 20px;
   border-radius: 100px;
   /* Pill shape */
-  background: linear-gradient(90deg, #012a2a, #011616);
-  /* Deep emerald gradient */
+  background: url(../img/dragon3.png) no-repeat right / 40%, linear-gradient(90deg, #012a2a, #011616);
   border: 1px solid rgba(8, 210, 193, 0.2);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -1908,15 +1907,15 @@ body.light-mode .trope-card:hover {
 
 .leaderboard-item:hover,
 .leaderboard-item--active {
-  background: linear-gradient(90deg, #023f3f, #011f1f) !important;
+  background: url(../img/dragon3.png) no-repeat right / 40%, linear-gradient(90deg, #023f3f, #011f1f) !important;
   border-color: var(--color-primary);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 15px rgba(8, 210, 193, 0.1);
   transform: scale(1.01);
 }
 
 .item-rank {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: radial-gradient(circle, #075a50, #081b19);
   display: flex;
@@ -1929,6 +1928,16 @@ body.light-mode .trope-card:hover {
   box-shadow: 0 0 10px rgba(45, 212, 191, 0.4);
   font-family: 'Exo 2', sans-serif;
   border: 2px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+}
+
+.rank-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .item-profile {
@@ -2028,7 +2037,23 @@ body.light-mode .trope-card:hover {
   width: 30px;
   height: 30px;
   object-fit: contain;
+  filter: invert(90%) sepia(93%) saturate(1000%) hue-rotate(90deg) brightness(90%) contrast(95%);
+  transition: filter 0.3s ease;
 }
+
+/* Rank-specific Dragon Colors */
+.rank-1 .cards-icon img {
+  filter: invert(91%) sepia(29%) saturate(2250%) hue-rotate(344deg) brightness(101%) contrast(105%);
+}
+
+.rank-2 .cards-icon img {
+  filter: invert(90%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(90%);
+}
+
+.rank-3 .cards-icon img {
+  filter: invert(52%) sepia(61%) saturate(541%) hue-rotate(346deg) brightness(91%) contrast(89%);
+}
+
 
 .cards-val {
   font-size: 25px;
@@ -2044,21 +2069,8 @@ body.light-mode .trope-card:hover {
   letter-spacing: 1px;
 }
 
-/* Rank specific overrides */
-.leaderboard-item:nth-child(1) .item-rank {
-  background: radial-gradient(circle, #fbbf24, #b45309);
-  box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
-}
+/* Rank specific overrides removed to match rest of ranks */
 
-.leaderboard-item:nth-child(2) .item-rank {
-  background: radial-gradient(circle, #e2e8f0, #475569);
-  box-shadow: 0 0 20px rgba(226, 232, 240, 0.3);
-}
-
-.leaderboard-item:nth-child(3) .item-rank {
-  background: radial-gradient(circle, #ca8a04, #713f12);
-  box-shadow: 0 0 20px rgba(202, 138, 4, 0.3);
-}
 
 .leaderboard-footer {
   margin-top: 24px;
