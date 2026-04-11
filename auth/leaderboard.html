@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Leaderboard — HoHeTo Kyle</title>
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+
+<body class="dashboard-body">
+
+    <!-- ══ Sidebar Placeholder ══ -->
+    <div id="comp-sidebar"></div>
+
+    <!-- ══ Main Content Area ══ -->
+    <main class="main-area">
+
+        <!-- Top Navigation Bar Placeholder -->
+        <div id="comp-header"></div>
+
+        <!-- Dynamic Content View -->
+        <div class="content-view">
+
+            <!-- Welcome Header -->
+            <div class="welcome-section">
+                <h1 class="welcome-title">Global Leaderboard</h1>
+                <p class="welcome-subtitle">The top storytellers and creature masters.</p>
+            </div>
+
+            <!-- Leaderboard Section -->
+            <section class="dashboard-section">
+                <div class="leaderboard-wrapper">
+                    <div class="leaderboard-main">
+                        <div class="leaderboard-container">
+                            <div class="leaderboard-header">
+                                <h3 class="section-title">Global Rankings</h3>
+                            </div>
+                            <div class="leaderboard-table-header">
+                                <span class="col-rank">RANK</span>
+                                <span class="col-user">USERNAME</span>
+                                <span class="col-creatures">CARDS</span>
+                            </div>
+                            <div class="leaderboard-list" id="leaderboardList">
+                                <!-- Populated via JS -->
+                                <div class="streak-loading"></div>
+                            </div>
+                            <div id="yourRank"></div>
+                        </div>
+                    </div>
+
+                    <!-- Top 1 Showcase -->
+                    <div class="leaderboard-showcase">
+                        <div class="showcase-content">
+                            <div class="top-badge">TOP #1</div>
+                            <div class="top-creature-info">
+                                <h4 id="top-ranker-name">---</h4>
+                                <p>Latest Discovery</p>
+                            </div>
+                            <div class="top-image-container">
+                                <div class="image-loader" id="showcase-loader"></div>
+                                <img id="top-creature-img" src="../img/placeholder.png" alt="Top Ranker Creature">
+                            </div>
+                            <div class="showcase-decor"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer Placeholder -->
+            <div id="comp-footer"></div>
+
+        </div>
+    </main>
+
+    <!-- Supabase & DB Layer -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/db.js"></script>
+    <script src="../js/components.js"></script>
+    <script src="../js/theme.js"></script>
+    <script>
+        // Init Components & Functionalities
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load Components
+            await ComponentLoader.loadAll([
+                { id: 'comp-sidebar', path: '../components/sidebar.html' },
+                { id: 'comp-header', path: '../components/header.html' },
+                { id: 'comp-footer', path: '../components/footer.html' }
+            ]);
+
+            // Set active nav item
+            const navLeaderboard = document.getElementById('nav-leaderboard');
+            if (navLeaderboard) navLeaderboard.classList.add('nav-item--active');
+
+            // Database & Auth Initialization
+            if (window.AumageDB) {
+                window.AumageDB.init();
+                await window.AumageDB.requireAuth();
+            }
+
+            // --- Sidebar & Profile UI ---
+            const profileToggle = document.getElementById('profileToggle');
+            const profileDropup = document.getElementById('profileDropup');
+
+            if (profileToggle && profileDropup) {
+                profileToggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    profileDropup.classList.toggle('profile-dropup--active');
+                });
+
+                document.addEventListener('click', () => {
+                    profileDropup.classList.remove('profile-dropup--active');
+                });
+
+                profileDropup.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            }
+
+            // --- Load Leaderboard ---
+            async function loadLeaderboard() {
+                const list = document.getElementById('leaderboardList');
+                const topName = document.getElementById('top-ranker-name');
+                const topImg = document.getElementById('top-creature-img');
+                const showcaseLoader = document.getElementById('showcase-loader');
+
+                if (!list || !window.AumageDB) return;
+
+                const leaderboard = await window.AumageDB.getLeaderboard(20); // More for a dedicated page
+                if (leaderboard && leaderboard.length > 0) {
+                    // Update Top 1 Showcase
+                    const top1 = leaderboard[0];
+                    if (top1) {
+                        topName.textContent = top1.display_name || top1.id.substring(0, 8);
+
+                        // Start loading visual
+                        topImg.classList.add('image-changing');
+                        if (showcaseLoader) showcaseLoader.classList.add('loader-active');
+
+                        try {
+                            const topCard = await window.AumageDB.getUserRecentCard(top1.id);
+                            if (topCard && topCard.card_image_url) {
+                                // Preload
+                                const imgPreload = new Image();
+                                imgPreload.src = topCard.card_image_url;
+                                await imgPreload.decode();
+                                topImg.src = topCard.card_image_url;
+                            } else {
+                                topImg.src = '../img/placeholder.png';
+                            }
+                        } catch (e) {
+                            topImg.src = '../img/placeholder.png';
+                        } finally {
+                            topImg.classList.remove('image-changing');
+                            if (showcaseLoader) showcaseLoader.classList.remove('loader-active');
+                        }
+                    }
+
+                    list.innerHTML = leaderboard.map((user, index) => {
+                        const displayName = user.display_name || user.id.substring(0, 8);
+                        return `
+                        <div class="leaderboard-item ${index === 0 ? 'leaderboard-item--active' : ''}" 
+                             data-user-id="${user.id}" 
+                             data-user-name="${displayName}">
+                            <div class="item-rank">${index + 1}</div>
+                            <div class="item-avatar">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}" alt="avatar">
+                            </div>
+                            <div class="item-info">
+                                <div class="user-meta">
+                                    <span class="item-name">${displayName}</span>
+                                    <span class="item-level">Level ${user.level || 1}</span>
+                                </div>
+                                <div class="user-badges">
+                                    ${index < 3 ? '<span class="badge-icon">🎖️</span>' : ''}
+                                    <span class="badge-icon">🔥</span>
+                                    <span class="badge-icon">⚡</span>
+                                </div>
+                            </div>
+                                <div class="item-count">
+                                    <div class="count-with-icon">
+                                        <span class="count-icon">🎴</span>
+                                        <span class="count-val">${user.creature_count}</span>
+                                    </div>
+                                    <span class="count-label">Cards</span>
+                                </div>
+                        </div>
+                    `;
+                    }).join('');
+
+                    // Add click listeners to items
+                    const items = list.querySelectorAll('.leaderboard-item');
+                    
+                    items.forEach(item => {
+                        item.addEventListener('click', async () => {
+                            // UI Feedback
+                            items.forEach(i => i.classList.remove('leaderboard-item--active'));
+                            item.classList.add('leaderboard-item--active');
+
+                            const uID = item.getAttribute('data-user-id');
+                            const uName = item.getAttribute('data-user-name');
+                            
+                            // Update UI
+                            topName.textContent = uName;
+                            
+                            // Visual feedback (start loading)
+                            topImg.classList.add('image-changing');
+                            if (showcaseLoader) showcaseLoader.classList.add('loader-active');
+
+                            try {
+                                const card = await window.AumageDB.getUserRecentCard(uID);
+                                
+                                // Preload image to avoid jumpy transitions
+                                if (card && card.card_image_url) {
+                                    const imgPreload = new Image();
+                                    imgPreload.src = card.card_image_url;
+                                    await imgPreload.decode();
+                                    topImg.src = card.card_image_url;
+                                } else {
+                                    topImg.src = '../img/placeholder.png'; // Fallback
+                                }
+                            } catch (err) {
+                                console.error("Error loading card:", err);
+                                topImg.src = '../img/placeholder.png';
+                            } finally {
+                                // End loading juice
+                                topImg.classList.remove('image-changing');
+                                if (showcaseLoader) showcaseLoader.classList.remove('loader-active');
+                            }
+                        });
+                    });
+
+                    // Populate Your Rank (Mocked based on current user)
+                    const currentUser = leaderboard.find(u => u.id === 'current-user-id') || leaderboard[3]; // Mocked fallback
+                    if (currentUser) {
+                        const yourRankEl = document.getElementById('yourRank');
+                        if (yourRankEl) {
+                            yourRankEl.innerHTML = `
+                                <div class="leaderboard-footer">
+                                    <div class="leaderboard-item" style="margin-bottom: 0; background: transparent; border: none; padding: 0;">
+                                        <div class="item-rank">4</div>
+                                        <div class="item-avatar">
+                                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=you" alt="avatar">
+                                        </div>
+                                        <div class="item-info">
+                                            <div class="user-meta">
+                                                <span class="item-name">You (Storyteller)</span>
+                                                <span class="item-level">Level 4</span>
+                                            </div>
+                                            <div class="user-badges">
+                                                <span class="badge-icon">🔥</span>
+                                                <span class="badge-icon">⚡</span>
+                                            </div>
+                                        </div>
+                                        <div class="item-count">
+                                            <div class="count-with-icon">
+                                                <span class="count-icon">🎴</span>
+                                                <span class="count-val">37</span>
+                                            </div>
+                                            <span class="count-label">Cards</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+                } else {
+                    list.innerHTML = '<div class="empty-msg">No legendaries yet.</div>';
+                }
+            }
+
+            // Run initial load
+            loadLeaderboard();
+        });
+    </script>
+</body>
+
+</html>
