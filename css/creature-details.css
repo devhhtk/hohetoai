@@ -57,6 +57,47 @@
     margin-top: 30px;
 }
 
+.creature-actions .btn-save, 
+.creature-actions .btn-share {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: var(--font-body);
+}
+
+.btn-save {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.btn-save:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-share {
+    background: linear-gradient(135deg, var(--color-primary), #06b6d4);
+    border: none;
+    color: #011616;
+    box-shadow: 0 4px 15px var(--color-primary-glow);
+}
+
+.btn-share:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--color-primary-glow);
+    filter: brightness(1.1);
+}
+
 /* Right Column: Information */
 .details-info {
     flex: 1.2;
@@ -92,9 +133,9 @@
     border: 1px solid currentColor;
 }
 
-.rarity-epic { color: #f97316; border-color: rgba(249, 115, 22, 0.3); background: rgba(249, 115, 22, 0.05); }
-.rarity-legendary { color: #8b5cf6; border-color: rgba(139, 92, 246, 0.3); background: rgba(139, 92, 246, 0.05); }
-.rarity-rare { color: #3b82f6; border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.05); }
+.rarity-epic { color: #f97316; border-color: rgba(249, 115, 22, 0.3); background: rgba(249, 115, 22, 0.05); box-shadow: 0 0 10px rgba(249, 115, 22, 0.1); }
+.rarity-legendary { color: #8b5cf6; border-color: rgba(139, 92, 246, 0.3); background: rgba(139, 92, 246, 0.05); box-shadow: 0 0 10px rgba(139, 92, 246, 0.1); }
+.rarity-rare { color: #3b82f6; border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.05); box-shadow: 0 0 10px rgba(59, 130, 246, 0.1); }
 .rarity-common { color: #94a3b8; border-color: rgba(148, 163, 184, 0.3); background: rgba(148, 163, 184, 0.05); }
 
 .serial-tag {
