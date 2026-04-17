@@ -1,0 +1,327 @@
+/* Explore Page Styles for Authenticated Users — HoHeTo Kyle */
+
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap');
+
+:root {
+  --color-primary: #08D2C1;
+  --color-primary-glow: rgba(8, 210, 193, 0.25);
+  --bg-sidebar: #011616;
+  --bg-main: #020C0C;
+  --bg-card: #011F1F;
+  --border-card: rgba(255, 255, 255, 0.06);
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.5);
+  --bg-search: rgba(255, 255, 255, 0.03);
+  --border-search: rgba(255, 255, 255, 0.08);
+  --transition: 0.2s ease;
+}
+
+.explore-container {
+    padding: 20px 20px;
+    max-width: 1000px; /* More compact container */
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* ── Header Section ── */
+.explore-header {
+    margin-bottom: 20px;
+}
+
+.explore-header__title {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.explore-header__subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+/* ── Controls (Filters Only as per Image) ── */
+.explore-controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.explore-search {
+    position: relative;
+    flex: 1;
+    min-width: 300px;
+    max-width: 500px;
+}
+
+.explore-search__input {
+    width: 100%;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+    padding: 0 16px 0 48px;
+    color: #fff;
+    backdrop-filter: blur(10px);
+    font-family: 'Instrument Sans', sans-serif;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.explore-search__input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 15px var(--color-primary-glow);
+}
+
+.explore-search__icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.explore-filters {
+    display: flex;
+    gap: 12px;
+}
+
+.filter-btn {
+    padding: 8px 24px;
+    background: #E2E8F0;
+    border: none;
+    border-radius: 6px;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 100px;
+}
+
+body.dashboard-body:not(.light-mode) .filter-btn {
+    background: #0F172A;
+    color: #94A3B8;
+}
+
+.filter-btn:hover {
+    background: #CBD5E1;
+}
+
+body.dashboard-body:not(.light-mode) .filter-btn:hover {
+    background: #1E293B;
+}
+
+.filter-btn--active {
+    background: var(--color-primary) !important;
+    color: #fff !important;
+}
+
+/* ── Creature Grid ── */
+.explore-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.creature-card {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+    transition: transform 0.3s ease;
+    text-align: left;
+}
+
+.creature-card:hover {
+    transform: translateY(-5px);
+}
+
+.creature-card__img-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 929 / 1348; /* Exact requested aspect ratio */
+    margin-bottom: 8px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.creature-card__img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.creature-card:hover .creature-card__img {
+    transform: scale(1.1);
+}
+
+.creature-card__rarity {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.rarity--common { color: #94a3b8; }
+.rarity--rare { color: #60a5fa; }
+.rarity--epic { color: #a855f7; }
+.rarity--legendary { color: #f59e0b; }
+
+.creature-card__content {
+    padding: 0 4px;
+}
+
+.creature-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+}
+
+.creature-card__name {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.creature-card__author {
+    font-size: 8px;
+    color: var(--text-muted);
+}
+
+.creature-card__type-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 5px;
+    background: #E2E8F0;
+    border-radius: 3px;
+    font-size: 8px;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+body.dashboard-body:not(.light-mode) .creature-card__type-pill {
+    background: rgba(8, 210, 193, 0.1);
+    color: var(--color-primary);
+}
+
+.creature-card__footer {
+    display: flex;
+    justify-content: flex-start;
+    gap: 8px;
+    padding-top: 4px;
+}
+
+.action-item {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.action-item:hover {
+    color: var(--color-primary);
+}
+
+.action-item svg {
+    width: 10px;
+    height: 10px;
+}
+
+/* ── Load More Button ── */
+.explore-footer {
+    margin-top: 60px;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-load-more {
+    padding: 10px 32px;
+    background: var(--color-primary);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.btn-load-more:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+/* ── Pagination ── */
+.explore-pagination {
+    margin-top: 48px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.page-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.page-btn:hover {
+    color: #fff;
+    border-color: var(--color-primary);
+}
+
+.page-btn--active {
+    background: var(--color-primary);
+    color: #011616 !important;
+    border-color: var(--color-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .explore-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .explore-filters {
+        overflow-x: auto;
+        padding-bottom: 8px;
+    }
+    .filter-btn {
+        white-space: nowrap;
+    }
+}
