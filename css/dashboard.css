@@ -2137,8 +2137,7 @@ body.light-mode .trope-card:hover {
   height: auto;
 }
 
-.page-leaderboar
-.page-leaderboard .leaderboard-list {
+.page-leaderboar .page-leaderboard .leaderboard-list {
   flex: 1;
   overflow-y: auto;
   padding-right: 4px;
@@ -2169,7 +2168,7 @@ body.light-mode .trope-card:hover {
   box-shadow: -15px 0 40px rgba(0, 0, 0, 0.6);
 }
 
-#notiOffcanvasToggle:checked ~ .noti-offcanvas {
+#notiOffcanvasToggle:checked~.noti-offcanvas {
   right: 0 !important;
 }
 
@@ -2187,7 +2186,7 @@ body.light-mode .trope-card:hover {
   transition: all 0.4s ease;
 }
 
-#notiOffcanvasToggle:checked ~ .noti-offcanvas-backdrop {
+#notiOffcanvasToggle:checked~.noti-offcanvas-backdrop {
   opacity: 1;
   visibility: visible;
 }
@@ -2278,6 +2277,7 @@ body.light-mode .trope-card:hover {
   font-size: 11px;
   color: var(--text-muted);
 }
+
 t strong {
   color: var(--color-primary);
 }
@@ -2285,5 +2285,4 @@ t strong {
 .noti-item__time {
   font-size: 11px;
   color: var(--text-muted);
-}
 }
