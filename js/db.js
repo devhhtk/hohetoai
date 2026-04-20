@@ -625,6 +625,32 @@ const AumageDB = {
   },
 
   /**
+   * Get public creatures through the Worker API for Explore.
+   * This ensures we get card_image_url filtered data.
+   */
+  async getExploreCards(limit = 50) {
+    try {
+      const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+      const resp = await fetch(`${apiBase}/api/explore?limit=${limit}`);
+      if (!resp.ok) throw new Error(`Explore API failed: ${resp.status}`);
+      return await resp.json();
+    } catch (e) {
+      console.error('AumageDB.getExploreCards error:', e);
+      // Fallback to direct supabase if worker fails
+      if (!this.supabase) return [];
+      const { data } = await this.supabase
+        .from('creatures')
+        .select('*')
+        .eq('is_public', true)
+        .not('card_image_url', 'is', null)
+        .neq('card_image_url', '')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+      return data || [];
+    }
+  },
+
+  /**
    * Get the most recent creature for a specific user ID.
    */
   async getUserRecentCreature(userId) {
