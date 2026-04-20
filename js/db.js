@@ -630,8 +630,17 @@ const AumageDB = {
    */
   async getExploreCards(limit = 50) {
     try {
-      const session = await this.supabase.auth.getSession();
-      const token = session?.data?.session?.access_token;
+      // On page refresh, we must ensure the auth state has rehydrated
+      // We check session first, if missing we wait a tiny bit or check user
+      let sessionData = await this.supabase.auth.getSession();
+      
+      // If we don't have a session immediately, try getUser which is more definitive on load
+      if (!sessionData?.data?.session) {
+        await this.supabase.auth.getUser();
+        sessionData = await this.supabase.auth.getSession();
+      }
+
+      const token = sessionData?.data?.session?.access_token;
       
       const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
       const resp = await fetch(`${apiBase}/api/explore?limit=${limit}`, {
