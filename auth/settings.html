@@ -307,38 +307,13 @@
             // SETTINGS PERSISTENCE (JSONB)
             // ============================================================
             
-            const loadSettings = async () => {
-                const settings = await window.AumageDB.getUserSettings();
-                console.log('Loading saved settings:', settings);
-
-                if (settings.username) document.getElementById('username').value = settings.username;
-                if (settings.bio) document.getElementById('bio').value = settings.bio;
-                
-                if (settings.theme) document.getElementById('pref-theme').value = settings.theme;
-                if (settings.creationType) document.getElementById('pref-creation-type').value = settings.creationType;
-                
-                if (settings.notifications) {
-                    document.getElementById('noti-creature').checked = !!settings.notifications.creature;
-                    document.getElementById('noti-likes').checked = !!settings.notifications.likes;
-                    document.getElementById('noti-comments').checked = !!settings.notifications.comments;
-                    document.getElementById('noti-push').checked = !!settings.notifications.push;
-                    document.getElementById('noti-mentions').checked = !!settings.notifications.mentions;
-                }
-
-                if (settings.privacy) document.getElementById('priv-visibility').value = settings.privacy.visibility || 'public';
-
-                if (settings.controls) {
-                    document.getElementById('ctrl-ai').checked = !!settings.controls.ai;
-                    document.getElementById('ctrl-auto-desc').checked = !!settings.controls.autoDesc;
-                    document.getElementById('ctrl-fusion').checked = !!settings.controls.fusion;
-                }
-            };
-
             let saveTimeout;
             const saveSettings = async () => {
-                const settings = {
-                    username: document.getElementById('username').value,
-                    bio: document.getElementById('bio').value,
+                const username = document.getElementById('username').value;
+                const bio = document.getElementById('bio').value;
+
+                const settingsData = {
+                    bio: bio,
                     theme: document.getElementById('pref-theme').value,
                     creationType: document.getElementById('pref-creation-type').value,
                     notifications: {
@@ -359,10 +334,57 @@
                 };
 
                 try {
-                    await window.AumageDB.updateUserSettings(settings);
-                    console.log('Settings saved automatically');
+                    // 1. Direct Profile Update (Username)
+                    await window.AumageDB.supabase
+                        .from('profiles')
+                        .update({ display_name: username })
+                        .eq('id', window.AumageDB.user.id);
+
+                    // 2. Settings JSONB Update (Everything else)
+                    await window.AumageDB.updateUserSettings(settingsData);
+                    
+                    console.log('Settings and Profile updated');
+                    
+                    // Update Sidebar/Header UI live
+                    if (window.AumageDB.updateSidebarStats) {
+                        await window.AumageDB.updateSidebarStats();
+                    }
                 } catch (err) {
-                    console.error('Auto-save failed:', err);
+                    console.error('Save failed:', err);
+                }
+            };
+
+            const loadSettings = async () => {
+                // Fetch direct profile for username
+                const profileResult = await window.AumageDB.getUserProfile();
+                if (profileResult && profileResult.profile) {
+                    document.getElementById('username').value = profileResult.profile.display_name || '';
+                    document.getElementById('email').value = window.AumageDB.user.email || '';
+                }
+
+                // Fetch JSONB settings
+                const settings = await window.AumageDB.getUserSettings();
+                console.log('Loading saved settings:', settings);
+
+                if (settings.bio) document.getElementById('bio').value = settings.bio;
+                
+                if (settings.theme) document.getElementById('pref-theme').value = settings.theme;
+                if (settings.creationType) document.getElementById('pref-creation-type').value = settings.creationType;
+                
+                if (settings.notifications) {
+                    document.getElementById('noti-creature').checked = !!settings.notifications.creature;
+                    document.getElementById('noti-likes').checked = !!settings.notifications.likes;
+                    document.getElementById('noti-comments').checked = !!settings.notifications.comments;
+                    document.getElementById('noti-push').checked = !!settings.notifications.push;
+                    document.getElementById('noti-mentions').checked = !!settings.notifications.mentions;
+                }
+
+                if (settings.privacy) document.getElementById('priv-visibility').value = settings.privacy.visibility || 'public';
+
+                if (settings.controls) {
+                    document.getElementById('ctrl-ai').checked = !!settings.controls.ai;
+                    document.getElementById('ctrl-auto-desc').checked = !!settings.controls.autoDesc;
+                    document.getElementById('ctrl-fusion').checked = !!settings.controls.fusion;
                 }
             };
 
