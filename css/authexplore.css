@@ -241,7 +241,7 @@ body.dashboard-body:not(.light-mode) .creature-card__type-pill {
 
 .creature-card__footer {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     gap: 8px;
     padding-top: 4px;
 }
