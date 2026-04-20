@@ -177,22 +177,32 @@
                 { id: 'comp-header', path: '../components/header.html' }
             ]);
             
+            // Set active nav
+            const navItem = document.getElementById('nav-library');
+            if (navItem) navItem.classList.add('nav-item--active');
+
             // Draw waveforms
-            document.querySelectorAll('.dna-waveform-canvas').forEach(canvas => {
-                const ctx = canvas.getContext('2d');
-                canvas.width = canvas.offsetWidth;
-                canvas.height = canvas.offsetHeight;
-                ctx.strokeStyle = '#08D2C1';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                const centerY = canvas.height / 2;
-                for (let x = 0; x < canvas.width; x += 4) {
-                    const h = Math.abs(Math.sin(x * 0.05)) * 40 + Math.random() * 10;
-                    ctx.moveTo(x, centerY - h/2);
-                    ctx.lineTo(x, centerY + h/2);
-                }
-                ctx.stroke();
-            });
+            function drawWaveforms() {
+                document.querySelectorAll('.dna-waveform-canvas').forEach(canvas => {
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = canvas.offsetWidth;
+                    canvas.height = canvas.offsetHeight;
+                    ctx.strokeStyle = '#08D2C1';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    const centerY = canvas.height / 2;
+                    for (let x = 0; x < canvas.width; x += 4) {
+                        const h = Math.abs(Math.sin(x * 0.05)) * 40 + Math.random() * 10;
+                        ctx.moveTo(x, centerY - h/2);
+                        ctx.lineTo(x, centerY + h/2);
+                    }
+                    ctx.stroke();
+                });
+            }
+            
+            drawWaveforms();
+            // Re-draw on expand
+            window.drawWaveforms = drawWaveforms;
         });
 
         function toggleLibraryItem(row) {
@@ -212,8 +222,11 @@
             dnaView.classList.toggle('active');
             
             // If it's empty (demo), add some dummy DNA content if needed
-            if (dnaView.classList.contains('active') && dnaView.innerHTML === '') {
-                dnaView.innerHTML = document.querySelector('.dna-expanded-view').innerHTML;
+            if (dnaView.classList.contains('active')) {
+                if (dnaView.innerHTML === '') {
+                    dnaView.innerHTML = document.querySelector('.dna-expanded-view').innerHTML;
+                }
+                setTimeout(() => window.drawWaveforms(), 50);
             }
         }
     </script>
