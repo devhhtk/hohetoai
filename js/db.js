@@ -848,6 +848,87 @@ const AumageDB = {
     }
   },
 
+  // ============================================================
+  // SOCIAL: LIKES & COMMENTS
+  // ============================================================
+
+  /**
+   * Toggle like for a creature.
+   */
+  async toggleLike(creatureId) {
+    if (!this.user) {
+      alert('Please log in to like creatures!');
+      return null;
+    }
+
+    try {
+      const session = await this.supabase.auth.getSession();
+      const token = session?.data?.session?.access_token;
+      const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+
+      const resp = await fetch(`${apiBase}/api/like`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ creature_id: creatureId })
+      });
+
+      if (!resp.ok) throw new Error(`Like failed: ${resp.status}`);
+      return await resp.json();
+    } catch (e) {
+      console.error('AumageDB.toggleLike error:', e);
+      return null;
+    }
+  },
+
+  /**
+   * Get comments for a creature.
+   */
+  async getComments(creatureId) {
+    try {
+      const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+      const resp = await fetch(`${apiBase}/api/comments?creature_id=${creatureId}`);
+      if (!resp.ok) throw new Error(`Comments fetch failed: ${resp.status}`);
+      return await resp.json();
+    } catch (e) {
+      console.error('AumageDB.getComments error:', e);
+      return [];
+    }
+  },
+
+  /**
+   * Post a comment for a creature.
+   */
+  async postComment(creatureId, content) {
+    if (!this.user) {
+      alert('Please log in to comment!');
+      return null;
+    }
+
+    try {
+      const session = await this.supabase.auth.getSession();
+      const token = session?.data?.session?.access_token;
+      const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+
+      const resp = await fetch(`${apiBase}/api/comment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ creature_id: creatureId, content })
+      });
+
+      if (!resp.ok) throw new Error(`Comment failed: ${resp.status}`);
+      return await resp.json();
+    } catch (e) {
+      console.error('AumageDB.postComment error:', e);
+      return null;
+    }
+  },
+
   /**
    * Calculate user achievements based on history.
    */

@@ -125,6 +125,24 @@
         </div>
     </main>
 
+    <!-- ══ Comments Modal ══ -->
+    <div class="modal-overlay" id="commentsModal">
+        <div class="comments-modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Comments</h3>
+                <button class="modal-close" id="closeComments">&times;</button>
+            </div>
+            <div class="comments-list" id="commentsList">
+                <!-- Comments will be loaded here -->
+                <div class="loading-state">Echoes正在回响...</div>
+            </div>
+            <form class="comment-form" id="commentForm">
+                <textarea class="comment-input" placeholder="Write a comment..." rows="3" id="commentContent"></textarea>
+                <button type="submit" class="btn-post-comment">Post Comment</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Supabase & DB Layer -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/db.js"></script>
@@ -230,13 +248,105 @@
                     </div>
                 `;
 
-                // Add click listener to navigate to creature details
-                div.onclick = () => {
+                // Add click listener to whole card for details (excluding actions)
+                div.onclick = (e) => {
+                    if (e.target.closest('.action-item')) return;
                     window.location.href = `creature-details.html?id=${creature.id}`;
+                };
+
+                // Add like listener
+                const likeBtn = div.querySelector('[title="Like"]');
+                likeBtn.onclick = async (e) => {
+                    e.stopPropagation();
+                    const result = await window.AumageDB.toggleLike(creature.id);
+                    if (result) {
+                        const countSpan = likeBtn.querySelector('span');
+                        let current = parseInt(countSpan.textContent);
+                        countSpan.textContent = result.liked ? current + 1 : current - 1;
+                        likeBtn.style.color = result.liked ? 'var(--color-primary)' : '';
+                    }
+                };
+
+                // Add comment listener
+                const commentBtn = div.querySelector('[title="Comment"]');
+                commentBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    openCommentsModal(creature.id, name);
                 };
 
                 return div;
             }
+
+            // Comments Modal Logic
+            const modal = document.getElementById('commentsModal');
+            const closeBtn = document.getElementById('closeComments');
+            const commentList = document.getElementById('commentsList');
+            const commentForm = document.getElementById('commentForm');
+            let currentCreatureId = null;
+
+            async function openCommentsModal(creatureId, name) {
+                currentCreatureId = creatureId;
+                modal.querySelector('.modal-title').textContent = `Comments — ${name}`;
+                modal.classList.add('modal-overlay--active');
+                
+                // Fetch comments
+                commentList.innerHTML = '<div class="loading-state">Summoning spirits...</div>';
+                const comments = await window.AumageDB.getComments(creatureId);
+                
+                commentList.innerHTML = '';
+                if (!comments || comments.length === 0) {
+                    commentList.innerHTML = '<div class="no-comments">No echoes yet. Be the first to speak.</div>';
+                } else {
+                    comments.forEach(comment => {
+                        const item = document.createElement('div');
+                        item.className = 'comment-item';
+                        
+                        const author = comment.profiles?.display_name || 'Anonymous';
+                        const avatar = comment.profiles?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(author)}&background=random`;
+                        const date = new Date(comment.created_at).toLocaleDateString();
+                        
+                        item.innerHTML = `
+                            <div class="comment-avatar">
+                                <img src="${avatar}" alt="${author}">
+                            </div>
+                            <div class="comment-body">
+                                <div class="comment-author">${author}</div>
+                                <div class="comment-text">${comment.content}</div>
+                                <div class="comment-date">${date}</div>
+                            </div>
+                        `;
+                        commentList.appendChild(item);
+                    });
+                }
+            }
+
+            closeBtn.onclick = () => {
+                modal.classList.remove('modal-overlay--active');
+            };
+
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.classList.remove('modal-overlay--active');
+            };
+
+            commentForm.onsubmit = async (e) => {
+                e.preventDefault();
+                const content = document.getElementById('commentContent').value.trim();
+                if (!content || !currentCreatureId) return;
+
+                const btn = commentForm.querySelector('button');
+                btn.disabled = true;
+                btn.textContent = 'Posting...';
+
+                const result = await window.AumageDB.postComment(currentCreatureId, content);
+                btn.disabled = false;
+                btn.textContent = 'Post Comment';
+
+                if (result) {
+                    document.getElementById('commentContent').value = '';
+                    // Reload comments
+                    openCommentsModal(currentCreatureId, modal.querySelector('.modal-title').textContent.split(' — ')[1]);
+                }
+            };
 
             // Profile Toggle logic
             const profileToggle = document.getElementById('profileToggle');
