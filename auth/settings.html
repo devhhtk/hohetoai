@@ -334,14 +334,19 @@
                 };
 
                 try {
-                    // 1. Direct Profile Update (Username)
-                    await window.AumageDB.supabase
-                        .from('profiles')
-                        .update({ display_name: username })
-                        .eq('id', window.AumageDB.user.id);
+                        // 1. Direct Profile Update (Username)
+                        await window.AumageDB.supabase
+                            .from('profiles')
+                            .update({ display_name: username })
+                            .eq('id', window.AumageDB.user.id);
 
-                    // 2. Settings JSONB Update (Everything else)
-                    await window.AumageDB.updateUserSettings(settingsData);
+                        // 2. Auth User Metadata Update
+                        await window.AumageDB.supabase.auth.updateUser({
+                            data: { display_name: username }
+                        });
+
+                        // 3. Settings JSONB Update (Everything else)
+                        await window.AumageDB.updateUserSettings(settingsData);
                     
                     console.log('Settings and Profile updated');
                     
