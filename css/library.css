@@ -1,0 +1,374 @@
+/* Sound Library Styles — HoHeTo Kyle */
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap');
+
+:root {
+    --color-primary: #08D2C1;
+    --color-primary-glow: rgba(8, 210, 193, 0.25);
+    --bg-main: #020C0C;
+    --bg-card: #011F1F;
+    --bg-row: rgba(255, 255, 255, 0.03);
+    --border-card: rgba(255, 255, 255, 0.08);
+    --text-main: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.5);
+    --transition: 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.library-container {
+    padding: 30px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ── Top Header ── */
+.library-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.library-title {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+/* ── Controls Row ── */
+.library-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.search-wrap {
+    position: relative;
+    flex: 1;
+    max-width: 400px;
+}
+
+.search-input {
+    width: 100%;
+    height: 40px;
+    background: var(--bg-row);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    padding: 0 16px 0 40px;
+    color: #fff;
+    font-size: 13px;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.search-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 10px var(--color-primary-glow);
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.sort-select {
+    height: 40px;
+    background: var(--bg-row);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    padding: 0 12px;
+    color: #fff;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+}
+
+.btn-upload {
+    height: 40px;
+    padding: 0 20px;
+    background: var(--color-primary);
+    border: none;
+    border-radius: 10px;
+    color: #011F1F;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-upload:hover {
+    transform: translateY(-2px);
+}
+
+/* ── Sound Row ── */
+.sound-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sound-row {
+    background: var(--bg-row);
+    border: 1px solid transparent;
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.sound-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-card);
+}
+
+.sound-row--active {
+    background: rgba(8, 210, 193, 0.05) !important;
+    border-color: rgba(8, 210, 193, 0.3) !important;
+}
+
+.sound-info {
+    width: 180px;
+    flex-shrink: 0;
+}
+
+.sound-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-main);
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Mini Player ── */
+.mini-player {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.btn-play-toggle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-play-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.player-duration {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.player-progress-wrap {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
+    position: relative;
+    cursor: pointer;
+}
+
+.player-progress-bar {
+    height: 100%;
+    background: var(--color-primary);
+    width: 30%; /* Demo */
+    border-radius: 2px;
+    box-shadow: 0 0 8px var(--color-primary-glow);
+}
+
+.player-volume {
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* ── Row Actions ── */
+.row-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-card);
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.action-btn svg {
+    width: 12px;
+    height: 12px;
+}
+
+/* ── Detailed DNA Section ── */
+.dna-expanded-view {
+    grid-column: 1 / -1;
+    background: rgba(8, 210, 193, 0.02);
+    border: 1px solid rgba(8, 210, 193, 0.1);
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 10px;
+    display: none; /* Hidden by default */
+    animation: slideDown 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.dna-expanded-view.active {
+    display: block;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dna-main-viz {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.dna-waveform-canvas {
+    width: 100%;
+    height: 120px;
+    margin-bottom: 20px;
+}
+
+.dna-circle-metrics {
+    display: flex;
+    gap: 60px;
+    justify-content: center;
+}
+
+.circle-metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.circle-svg {
+    width: 80px;
+    height: 80px;
+    transform: rotate(-100deg);
+}
+
+.circle-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.05);
+    stroke-width: 6;
+}
+
+.circle-progress {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-dasharray: 251.2;
+    stroke-dashoffset: 125; /* Demo 50% */
+    filter: drop-shadow(0 0 5px var(--color-primary-glow));
+}
+
+.metric-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.metric-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+/* ── DNA Bars Grid ── */
+.dna-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px 60px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.dna-stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dna-stat-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+}
+
+.dna-stat-name {
+    color: var(--text-muted);
+}
+
+.dna-stat-percent {
+    color: #fff;
+    font-weight: 600;
+}
+
+.dna-stat-bar-outer {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.dna-stat-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary), #00F2FE);
+    border-radius: 3px;
+    width: 0; /* Animated via JS */
+    transition: width 1s ease-out;
+}
+
+/* Multi-colored bars based on category */
+.stat-complexity .dna-stat-bar-inner { background: #FF9F0A; }
+.stat-harmony .dna-stat-bar-inner { background: #32D74B; }
+.stat-roughness .dna-stat-bar-inner { background: #FF375F; }
+.stat-intensity .dna-stat-bar-inner { background: #BF5AF2; }
+.stat-warmth .dna-stat-bar-inner { background: #FFD60A; }
+.stat-brightness .dna-stat-bar-inner { background: #0A84FF; }

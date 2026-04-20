@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sound Library | HoHeTo Kai</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/library.css">
+</head>
+<body class="dashboard-body">
+
+    <!-- Sidebar Placeholder -->
+    <div id="comp-sidebar"></div>
+
+    <main class="main-content">
+        <!-- Global Header Placeholder -->
+        <div id="comp-header"></div>
+
+        <div class="library-container">
+            <!-- Page Header -->
+            <header class="library-header">
+                <h1 class="library-title">Sound Library</h1>
+            </header>
+
+            <!-- Controls -->
+            <div class="library-controls">
+                <div class="search-wrap">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="M21 21l-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" class="search-input" placeholder="Search sounds...">
+                </div>
+
+                <select class="sort-select">
+                    <option>Sort: Newest First</option>
+                    <option>Sort: Oldest First</option>
+                    <option>Sort: Name A-Z</option>
+                </select>
+
+                <button class="btn-upload">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    Upload
+                </button>
+            </div>
+
+            <!-- Sound List -->
+            <div class="sound-list" id="sound-list">
+                <!-- Demo Row 1 (Expanded) -->
+                <div class="sound-row-wrapper">
+                    <div class="sound-row sound-row--active">
+                        <div class="sound-info">
+                            <span class="sound-name">Aqua Dreams</span>
+                        </div>
+                        <div class="mini-player">
+                            <button class="btn-play-toggle">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                            </button>
+                            <span class="player-duration">0:28</span>
+                            <div class="player-progress-wrap">
+                                <div class="player-progress-bar" style="width: 45%;"></div>
+                            </div>
+                            <div class="player-volume">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="row-actions">
+                            <button class="action-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                Edit Name
+                            </button>
+                            <button class="action-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                Download
+                            </button>
+                            <button class="action-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                Remove
+                            </button>
+                            <button class="action-btn" style="background: rgba(8, 210, 193, 0.1); border-color: rgba(8, 210, 193, 0.2); color: var(--color-primary);">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                                Use in Lab
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- DNA Expanded View -->
+                    <div class="dna-expanded-view active">
+                        <div class="dna-main-viz">
+                            <canvas class="dna-waveform-canvas" id="demoWaveform"></canvas>
+                            <div class="dna-circle-metrics">
+                                <div class="circle-metric">
+                                    <svg class="circle-svg">
+                                        <circle class="circle-bg" cx="40" cy="40" r="36"></circle>
+                                        <circle class="circle-progress" cx="40" cy="40" r="36" style="stroke-dashoffset: 110;"></circle>
+                                    </svg>
+                                    <span class="metric-label">Harmony</span>
+                                    <span class="metric-value">53%</span>
+                                </div>
+                                <div class="circle-metric">
+                                    <svg class="circle-svg">
+                                        <circle class="circle-bg" cx="40" cy="40" r="36"></circle>
+                                        <circle class="circle-progress" cx="40" cy="40" r="36" style="stroke-dashoffset: 200;"></circle>
+                                    </svg>
+                                    <span class="metric-label">Complexity</span>
+                                    <span class="metric-value">18%</span>
+                                </div>
+                                <div class="circle-metric">
+                                    <svg class="circle-svg">
+                                        <circle class="circle-bg" cx="40" cy="40" r="36"></circle>
+                                        <circle class="circle-progress" cx="40" cy="40" r="36" style="stroke-dashoffset: 50;"></circle>
+                                    </svg>
+                                    <span class="metric-label">Intensity</span>
+                                    <span class="metric-value">79%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dna-stats-grid">
+                            <div class="dna-stat-item stat-complexity">
+                                <div class="dna-stat-label-row">
+                                    <span class="dna-stat-name">Complexity</span>
+                                    <span class="dna-stat-percent">30%</span>
+                                </div>
+                                <div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" style="width: 30%;"></div></div>
+                            </div>
+                            <div class="dna-stat-item stat-intensity">
+                                <div class="dna-stat-label-row">
+                                    <span class="dna-stat-name">Intensity</span>
+                                    <span class="dna-stat-percent">18%</span>
+                                </div>
+                                <div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" style="width: 18%;"></div></div>
+                            </div>
+                            <div class="dna-stat-item stat-harmony">
+                                <div class="dna-stat-label-row">
+                                    <span class="dna-stat-name">Harmony</span>
+                                    <span class="dna-stat-percent">50%</span>
+                                </div>
+                                <div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" style="width: 50%;"></div></div>
+                            </div>
+                            <div class="dna-stat-item stat-warmth">
+                                <div class="dna-stat-label-row">
+                                    <span class="dna-stat-name">Warmth</span>
+                                    <span class="dna-stat-percent">90%</span>
+                                </div>
+                                <div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" style="width: 90%;"></div></div>
+                            </div>
+                            <div class="dna-stat-item stat-roughness">
+                                <div class="dna-stat-label-row">
+                                    <span class="dna-stat-name">Roughness</span>
+                                    <span class="dna-stat-percent">23%</span>
+                                </div>
+                                <div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" style="width: 23%;"></div></div>
+                            </div>
+                            <div class="dna-stat-item stat-brightness">
+                                <div class="dna-stat-label-row">
+                                    <span class="dna-stat-name">Brightness</span>
+                                    <span class="dna-stat-percent">28%</span>
+                                </div>
+                                <div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" style="width: 28%;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demo Row 2 (Collapsed) -->
+                <div class="sound-row">
+                    <div class="sound-info">
+                        <span class="sound-name">Mystic Portal</span>
+                    </div>
+                    <div class="mini-player">
+                        <button class="btn-play-toggle"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></button>
+                        <span class="player-duration">0:11</span>
+                        <div class="player-progress-wrap"><div class="player-progress-bar" style="width: 0%;"></div></div>
+                        <div class="player-volume"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg></div>
+                    </div>
+                    <div class="row-actions">
+                        <button class="action-btn">Edit Name</button>
+                        <button class="action-btn">Download</button>
+                        <button class="action-btn">Remove</button>
+                        <button class="action-btn">Use in Lab</button>
+                    </div>
+                </div>
+
+                <!-- Demo Row 3 -->
+                <div class="sound-row">
+                    <div class="sound-info">
+                        <span class="sound-name">Neon Lights</span>
+                    </div>
+                    <div class="mini-player">
+                        <button class="btn-play-toggle"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></button>
+                        <span class="player-duration">0:18</span>
+                        <div class="player-progress-wrap"><div class="player-progress-bar" style="width: 0%;"></div></div>
+                        <div class="player-volume"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg></div>
+                    </div>
+                    <div class="row-actions">
+                        <button class="action-btn">Edit Name</button>
+                        <button class="action-btn">Download</button>
+                        <button class="action-btn">Remove</button>
+                        <button class="action-btn">Use in Lab</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/db.js"></script>
+    <script src="../js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await ComponentLoader.loadAll([
+                { id: 'comp-sidebar', path: '../components/sidebar.html' },
+                { id: 'comp-header', path: '../components/header.html' }
+            ]);
+
+            // Draw demo waveform
+            const canvas = document.getElementById('demoWaveform');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                
+                ctx.strokeStyle = '#08D2C1';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                const centerY = canvas.height / 2;
+                for (let x = 0; x < canvas.width; x += 5) {
+                    const h = Math.sin(x * 0.05) * 30 + Math.random() * 20;
+                    ctx.moveTo(x, centerY - h/2);
+                    ctx.lineTo(x, centerY + h/2);
+                }
+                ctx.stroke();
+            }
+        });
+    </script>
+</body>
+</html>
