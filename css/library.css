@@ -228,7 +228,7 @@
     gap: 6px;
 }
 
-.action-btn {
+.row-action-btn {
     height: 30px;
     padding: 0 10px;
     background: rgba(255, 255, 255, 0.02);
@@ -244,12 +244,12 @@
     white-space: nowrap;
 }
 
-.action-btn:hover {
+.row-action-btn:hover {
     color: #fff;
     background: rgba(255, 255, 255, 0.05);
 }
 
-.action-btn svg { width: 10px; height: 10px; }
+.row-action-btn svg { width: 10px; height: 10px; }
 
 /* ── DNA Panel ── */
 .dna-expanded-view {
