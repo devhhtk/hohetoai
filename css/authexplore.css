@@ -3,22 +3,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap');
 
 :root {
-  --color-primary: #08D2C1;
-  --color-primary-glow: rgba(8, 210, 193, 0.25);
-  --bg-sidebar: #011616;
-  --bg-main: #020C0C;
-  --bg-card: #011F1F;
-  --border-card: rgba(255, 255, 255, 0.06);
-  --text-main: #ffffff;
-  --text-muted: rgba(255, 255, 255, 0.5);
-  --bg-search: rgba(255, 255, 255, 0.03);
-  --border-search: rgba(255, 255, 255, 0.08);
-  --transition: 0.2s ease;
+    --color-primary: #08D2C1;
+    --color-primary-glow: rgba(8, 210, 193, 0.25);
+    --bg-sidebar: #011616;
+    --bg-main: #020C0C;
+    --bg-card: #011F1F;
+    --border-card: rgba(255, 255, 255, 0.06);
+    --text-main: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.5);
+    --bg-search: rgba(255, 255, 255, 0.03);
+    --border-search: rgba(255, 255, 255, 0.08);
+    --transition: 0.2s ease;
 }
 
 .explore-container {
     padding: 20px 20px;
-    max-width: 1000px; /* More compact container */
+    max-width: 1000px;
+    /* More compact container */
     margin: 0 auto;
     text-align: center;
 }
@@ -145,7 +146,8 @@ body.dashboard-body:not(.light-mode) .filter-btn:hover {
     position: relative;
     width: 92%;
     margin: 0 auto 12px auto;
-    aspect-ratio: 929 / 1348; /* Exact requested aspect ratio */
+    aspect-ratio: 929 / 1348;
+    /* Exact requested aspect ratio */
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -176,10 +178,21 @@ body.dashboard-body:not(.light-mode) .filter-btn:hover {
     backdrop-filter: blur(4px);
 }
 
-.rarity--common { color: #94a3b8; }
-.rarity--rare { color: #60a5fa; }
-.rarity--epic { color: #a855f7; }
-.rarity--legendary { color: #f59e0b; }
+.rarity--common {
+    color: #94a3b8;
+}
+
+.rarity--rare {
+    color: #60a5fa;
+}
+
+.rarity--epic {
+    color: #a855f7;
+}
+
+.rarity--legendary {
+    color: #f59e0b;
+}
 
 .creature-card__content {
     padding: 0 4px;
@@ -190,6 +203,7 @@ body.dashboard-body:not(.light-mode) .filter-btn:hover {
     justify-content: space-between;
     align-items: baseline;
     margin-bottom: 4px;
+    flex-direction: column;
 }
 
 .creature-card__name {
@@ -317,16 +331,18 @@ body.dashboard-body:not(.light-mode) .creature-card__type-pill {
         flex-direction: column;
         align-items: stretch;
     }
+
     .explore-filters {
         overflow-x: auto;
         padding-bottom: 8px;
     }
+
     .filter-btn {
         white-space: nowrap;
     }
 }
 
-.loading-state, 
+.loading-state,
 .no-results {
     grid-column: 1 / -1;
     padding: 60px 20px;
@@ -340,7 +356,15 @@ body.dashboard-body:not(.light-mode) .creature-card__type-pill {
 }
 
 @keyframes pulse {
-    0% { opacity: 0.5; }
-    50% { opacity: 1; }
-    100% { opacity: 0.5; }
+    0% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.5;
+    }
 }
