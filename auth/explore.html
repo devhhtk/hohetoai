@@ -207,6 +207,9 @@
 
                 const type = (creature.audio_source === 'upload' ? 'Imagen Born' : 'Resogen Born');
 
+                const isLiked = creature.user_has_liked === true;
+                const likedStyle = isLiked ? 'style="color: var(--color-primary)"' : '';
+
                 div.innerHTML = `
                     <div class="creature-card__img-wrapper">
                         <img src="${imgUrl}" class="creature-card__img" alt="${name}" loading="lazy">
@@ -225,8 +228,8 @@
                             ${type}
                         </div>
                         <div class="creature-card__footer">
-                            <div class="action-item" title="Like">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <div class="action-item" title="Like" ${likedStyle}>
+                                <svg viewBox="0 0 24 24" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
                                     <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
                                 </svg>
                                 <span>${creature.likes_count || 0}</span>
@@ -264,6 +267,9 @@
                         let current = parseInt(countSpan.textContent);
                         countSpan.textContent = result.liked ? current + 1 : current - 1;
                         likeBtn.style.color = result.liked ? 'var(--color-primary)' : '';
+                        
+                        const svg = likeBtn.querySelector('svg');
+                        if (svg) svg.setAttribute('fill', result.liked ? 'currentColor' : 'none');
                     }
                 };
 

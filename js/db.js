@@ -630,8 +630,15 @@ const AumageDB = {
    */
   async getExploreCards(limit = 50) {
     try {
+      const session = await this.supabase.auth.getSession();
+      const token = session?.data?.session?.access_token;
+      
       const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
-      const resp = await fetch(`${apiBase}/api/explore?limit=${limit}`);
+      const resp = await fetch(`${apiBase}/api/explore?limit=${limit}`, {
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
+      });
       if (!resp.ok) throw new Error(`Explore API failed: ${resp.status}`);
       return await resp.json();
     } catch (e) {
