@@ -180,13 +180,13 @@
                 div.className = 'creature-card';
 
                 // Use card_image_url as requested by user
-                const imgUrl = creature.card_image_url || creature.image_url || '../img/placeholder-card.png';
+                const imgUrl = creature.card_image_url || '../img/placeholder-card.png';
                 const name = creature.creature_name || 'Legendary Echo';
-                
+
                 // Author logic: use joined profile display_name
                 const authorName = creature.profiles?.display_name || (creature.user_id ? 'Explorer' : 'Anonymous');
                 const author = `by ${authorName}`;
-                
+
                 const type = (creature.audio_source === 'upload' ? 'Imagen Born' : 'Resogen Born');
 
                 div.innerHTML = `
