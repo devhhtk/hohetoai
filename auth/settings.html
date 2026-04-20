@@ -80,7 +80,7 @@
                                 <!-- Bio -->
                                 <div class="form-group form-group-full">
                                     <label class="input-label">Short Bio</label>
-                                    <textarea class="input-field textarea-field" placeholder="Write Here......."></textarea>
+                                    <textarea class="input-field textarea-field" id="bio" placeholder="Write Here......."></textarea>
                                 </div>
 
                                 <!-- Password -->
@@ -116,7 +116,7 @@
                             <div class="form-group">
                                 <label class="input-label">Theme</label>
                                 <div class="input-wrap">
-                                    <select class="input-field select-field">
+                                    <select class="input-field select-field" id="pref-theme">
                                         <option value="dark">Dark</option>
                                         <option value="light">Light</option>
                                     </select>
@@ -125,7 +125,7 @@
                             <div class="form-group">
                                 <label class="input-label">Default Creation Type</label>
                                 <div class="input-wrap">
-                                    <select class="input-field select-field">
+                                    <select class="input-field select-field" id="pref-creation-type">
                                         <option value="sound">Sound</option>
                                         <option value="image">Image</option>
                                         <option value="video">Video</option>
@@ -148,23 +148,23 @@
                         <div class="form-list">
                             <div class="toggle-row">
                                 <span class="toggle-label">Creature Generated</span>
-                                <input type="checkbox" class="toggle-input" checked>
+                                <input type="checkbox" class="toggle-input" id="noti-creature" checked>
                             </div>
                             <div class="toggle-row">
                                 <span class="toggle-label">Likes</span>
-                                <input type="checkbox" class="toggle-input" checked>
+                                <input type="checkbox" class="toggle-input" id="noti-likes" checked>
                             </div>
                             <div class="toggle-row">
                                 <span class="toggle-label">Comments</span>
-                                <input type="checkbox" class="toggle-input" checked>
+                                <input type="checkbox" class="toggle-input" id="noti-comments" checked>
                             </div>
                             <div class="toggle-row">
                                 <span class="toggle-label">Enable Push Notifications</span>
-                                <input type="checkbox" class="toggle-input">
+                                <input type="checkbox" class="toggle-input" id="noti-push">
                             </div>
                             <div class="toggle-row">
                                 <span class="toggle-label">Get Mentions & Replies Alerts</span>
-                                <input type="checkbox" class="toggle-input">
+                                <input type="checkbox" class="toggle-input" id="noti-mentions">
                             </div>
                         </div>
                     </section>
@@ -183,7 +183,7 @@
                             <div class="form-group">
                                 <label class="input-label">Profile Visibility</label>
                                 <div class="input-wrap">
-                                    <select class="input-field select-field">
+                                    <select class="input-field select-field" id="priv-visibility">
                                         <option value="public">Public</option>
                                         <option value="private">Private</option>
                                     </select>
@@ -206,15 +206,15 @@
                         <div class="form-list">
                             <div class="toggle-row">
                                 <span class="toggle-label">AI Enhancements</span>
-                                <input type="checkbox" class="toggle-input" checked>
+                                <input type="checkbox" class="toggle-input" id="ctrl-ai" checked>
                             </div>
                             <div class="toggle-row">
                                 <span class="toggle-label">Auto Description</span>
-                                <input type="checkbox" class="toggle-input">
+                                <input type="checkbox" class="toggle-input" id="ctrl-auto-desc">
                             </div>
                             <div class="toggle-row">
                                 <span class="toggle-label">Allow Fusion</span>
-                                <input type="checkbox" class="toggle-input">
+                                <input type="checkbox" class="toggle-input" id="ctrl-fusion">
                             </div>
                         </div>
                     </section>
@@ -302,6 +302,86 @@
                 document.addEventListener('click', () => profileDropup.classList.remove('profile-dropup--active'));
                 profileDropup.addEventListener('click', (e) => e.stopPropagation());
             }
+
+            // ============================================================
+            // SETTINGS PERSISTENCE (JSONB)
+            // ============================================================
+            
+            const loadSettings = async () => {
+                const settings = await window.AumageDB.getUserSettings();
+                console.log('Loading saved settings:', settings);
+
+                if (settings.username) document.getElementById('username').value = settings.username;
+                if (settings.bio) document.getElementById('bio').value = settings.bio;
+                
+                if (settings.theme) document.getElementById('pref-theme').value = settings.theme;
+                if (settings.creationType) document.getElementById('pref-creation-type').value = settings.creationType;
+                
+                if (settings.notifications) {
+                    document.getElementById('noti-creature').checked = !!settings.notifications.creature;
+                    document.getElementById('noti-likes').checked = !!settings.notifications.likes;
+                    document.getElementById('noti-comments').checked = !!settings.notifications.comments;
+                    document.getElementById('noti-push').checked = !!settings.notifications.push;
+                    document.getElementById('noti-mentions').checked = !!settings.notifications.mentions;
+                }
+
+                if (settings.privacy) document.getElementById('priv-visibility').value = settings.privacy.visibility || 'public';
+
+                if (settings.controls) {
+                    document.getElementById('ctrl-ai').checked = !!settings.controls.ai;
+                    document.getElementById('ctrl-auto-desc').checked = !!settings.controls.autoDesc;
+                    document.getElementById('ctrl-fusion').checked = !!settings.controls.fusion;
+                }
+            };
+
+            let saveTimeout;
+            const saveSettings = async () => {
+                const settings = {
+                    username: document.getElementById('username').value,
+                    bio: document.getElementById('bio').value,
+                    theme: document.getElementById('pref-theme').value,
+                    creationType: document.getElementById('pref-creation-type').value,
+                    notifications: {
+                        creature: document.getElementById('noti-creature').checked,
+                        likes: document.getElementById('noti-likes').checked,
+                        comments: document.getElementById('noti-comments').checked,
+                        push: document.getElementById('noti-push').checked,
+                        mentions: document.getElementById('noti-mentions').checked,
+                    },
+                    privacy: {
+                        visibility: document.getElementById('priv-visibility').value
+                    },
+                    controls: {
+                        ai: document.getElementById('ctrl-ai').checked,
+                        autoDesc: document.getElementById('ctrl-auto-desc').checked,
+                        fusion: document.getElementById('ctrl-fusion').checked,
+                    }
+                };
+
+                try {
+                    await window.AumageDB.updateUserSettings(settings);
+                    console.log('Settings saved automatically');
+                } catch (err) {
+                    console.error('Auto-save failed:', err);
+                }
+            };
+
+            // Trigger load
+            await loadSettings();
+
+            // Setup listeners for auto-save
+            const allInputs = document.querySelectorAll('.settings-panels-wrap input, .settings-panels-wrap select, .settings-panels-wrap textarea');
+            allInputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(saveSettings, 1000);
+                });
+                
+                // For text inputs/textarea, also save on blur
+                if (input.type === 'text' || input.tagName === 'TEXTAREA') {
+                    input.addEventListener('blur', saveSettings);
+                }
+            });
         });
     </script>
 </body>

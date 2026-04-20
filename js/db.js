@@ -763,6 +763,43 @@ const AumageDB = {
   },
 
   /**
+   * Update the JSONB settings column for the current profile.
+   */
+  async updateUserSettings(settings) {
+    if (!this.user || !this.supabase) return null;
+    const { data, error } = await this.supabase
+      .from('profiles')
+      .update({ settings })
+      .eq('id', this.user.id)
+      .select('settings')
+      .single();
+    
+    if (error) {
+      console.error('AumageDB updateUserSettings error:', error);
+      throw error;
+    }
+    return data;
+  },
+
+  /**
+   * Fetch the JSONB settings directly from Supabase.
+   */
+  async getUserSettings() {
+    if (!this.user || !this.supabase) return {};
+    const { data, error } = await this.supabase
+      .from('profiles')
+      .select('settings')
+      .eq('id', this.user.id)
+      .single();
+    
+    if (error) {
+      console.warn('AumageDB getUserSettings warning:', error.message);
+      return {};
+    }
+    return data.settings || {};
+  },
+
+  /**
    * Get global leaderboard (users with most creatures).
    */
   async getLeaderboard(limit = 6) {
