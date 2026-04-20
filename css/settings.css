@@ -40,6 +40,11 @@
     grid-template-columns: 240px 1fr;
     gap: 40px;
     align-items: start;
+    flex: 1;
+}
+
+.settings-panels-wrap {
+    flex: 1;
 }
 
 /* ── Vertical Tabs ── */
@@ -149,6 +154,96 @@
     height: 120px;
     padding: 16px;
     resize: none;
+}
+
+.select-field {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+}
+
+.select-field option {
+    background: #011F1F;
+    color: #fff;
+}
+
+/* ── Notifications ── */
+.form-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 0;
+}
+
+.toggle-label {
+    font-size: 14px;
+    color: var(--text-main);
+}
+
+.toggle-input {
+    width: 20px;
+    height: 20px;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-card);
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.toggle-input:checked {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.toggle-input:checked::after {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #011F1F;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+/* ── Plan ── */
+.plan-status {
+    font-size: 16px;
+    color: var(--text-main);
+    margin-bottom: 20px;
+}
+
+.plan-status strong {
+    color: var(--color-primary);
+}
+
+.btn-upgrade {
+    height: 36px;
+    padding: 0 24px;
+    background: var(--color-primary);
+    border: none;
+    border-radius: 6px;
+    color: #011F1F;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-upgrade:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--color-primary-glow);
 }
 
 /* Input Icons */
