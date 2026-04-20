@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings — HoHeTo Kyle</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/settings.css">
+</head>
+<body class="dashboard-body">
+
+    <!-- Sidebar Placeholder -->
+    <div id="comp-sidebar"></div>
+
+    <main class="main-area">
+        <!-- Global Header Placeholder -->
+        <div id="comp-header"></div>
+
+        <div class="settings-container">
+            <div class="settings-header">
+                <h1 class="settings-title">Settings</h1>
+                <p class="settings-subtitle">Customize your experience and control your creations.</p>
+            </div>
+
+            <div class="settings-content-wrapper">
+                <!-- Vertical Navigation -->
+                <aside class="settings-tabs">
+                    <div class="settings-tab settings-tab--active">Profile</div>
+                    <div class="settings-tab">Preferences</div>
+                    <div class="settings-tab">Notifications</div>
+                    <div class="settings-tab">Privacy</div>
+                    <div class="settings-tab">Creator</div>
+                    <div class="settings-tab">Plan</div>
+                </aside>
+
+                <!-- Settings Panel -->
+                <section class="settings-panel">
+                    <div class="panel-header">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <h2 class="panel-title">Your Identity</h2>
+                    </div>
+
+                    <form class="settings-form">
+                        <div class="form-grid">
+                            <!-- Username -->
+                            <div class="form-group">
+                                <label class="input-label">Username</label>
+                                <div class="input-wrap">
+                                    <span class="input-left-icon">@</span>
+                                    <input type="text" class="input-field input-with-left input-with-right" id="username" placeholder="Travis" value="@Travis">
+                                    <div class="input-right-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="form-group">
+                                <label class="input-label">Email</label>
+                                <div class="input-wrap">
+                                    <span class="input-left-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                            <polyline points="22,6 12,13 2,6"></polyline>
+                                        </svg>
+                                    </span>
+                                    <input type="email" class="input-field input-with-left" id="email" value="travis8907@gmail.com" readonly>
+                                </div>
+                            </div>
+
+                            <!-- Bio -->
+                            <div class="form-group form-group-full">
+                                <label class="input-label">Short Bio</label>
+                                <textarea class="input-field textarea-field" placeholder="Write Here......."></textarea>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="form-group form-group-full">
+                                <label class="input-label">Change Password</label>
+                                <div class="input-wrap">
+                                    <input type="password" class="input-field input-with-right" placeholder="************" value="************">
+                                    <div class="input-right-icon">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/db.js"></script>
+    <script src="../js/components.js"></script>
+    <script src="../js/theme.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Database Init
+            if (window.AumageDB) {
+                window.AumageDB.init();
+                const session = await window.AumageDB.requireAuth();
+                if (!session) return;
+            }
+
+            // Load Components
+            await ComponentLoader.loadAll([
+                { id: 'comp-sidebar', path: '../components/sidebar.html' },
+                { id: 'comp-header', path: '../components/header.html' }
+            ]);
+            
+            // Set active nav
+            const navItem = document.getElementById('nav-settings');
+            if (navItem) navItem.classList.add('nav-item--active');
+
+            // Hydrate Sidebar & Greeting
+            if (window.AumageDB) {
+                await window.AumageDB.updateSidebarStats();
+            }
+
+            // Tab Interactivity
+            const tabs = document.querySelectorAll('.settings-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('settings-tab--active'));
+                    tab.classList.add('settings-tab--active');
+                });
+            });
+
+            // Profile Dropdown Logic
+            const profileToggle = document.getElementById('profileToggle');
+            const profileDropup = document.getElementById('profileDropup');
+
+            if (profileToggle && profileDropup) {
+                profileToggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    profileDropup.classList.toggle('profile-dropup--active');
+                });
+                document.addEventListener('click', () => profileDropup.classList.remove('profile-dropup--active'));
+                profileDropup.addEventListener('click', (e) => e.stopPropagation());
+            }
+        });
+    </script>
+</body>
+</html>
