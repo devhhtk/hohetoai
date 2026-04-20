@@ -360,22 +360,40 @@
             };
 
             const loadSettings = async () => {
-                // Fetch direct profile for username
+                const user = window.AumageDB.user;
+                if (!user) return;
+
+                console.log('User detected for load:', user);
+                
+                // Set Email (Always available from auth)
+                document.getElementById('email').value = user.email || '';
+
+                // 1. Try to fetch the live profile (for bio and display_name)
                 const profileResult = await window.AumageDB.getUserProfile();
+                
+                // Fallback username logic
+                let displayName = '';
                 if (profileResult && profileResult.profile) {
-                    document.getElementById('username').value = profileResult.profile.display_name || '';
-                    document.getElementById('email').value = window.AumageDB.user.email || '';
+                    displayName = profileResult.profile.display_name;
                 }
+                if (!displayName) {
+                    displayName = user.user_metadata?.display_name || user.email?.split('@')[0] || '';
+                }
+                
+                document.getElementById('username').value = displayName;
 
-                // Fetch JSONB settings
+                // 2. Fetch JSONB settings from Supabase Directly (Bio, Prefs, etc.)
                 const settings = await window.AumageDB.getUserSettings();
-                console.log('Loading saved settings:', settings);
+                console.log('Loading JSONB settings:', settings);
 
+                // Set Bio from JSONB
                 if (settings.bio) document.getElementById('bio').value = settings.bio;
                 
+                // Set Preferences
                 if (settings.theme) document.getElementById('pref-theme').value = settings.theme;
                 if (settings.creationType) document.getElementById('pref-creation-type').value = settings.creationType;
                 
+                // Set Notifications
                 if (settings.notifications) {
                     document.getElementById('noti-creature').checked = !!settings.notifications.creature;
                     document.getElementById('noti-likes').checked = !!settings.notifications.likes;
@@ -384,8 +402,10 @@
                     document.getElementById('noti-mentions').checked = !!settings.notifications.mentions;
                 }
 
+                // Set Privacy
                 if (settings.privacy) document.getElementById('priv-visibility').value = settings.privacy.visibility || 'public';
 
+                // Set Creator Controls
                 if (settings.controls) {
                     document.getElementById('ctrl-ai').checked = !!settings.controls.ai;
                     document.getElementById('ctrl-auto-desc').checked = !!settings.controls.autoDesc;
