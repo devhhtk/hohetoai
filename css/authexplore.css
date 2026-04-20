@@ -125,7 +125,7 @@ body.dashboard-body:not(.light-mode) .filter-btn:hover {
 .explore-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    gap: 24px;
 }
 
 .creature-card {
@@ -143,10 +143,10 @@ body.dashboard-body:not(.light-mode) .filter-btn:hover {
 
 .creature-card__img-wrapper {
     position: relative;
-    width: 100%;
+    width: 92%;
+    margin: 0 auto 12px auto;
     aspect-ratio: 929 / 1348; /* Exact requested aspect ratio */
-    margin-bottom: 8px;
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
@@ -193,7 +193,7 @@ body.dashboard-body:not(.light-mode) .filter-btn:hover {
 }
 
 .creature-card__name {
-    font-size: 11px;
+    font-size: 14px;
     font-weight: 700;
     color: var(--text-main);
     margin: 0;
@@ -203,21 +203,21 @@ body.dashboard-body:not(.light-mode) .filter-btn:hover {
 }
 
 .creature-card__author {
-    font-size: 8px;
+    font-size: 11px;
     color: var(--text-muted);
 }
 
 .creature-card__type-pill {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
-    padding: 2px 5px;
+    gap: 5px;
+    padding: 4px 8px;
     background: #E2E8F0;
-    border-radius: 3px;
-    font-size: 8px;
+    border-radius: 6px;
+    font-size: 10px;
     font-weight: 700;
     color: #475569;
-    margin-bottom: 6px;
+    margin-bottom: 12px;
 }
 
 body.dashboard-body:not(.light-mode) .creature-card__type-pill {
@@ -235,8 +235,8 @@ body.dashboard-body:not(.light-mode) .creature-card__type-pill {
 .action-item {
     display: flex;
     align-items: center;
-    gap: 2px;
-    font-size: 9px;
+    gap: 5px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--text-muted);
     cursor: pointer;
@@ -248,8 +248,8 @@ body.dashboard-body:not(.light-mode) .creature-card__type-pill {
 }
 
 .action-item svg {
-    width: 10px;
-    height: 10px;
+    width: 14px;
+    height: 14px;
 }
 
 /* ── Load More Button ── */
