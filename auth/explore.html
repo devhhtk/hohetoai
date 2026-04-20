@@ -168,18 +168,32 @@
             // Database Init
             if (window.AumageDB) {
                 window.AumageDB.init();
-                // Load Dynamic Explore Cards
-                loadExploreCards();
+                // Load Dynamic Explore Cards (Default: All/Latest)
+                loadExploreCards('all');
+
+                // Attachment to Filter Buttons
+                const filterBtns = document.querySelectorAll('.filter-btn');
+                filterBtns.forEach(btn => {
+                    btn.onclick = () => {
+                        // Change Active State
+                        filterBtns.forEach(b => b.classList.remove('filter-btn--active'));
+                        btn.classList.add('filter-btn--active');
+
+                        // Map text to sort type
+                        const sortType = btn.textContent.trim().toLowerCase().replace(' ', '_');
+                        loadExploreCards(sortType);
+                    };
+                });
             }
 
-            async function loadExploreCards() {
+            async function loadExploreCards(sort = 'all') {
                 const grid = document.getElementById('explore-grid');
                 if (!grid) return;
 
                 // Show loading state if needed
                 grid.innerHTML = '<div class="loading-state">Syncing with the Realm...</div>';
 
-                const creatures = await window.AumageDB.getExploreCards(20);
+                const creatures = await window.AumageDB.getExploreCards(24, sort);
                 grid.innerHTML = ''; // Clear loading
 
                 if (!creatures || creatures.length === 0) {

@@ -628,7 +628,7 @@ const AumageDB = {
    * Get public creatures through the Worker API for Explore.
    * This ensures we get card_image_url filtered data.
    */
-  async getExploreCards(limit = 50) {
+  async getExploreCards(limit = 50, sort = 'latest') {
     try {
       // On page refresh, we must ensure the auth state has rehydrated
       // We check session first, if missing we wait a tiny bit or check user
@@ -643,7 +643,7 @@ const AumageDB = {
       const token = sessionData?.data?.session?.access_token;
       
       const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
-      const resp = await fetch(`${apiBase}/api/explore?limit=${limit}`, {
+      const resp = await fetch(`${apiBase}/api/explore?limit=${limit}&sort=${sort}`, {
         headers: {
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         }
