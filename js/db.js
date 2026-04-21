@@ -552,31 +552,24 @@ const AumageDB = {
         .from('creatures')
         .select(`
           *,
-          creature_likes(count),
-          creature_comments(count)
+          likes_count:creature_likes(count),
+          comments_count:creature_comments(count)
         `)
         .eq('user_id', this.user.id)
-        .order('created_at', { ascending: false }); // Fetch all user creatures to sort by engagement
+        .eq('is_public', true) // Matching explore logic: trending is usually public
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      // Transform + calculate score
-      const creatures = (data || []).map(c => {
-        const likes = c.creature_likes?.[0]?.count ?? 0;
-        const comments = c.creature_comments?.[0]?.count ?? 0;
-        return {
-          ...c,
-          likes_count: likes,
-          comments_count: comments,
-          score: likes + comments
-        };
-      });
+      // Transform + calculate score (same logic as explore)
+      const creatures = (data || []).map(c => ({
+        ...c,
+        likes_count: c.likes_count?.[0]?.count || 0,
+        comments_count: c.comments_count?.[0]?.count || 0,
+      }));
 
-      // Sort by engagement score
-      creatures.sort((a, b) => {
-        if (b.score !== a.score) return b.score - a.score;
-        return new Date(b.created_at) - new Date(a.created_at);
-      });
+      // Sort by combined engagement (same as explore)
+      creatures.sort((a, b) => (b.likes_count + b.comments_count) - (a.likes_count + a.comments_count));
 
       return creatures.slice(0, limit);
     } catch (e) {
@@ -593,41 +586,32 @@ const AumageDB = {
     if (!this.supabase || !this.user) return [];
 
     try {
-      // Fetch creatures with proper relation counts
+      // Fetch cards with proper relation counts
       const { data, error } = await this.supabase
         .from('creatures')
         .select(`
-        *,
-        creature_likes(count),
-        creature_comments(count)
-      `)
-        .eq('user_id', this.user.id) // keep user-specific
+          *,
+          likes_count:creature_likes(count),
+          comments_count:creature_comments(count)
+        `)
+        .eq('user_id', this.user.id)
+        .eq('is_public', true) // Matching explore logic
         .neq('card_image_url', '')
         .not('card_image_url', 'is', null);
 
       if (error) throw error;
 
-      // Transform + calculate score
-      const creatures = (data || []).map(c => {
-        const likes = c.creature_likes?.[0]?.count ?? 0;
-        const comments = c.creature_comments?.[0]?.count ?? 0;
+      // Transform + calculate score (same logic as explore)
+      const creatures = (data || []).map(c => ({
+        ...c,
+        likes_count: c.likes_count?.[0]?.count || 0,
+        comments_count: c.comments_count?.[0]?.count || 0,
+      }));
 
-        return {
-          ...c,
-          likes_count: likes,
-          comments_count: comments,
-          score: likes + comments
-        };
-      });
-
-      // Sort by engagement score, then by recency
-      creatures.sort((a, b) => {
-        if (b.score !== a.score) return b.score - a.score;
-        return new Date(b.created_at) - new Date(a.created_at);
-      });
+      // Sort by combined engagement (same as explore)
+      creatures.sort((a, b) => (b.likes_count + b.comments_count) - (a.likes_count + a.comments_count));
 
       return creatures.slice(0, limit);
-
     } catch (e) {
       console.error('AumageDB.getTrendingCards error:', e);
       return [];
