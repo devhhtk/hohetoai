@@ -124,7 +124,7 @@
             <!-- Trending Creatures -->
             <section class="dashboard-section">
                 <div class="section-header">
-                    <h3 class="section-title">Our Trending Creatures Cards</h3>
+                    <h3 class="section-title">My Trending Creatures Cards</h3>
                     <a href="#" class="btn-see-all">See all</a>
                 </div>
                 <div id="trending-cards-grid" class="creatures-grid">
@@ -154,7 +154,7 @@
             <!-- Popular Characters Rounded Squares -->
             <section class="dashboard-section">
                 <div class="section-header">
-                    <h3 class="section-title">Our Popular Characters</h3>
+                    <h3 class="section-title">My Popular Characters</h3>
                     <a href="#" class="btn-see-all">See all</a>
                 </div>
                 <div id="popular-grid" class="creatures-grid">
@@ -274,11 +274,15 @@
 
                     if (validCreatures.length > 0) {
                         popularGrid.innerHTML = validCreatures.map(c => `
-                            <a href="creature-details.html?s=${c.share_slug}" class="creature-card--rounded">
-                                <img src="${c.image_url}" alt="${c.creature_name || 'Generated Creature'}" title="${c.creature_name || 'Creature'}">
+                            <a href="creature-details.html?${c.share_slug ? 's=' + c.share_slug : 'id=' + c.id}" class="creature-card--rounded" title="${c.creature_name || 'Creature'}">
+                                <img src="${c.image_url}" alt="${c.creature_name || 'Creature'}">
                             </a>
                         `).join('');
+                    } else {
+                        popularGrid.innerHTML = '<div class="no-data-msg">No creatures yet. <a href="generate.html" style="color:var(--color-primary);">Create one!</a></div>';
                     }
+                } else {
+                    popularGrid.innerHTML = '<div class="no-data-msg">No creatures yet. <a href="generate.html" style="color:var(--color-primary);">Create one!</a></div>';
                 }
             }
 
@@ -290,10 +294,18 @@
                 const creatures = await window.AumageDB.getTrendingCards(5);
                 if (creatures && creatures.length > 0) {
                     grid.innerHTML = creatures.map(c => `
-                        <a href="creature-details.html?s=${c.share_slug}" class="creature-card--tall">
-                            <img src="${c.card_image_url || c.card_url}" alt="${c.creature_name || 'Generated Card'}" title="${c.creature_name || 'Card'}">
+                        <a href="creature-details.html?${c.share_slug ? 's=' + c.share_slug : 'id=' + c.id}" class="creature-card--tall" title="${c.creature_name || 'Card'}">
+                            <img src="${c.card_image_url || c.card_url || c.image_url}" alt="${c.creature_name || 'Card'}">
+                            ${(c.likes_count > 0 || c.comments_count > 0) ? `
+                                <div class="card-engagement-mini">
+                                    <span>❤️ ${c.likes_count}</span>
+                                    <span>💬 ${c.comments_count}</span>
+                                </div>
+                            ` : ''}
                         </a>
                     `).join('');
+                } else {
+                    grid.innerHTML = '<div class="no-data-msg">No trending cards found for your collection.</div>';
                 }
             }
 

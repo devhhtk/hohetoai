@@ -561,25 +561,38 @@ const AumageDB = {
   },
 
   /**
-   * Get creatures that have generated schematic cards.
+   * Get creatures of the current user that have generated schematic cards,
+   * ordered by most likes and comments.
    */
   async getTrendingCards(limit = 8) {
-    if (!this.supabase) return [];
-    // We check for card_image_url presence
-    const { data, error } = await this.supabase
-      .from('creatures')
-      .select('*')
-      .neq('card_image_url', '')
-      .not('card_image_url', 'is', null)
-      .eq('is_public', true)
-      .order('created_at', { ascending: false })
-      .limit(limit);
+    if (!this.supabase || !this.user) return [];
+    
+    try {
+      // We check for card_image_url presence and filter by current user
+      const { data, error } = await this.supabase
+        .from('creatures')
+        .select('*, likes_count:creature_likes(count), comments_count:creature_comments(count)')
+        .eq('user_id', this.user.id)
+        .neq('card_image_url', '')
+        .not('card_image_url', 'is', null);
 
-    if (error) {
-      console.error('AumageDB getTrendingCards error:', error);
+      if (error) throw error;
+
+      // Transform counts and sort in memory (since PostgREST aggregates sorting is complex)
+      let creatures = (data || []).map(c => ({
+        ...c,
+        likes_count: c.likes_count?.[0]?.count || 0,
+        comments_count: c.comments_count?.[0]?.count || 0
+      }));
+
+      // Sort by combined engagement
+      creatures.sort((a, b) => (b.likes_count + b.comments_count) - (a.likes_count + a.comments_count));
+
+      return creatures.slice(0, limit);
+    } catch (e) {
+      console.error('AumageDB getTrendingCards error:', e);
       return [];
     }
-    return data || [];
   },
 
   /**
@@ -605,15 +618,16 @@ const AumageDB = {
   },
 
   /**
-   * Get popular creatures (for now, fetching a mixed sample).
+   * Get latest creatures of the current user (User's "Popular" definition).
    */
   async getPopularCreatures(limit = 20) {
-    if (!this.supabase) return [];
-    // Currently using random sample of public creatures since no like/view metrics exist yet
+    if (!this.supabase || !this.user) return [];
+    
+    // Fetch current user's creatures ordered by latest
     const { data, error } = await this.supabase
       .from('creatures')
       .select('*')
-      .eq('is_public', true)
+      .eq('user_id', this.user.id)
       .order('created_at', { ascending: false })
       .limit(limit);
 

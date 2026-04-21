@@ -2286,3 +2286,52 @@ t strong {
   font-size: 11px;
   color: var(--text-muted);
 }
+
+/* ── Dashboard Enhancements ── */
+.no-data-msg {
+  grid-column: 1 / -1;
+  padding: 40px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.creature-card--tall {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-engagement-mini {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.creature-card--tall:hover .card-engagement-mini {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.creatures-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+}
