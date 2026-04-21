@@ -562,13 +562,14 @@ const AumageDB = {
 
   /**
    * Get creatures of the current user that have generated schematic cards,
-   * ordered by most likes and comments.
+   * sorted by most engagement (likes + comments).
    */
   async getTrendingCards(limit = 8) {
     if (!this.supabase || !this.user) return [];
     
     try {
-      // We check for card_image_url presence and filter by current user
+      // 1. Fetch user's cards with their engagement counts
+      // We alias the counts to match the format expected by the UI
       const { data, error } = await this.supabase
         .from('creatures')
         .select('*, likes_count:creature_likes(count), comments_count:creature_comments(count)')
@@ -578,19 +579,26 @@ const AumageDB = {
 
       if (error) throw error;
 
-      // Transform counts and sort in memory (since PostgREST aggregates sorting is complex)
-      let creatures = (data || []).map(c => ({
+      // 2. Transform the data into a flat structure and sort
+      const creatures = (data || []).map(c => ({
         ...c,
         likes_count: c.likes_count?.[0]?.count || 0,
         comments_count: c.comments_count?.[0]?.count || 0
       }));
 
-      // Sort by combined engagement
-      creatures.sort((a, b) => (b.likes_count + b.comments_count) - (a.likes_count + a.comments_count));
+      // 3. Sort by engagement (Likes + Comments combined)
+      // We use created_at as a tie-breaker for a more predictable order
+      creatures.sort((a, b) => {
+        const scoreA = a.likes_count + a.comments_count;
+        const scoreB = b.likes_count + b.comments_count;
+        if (scoreB !== scoreA) return scoreB - scoreA;
+        // Tie-breaker: most recent first
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
 
       return creatures.slice(0, limit);
     } catch (e) {
-      console.error('AumageDB getTrendingCards error:', e);
+      console.error('AumageDB.getTrendingCards error:', e);
       return [];
     }
   },
