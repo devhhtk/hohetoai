@@ -587,37 +587,45 @@ const AumageDB = {
 
     try {
       // Fetch cards with proper relation counts
-      // Note: We use a broader fetch and filter in JS to handle both card_image_url and card_url
+      // We use unique aliases to avoid any potential conflicts with table columns
       const { data, error } = await this.supabase
         .from('creatures')
         .select(`
           *,
-          likes_count:creature_likes(count),
-          comments_count:creature_comments(count)
+          total_likes:creature_likes(count),
+          total_comments:creature_comments(count)
         `)
         .eq('user_id', this.user.id)
-        .eq('is_public', true); // Trending usually implies public engagement
+        .eq('is_public', true);
 
       if (error) throw error;
 
       // Transform + calculate score + filter for valid card images
       const creatures = (data || [])
-        .map(c => ({
-          ...c,
-          likes_count: c.likes_count?.[0]?.count || 0,
-          comments_count: c.comments_count?.[0]?.count || 0,
-        }))
+        .map(c => {
+          // Check join results first, then fallback to potential table columns
+          const lCount = (c.total_likes?.[0]?.count) ?? (c.likes_count) ?? 0;
+          const cCount = (c.total_comments?.[0]?.count) ?? (c.comments_count) ?? 0;
+          
+          return {
+            ...c,
+            likes_count: lCount,
+            comments_count: cCount
+          };
+        })
         .filter(c => (c.card_image_url && c.card_image_url !== '') || (c.card_url && c.card_url !== ''));
 
-      // Sort by combined engagement (Score) first, then by recency (created_at)
+      // Sort primarily by likes (descending), then by comments, then by recency
       creatures.sort((a, b) => {
-        const scoreA = a.likes_count + a.comments_count;
-        const scoreB = b.likes_count + b.comments_count;
-        
-        if (scoreB !== scoreA) {
-          return scoreB - scoreA;
+        // 1. Primary: Likes
+        if (b.likes_count !== a.likes_count) {
+          return b.likes_count - a.likes_count;
         }
-        // Fallback to recency for cards with same engagement
+        // 2. Secondary: Comments
+        if (b.comments_count !== a.comments_count) {
+          return b.comments_count - a.comments_count;
+        }
+        // 3. Last Resort: Time
         return new Date(b.created_at) - new Date(a.created_at);
       });
 
