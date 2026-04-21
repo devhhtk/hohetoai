@@ -601,6 +601,7 @@ const AumageDB = {
           total_likes:creature_likes(count),
           total_comments:creature_comments(count)
         `)
+        .not('card_image_url', 'is', null)
         .eq('user_id', this.user.id)
         .eq('is_public', true);
 
@@ -612,7 +613,7 @@ const AumageDB = {
           // Check join results first, then fallback to potential table columns
           const lCount = (c.total_likes?.[0]?.count) ?? (c.likes_count) ?? 0;
           const cCount = (c.total_comments?.[0]?.count) ?? (c.comments_count) ?? 0;
-          
+
           return {
             ...c,
             likes_count: lCount,
