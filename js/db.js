@@ -587,29 +587,44 @@ const AumageDB = {
 
     try {
       // Fetch cards with proper relation counts
+      // We check for both card_image_url and card_url to be safe
       const { data, error } = await this.supabase
         .from('creatures')
         .select(`
           *,
-          likes_count:creature_likes(count),
-          comments_count:creature_comments(count)
+          likes:creature_likes(count),
+          comments:creature_comments(count)
         `)
         .eq('user_id', this.user.id)
-        .eq('is_public', true) // Matching explore logic
-        .neq('card_image_url', '')
-        .not('card_image_url', 'is', null);
+        .eq('is_public', true);
 
       if (error) throw error;
 
-      // Transform + calculate score (same logic as explore)
-      const creatures = (data || []).map(c => ({
-        ...c,
-        likes_count: c.likes_count?.[0]?.count || 0,
-        comments_count: c.comments_count?.[0]?.count || 0,
-      }));
+      // Transform + calculate score
+      const creatures = (data || [])
+        .filter(c => 
+          (c.card_image_url && c.card_image_url !== '') || 
+          (c.card_url && c.card_url !== '') ||
+          (c.image_url && c.image_url !== '')
+        )
+        .map(c => {
+          const lCount = c.likes?.[0]?.count || 0;
+          const cCount = c.comments?.[0]?.count || 0;
+          return {
+            ...c,
+            likes_count: lCount,
+            comments_count: cCount,
+            engagement_score: lCount + cCount
+          };
+        });
 
-      // Sort by combined engagement (same as explore)
-      creatures.sort((a, b) => (b.likes_count + b.comments_count) - (a.likes_count + a.comments_count));
+      // Sort by combined engagement (Score) first, then by recency
+      creatures.sort((a, b) => {
+        if (b.engagement_score !== a.engagement_score) {
+          return b.engagement_score - a.engagement_score;
+        }
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
 
       return creatures.slice(0, limit);
     } catch (e) {
