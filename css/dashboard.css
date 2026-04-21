@@ -1742,8 +1742,8 @@ body.light-mode .trope-card:hover {
   max-width: 100%;
   max-height: 480px;
   object-fit: contain;
-  animation: float 4s ease-in-out infinite;
-  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  /* animation: float 4s ease-in-out infinite;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); */
 }
 
 .top-image-container img.image-changing {
@@ -2334,4 +2334,4 @@ t strong {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 20px;
-}
+}
