@@ -542,22 +542,47 @@ const AumageDB = {
   // ============================================================
 
   /**
-   * Get trending creatures (latest public creations).
+   * Get trending creatures of the current user (most likes/comments).
    */
   async getTrendingCreatures(limit = 8) {
-    if (!this.supabase) return [];
-    const { data, error } = await this.supabase
-      .from('creatures')
-      .select('*')
-      .eq('is_public', true)
-      .order('created_at', { ascending: false })
-      .limit(limit);
+    if (!this.supabase || !this.user) return [];
 
-    if (error) {
-      console.error('AumageDB getTrendingCreatures error:', error);
+    try {
+      const { data, error } = await this.supabase
+        .from('creatures')
+        .select(`
+          *,
+          creature_likes(count),
+          creature_comments(count)
+        `)
+        .eq('user_id', this.user.id)
+        .order('created_at', { ascending: false }); // Fetch all user creatures to sort by engagement
+
+      if (error) throw error;
+
+      // Transform + calculate score
+      const creatures = (data || []).map(c => {
+        const likes = c.creature_likes?.[0]?.count ?? 0;
+        const comments = c.creature_comments?.[0]?.count ?? 0;
+        return {
+          ...c,
+          likes_count: likes,
+          comments_count: comments,
+          score: likes + comments
+        };
+      });
+
+      // Sort by engagement score
+      creatures.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+
+      return creatures.slice(0, limit);
+    } catch (e) {
+      console.error('AumageDB.getTrendingCreatures error:', e);
       return [];
     }
-    return data || [];
   },
 
   /**
