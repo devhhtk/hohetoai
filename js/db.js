@@ -79,7 +79,7 @@ const AumageDB = {
 
       if (levelEl) levelEl.textContent = `Lv. ${profile.level}`;
       if (xpValueEl) xpValueEl.textContent = `${Math.floor(profile.xp)} / ${profile.next_level_xp} XP`;
-      
+
       if (xpFillEl) {
         const pct = Math.min(100, Math.max(0, (profile.xp / profile.next_level_xp) * 100));
         xpFillEl.style.width = `${pct}%`;
@@ -188,14 +188,14 @@ const AumageDB = {
     const profUID = document.getElementById('prof-uid');
     const profAvatar = document.getElementById('prof-avatar');
     const greetName = document.getElementById('dash-greeting-name');
-    
+
     const name = profile.display_name || this.user.email?.split('@')[0] || 'Storyteller';
     const uidTruncated = this.user.id.substring(0, 12).toUpperCase() + '...';
 
     if (profName) profName.textContent = name;
     if (profUID) profUID.textContent = `UID: ${uidTruncated}`;
     if (greetName) greetName.textContent = name;
-    
+
     if (profAvatar) {
       if (profile.avatar_url) {
         profAvatar.src = profile.avatar_url;
@@ -566,37 +566,43 @@ const AumageDB = {
    */
   async getTrendingCards(limit = 8) {
     if (!this.supabase || !this.user) return [];
-    
+
     try {
-      // 1. Fetch user's cards with their engagement counts
-      // We alias the counts to match the format expected by the UI
+      // Fetch creatures with proper relation counts
       const { data, error } = await this.supabase
         .from('creatures')
-        .select('*, likes_count:creature_likes(count), comments_count:creature_comments(count)')
-        .eq('user_id', this.user.id)
+        .select(`
+        *,
+        creature_likes(count),
+        creature_comments(count)
+      `)
+        .eq('user_id', this.user.id) // keep user-specific
         .neq('card_image_url', '')
         .not('card_image_url', 'is', null);
 
       if (error) throw error;
 
-      // 2. Transform the data into a flat structure and sort
-      const creatures = (data || []).map(c => ({
-        ...c,
-        likes_count: c.likes_count?.[0]?.count || 0,
-        comments_count: c.comments_count?.[0]?.count || 0
-      }));
+      // Transform + calculate score
+      const creatures = (data || []).map(c => {
+        const likes = c.creature_likes?.[0]?.count ?? 0;
+        const comments = c.creature_comments?.[0]?.count ?? 0;
 
-      // 3. Sort by engagement (Likes + Comments combined)
-      // We use created_at as a tie-breaker for a more predictable order
+        return {
+          ...c,
+          likes_count: likes,
+          comments_count: comments,
+          score: likes + comments
+        };
+      });
+
+      // Sort by engagement score, then by recency
       creatures.sort((a, b) => {
-        const scoreA = a.likes_count + a.comments_count;
-        const scoreB = b.likes_count + b.comments_count;
-        if (scoreB !== scoreA) return scoreB - scoreA;
-        // Tie-breaker: most recent first
+        if (b.score !== a.score) return b.score - a.score;
         return new Date(b.created_at) - new Date(a.created_at);
       });
 
       return creatures.slice(0, limit);
+
     } catch (e) {
       console.error('AumageDB.getTrendingCards error:', e);
       return [];
@@ -630,7 +636,7 @@ const AumageDB = {
    */
   async getPopularCreatures(limit = 20) {
     if (!this.supabase || !this.user) return [];
-    
+
     // Fetch current user's creatures ordered by latest
     const { data, error } = await this.supabase
       .from('creatures')
@@ -655,7 +661,7 @@ const AumageDB = {
       // On page refresh, we must ensure the auth state has rehydrated
       // We check session first, if missing we wait a tiny bit or check user
       let sessionData = await this.supabase.auth.getSession();
-      
+
       // If we don't have a session immediately, try getUser which is more definitive on load
       if (!sessionData?.data?.session) {
         await this.supabase.auth.getUser();
@@ -663,7 +669,7 @@ const AumageDB = {
       }
 
       const token = sessionData?.data?.session?.access_token;
-      
+
       const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
       const resp = await fetch(`${apiBase}/api/explore?limit=${limit}&sort=${sort}`, {
         headers: {
@@ -795,7 +801,7 @@ const AumageDB = {
       .eq('id', this.user.id)
       .select('settings')
       .single();
-    
+
     if (error) {
       console.error('AumageDB updateUserSettings error:', error);
       throw error;
@@ -813,7 +819,7 @@ const AumageDB = {
       .select('settings')
       .eq('id', this.user.id)
       .single();
-    
+
     if (error) {
       console.warn('AumageDB getUserSettings warning:', error.message);
       return {};
@@ -844,7 +850,7 @@ const AumageDB = {
           .eq('user_id', p.id)
           .neq('card_image_url', '')
           .not('card_image_url', 'is', null);
-        
+
         return {
           ...p,
           creature_count: count || 0
@@ -1084,12 +1090,12 @@ const StreakUI = {
 
       // 3. Populate Grid
       grid.innerHTML = '';
-      
+
       for (let day = 1; day <= 30; day++) {
         const xp = rewards[day] || 0;
         const isClaimed = day <= last_reward_index;
         const isAvailable = day === (last_reward_index + 1) && day <= streak_count;
-        
+
         const item = document.createElement('div');
         item.className = 'streak-item';
         if (isClaimed) item.classList.add('streak-item--claimed');
@@ -1138,13 +1144,13 @@ const StreakUI = {
       }
 
       const result = await window.AumageDB.claimStreakReward();
-      
+
       if (result.success) {
         console.log('Reward claimed!', result);
-        
+
         // Refresh UI
         await this.init();
-        
+
         // Update main sidebar stats
         if (window.AumageDB.updateSidebarStats) {
           window.AumageDB.updateSidebarStats();
@@ -1155,7 +1161,7 @@ const StreakUI = {
           const oldLvl = document.getElementById('lvl-old');
           const newLvl = document.getElementById('lvl-new');
           const toggle = document.getElementById('levelUpModalToggle');
-          
+
           if (oldLvl) oldLvl.textContent = result.profile.level - 1;
           if (newLvl) newLvl.textContent = result.profile.level;
           if (toggle) toggle.checked = true;
@@ -1202,7 +1208,7 @@ const ConfettiEngine = {
   burst() {
     this.particles = [];
     const colors = ['#08D2C1', '#00f2e0', '#ffffff', '#ffd700', '#ff6b00'];
-    
+
     for (let i = 0; i < 150; i++) {
       this.particles.push({
         x: window.innerWidth / 2,
@@ -1267,7 +1273,7 @@ window.StreakUI = StreakUI;
 window.ConfettiEngine = ConfettiEngine;
 
 // Auto-initialize when possible
-(function() {
+(function () {
   const tryInit = () => {
     if (window.AumageDB && window.AumageDB.user && document.getElementById('streakGrid')) {
       window.StreakUI.init();
@@ -1279,7 +1285,7 @@ window.ConfettiEngine = ConfettiEngine;
 
   // Listen for signals that UI or data might be ready
   document.addEventListener('componentsLoaded', tryInit);
-  
+
   // Re-init on manual modal open
   document.addEventListener('change', (e) => {
     if (e.target.id === 'streakModalToggle' && e.target.checked) {
