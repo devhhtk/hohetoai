@@ -15,6 +15,14 @@
     </div>
 
     <div class="top-bar__actions">
+        <div class="token-display" title="Game Tokens">
+            <svg class="token-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="12" cy="12" r="8"></circle>
+                <path d="M12 7v10"></path>
+                <path d="M15 9h-4.5a1.5 1.5 0 0 0 0 3h3a1.5 1.5 0 0 1 0 3H9"></path>
+            </svg>
+            <span id="header-token-count">1,250</span>
+        </div>
         <label for="streakModalToggle" class="action-btn streak-btn" title="Daily Streak">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3 2.5.5 4.5 2.5 4.5 5.5a4.5 4.5 0 0 1-9 0c0-1.11.33-2.11 1-3 .5 1.11 1 2 3.5 3z"></path>
@@ -33,6 +41,19 @@
                 <path d="M12 20V4"></path>
                 <path d="M18 20V14"></path>
             </svg>
+        </button>
+        <button class="action-btn" title="Messages" onclick="window.location.href='messages.html'">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span class="badge--dot" style="display: none;"></span>
+        </button>
+        <button class="action-btn" title="Inbox" onclick="window.location.href='inbox.html'">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            <span class="badge--dot" style="display: none;"></span>
         </button>
         <label for="notiOffcanvasToggle" class="action-btn" title="Notifications">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

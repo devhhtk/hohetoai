@@ -188,6 +188,7 @@ const AumageDB = {
     const profUID = document.getElementById('prof-uid');
     const profAvatar = document.getElementById('prof-avatar');
     const greetName = document.getElementById('dash-greeting-name');
+    const headerTokens = document.getElementById('header-token-count');
 
     const name = profile.display_name || this.user.email?.split('@')[0] || 'Storyteller';
     const uidTruncated = this.user.id.substring(0, 12).toUpperCase() + '...';
@@ -195,6 +196,11 @@ const AumageDB = {
     if (profName) profName.textContent = name;
     if (profUID) profUID.textContent = `UID: ${uidTruncated}`;
     if (greetName) greetName.textContent = name;
+
+    if (headerTokens) {
+      // Assuming 'tokens' or 'currency' exists in profile, otherwise default to 0
+      headerTokens.textContent = (profile.tokens !== undefined ? profile.tokens : (profile.currency || 0)).toLocaleString();
+    }
 
     if (profAvatar) {
       if (profile.avatar_url) {
