@@ -587,6 +587,7 @@ const AumageDB = {
 
     try {
       // Fetch cards with proper relation counts
+      // Note: We use a broader fetch and filter in JS to handle both card_image_url and card_url
       const { data, error } = await this.supabase
         .from('creatures')
         .select(`
@@ -595,21 +596,30 @@ const AumageDB = {
           comments_count:creature_comments(count)
         `)
         .eq('user_id', this.user.id)
-        .eq('is_public', true) // Matching explore logic
-        .neq('card_image_url', '')
-        .not('card_image_url', 'is', null);
+        .eq('is_public', true); // Trending usually implies public engagement
 
       if (error) throw error;
 
-      // Transform + calculate score (same logic as explore)
-      const creatures = (data || []).map(c => ({
-        ...c,
-        likes_count: c.likes_count?.[0]?.count || 0,
-        comments_count: c.comments_count?.[0]?.count || 0,
-      }));
+      // Transform + calculate score + filter for valid card images
+      const creatures = (data || [])
+        .map(c => ({
+          ...c,
+          likes_count: c.likes_count?.[0]?.count || 0,
+          comments_count: c.comments_count?.[0]?.count || 0,
+        }))
+        .filter(c => (c.card_image_url && c.card_image_url !== '') || (c.card_url && c.card_url !== ''));
 
-      // Sort by combined engagement (same as explore)
-      creatures.sort((a, b) => (b.likes_count + b.comments_count) - (a.likes_count + a.comments_count));
+      // Sort by combined engagement (Score) first, then by recency (created_at)
+      creatures.sort((a, b) => {
+        const scoreA = a.likes_count + a.comments_count;
+        const scoreB = b.likes_count + b.comments_count;
+        
+        if (scoreB !== scoreA) {
+          return scoreB - scoreA;
+        }
+        // Fallback to recency for cards with same engagement
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
 
       return creatures.slice(0, limit);
     } catch (e) {
