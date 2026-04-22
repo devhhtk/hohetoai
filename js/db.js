@@ -636,6 +636,8 @@ const AumageDB = {
         return new Date(b.created_at) - new Date(a.created_at);
       });
 
+      console.log("creatures", creatures);
+
       return creatures.slice(0, limit);
     } catch (e) {
       console.error('AumageDB.getTrendingCards error:', e);
