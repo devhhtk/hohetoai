@@ -108,49 +108,93 @@
 <!-- Notifications Offcanvas -->
 <div class="noti-offcanvas">
     <div class="noti-offcanvas__header">
-        <h3>Notifications</h3>
-        <label for="notiOffcanvasToggle" class="close-offcanvas">&times;</label>
+        <div class="noti-offcanvas__header-main">
+            <h3>Notifications</h3>
+            <div class="noti-offcanvas__actions">
+                <button class="noti-action-btn" title="Mark all as read">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"></path>
+                    </svg>
+                </button>
+                <label for="notiOffcanvasToggle" class="close-offcanvas">&times;</label>
+            </div>
+        </div>
+        <div class="noti-filters">
+            <button class="noti-filter active" data-filter="all">All</button>
+            <button class="noti-filter" data-filter="unread">Unread</button>
+            <button class="noti-filter" data-filter="read">Read</button>
+        </div>
     </div>
     <div class="noti-offcanvas__content">
         <div class="noti-list">
-            <!-- Sample Notification -->
-            <div class="noti-item">
-                <div class="noti-item__icon" style="background: rgba(8, 210, 193, 0.1); color: #08D2C1;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
+            <!-- Unread Notification -->
+            <div class="noti-item noti-item--unread">
+                <div class="noti-item__avatar">
+                    <img src="https://i.pravatar.cc/150?u=glimmer" alt="User">
+                    <div class="noti-item__type-icon" style="background: #08D2C1;">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                        </svg>
+                    </div>
                 </div>
                 <div class="noti-item__info">
-                    <p class="noti-item__text"><strong>Creature Generated!</strong> Your Glimmerwisp is ready.</p>
+                    <p class="noti-item__text"><strong>System</strong>: Your new creature <strong>Glimmerwisp</strong> has been successfully generated!</p>
                     <span class="noti-item__time">2 mins ago</span>
                 </div>
+                <div class="noti-item__status"></div>
             </div>
 
+            <!-- Read Notification -->
             <div class="noti-item">
-                <div class="noti-item__icon" style="background: rgba(255, 77, 79, 0.1); color: #ff4d4f;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                    </svg>
+                <div class="noti-item__avatar">
+                    <img src="https://i.pravatar.cc/150?u=alex" alt="User">
+                    <div class="noti-item__type-icon" style="background: #ff4d4f;">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </div>
                 </div>
                 <div class="noti-item__info">
-                    <p class="noti-item__text"><strong>Someone liked your work!</strong> 5 people liked Flamecurl.</p>
+                    <p class="noti-item__text"><strong>Alex Rivera</strong> and 4 others liked your creature <strong>Flamecurl</strong>.</p>
                     <span class="noti-item__time">1 hour ago</span>
                 </div>
             </div>
 
-            <div class="noti-item">
-                <div class="noti-item__icon" style="background: rgba(96, 165, 250, 0.1); color: #60a5fa;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                    </svg>
+            <!-- Unread Notification -->
+            <div class="noti-item noti-item--unread">
+                <div class="noti-item__avatar">
+                    <img src="https://i.pravatar.cc/150?u=sarah" alt="User">
+                    <div class="noti-item__type-icon" style="background: #60a5fa;">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </div>
                 </div>
                 <div class="noti-item__info">
-                    <p class="noti-item__text"><strong>New Comment!</strong> Alex said: "This creature looks insane!"</p>
+                    <p class="noti-item__text"><strong>Sarah Chen</strong> commented on your post: "The lighting on this one is incredible!"</p>
                     <span class="noti-item__time">3 hours ago</span>
+                </div>
+                <div class="noti-item__status"></div>
+            </div>
+
+            <div class="noti-item">
+                <div class="noti-item__avatar">
+                    <img src="https://i.pravatar.cc/150?u=system" alt="User">
+                    <div class="noti-item__type-icon" style="background: #fbbf24;">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="noti-item__info">
+                    <p class="noti-item__text"><strong>Rewards</strong>: You've earned <strong>50 Echo Tokens</strong> for your 7-day streak!</p>
+                    <span class="noti-item__time">Yesterday</span>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="noti-offcanvas__footer">
+        <a href="inbox.html" class="view-all-noti">View all in Inbox</a>
     </div>
 </div>
 <label for="notiOffcanvasToggle" class="noti-offcanvas-backdrop"></label>
