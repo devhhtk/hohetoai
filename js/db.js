@@ -611,19 +611,18 @@ const AumageDB = {
       // Transform + calculate score + filter for valid card images
       const creatures = (data || [])
         .map(c => {
-          // Check join results first, then fallback to potential table columns
-          const lCount = (c.total_likes?.[0]?.count) ?? (c.likes_count) ?? 0;
-          const cCount = (c.total_comments?.[0]?.count) ?? (c.comments_count) ?? 0;
+          // Extract counts from the join results (standard Supabase count join structure)
+          const lCount = (c.total_likes && c.total_likes[0]) ? c.total_likes[0].count : (c.likes_count || 0);
+          const cCount = (c.total_comments && c.total_comments[0]) ? c.total_comments[0].count : (c.comments_count || 0);
 
           return {
             ...c,
             likes_count: lCount,
             comments_count: cCount
           };
-        })
-        .filter(c => (c.card_image_url && c.card_image_url !== '') || (c.card_url && c.card_url !== ''));
+        });
 
-      // Sort primarily by likes (descending), then by comments, then by recency
+      // Sort primarily by likes (descending), then by comments, then by recency (created_at)
       creatures.sort((a, b) => {
         // 1. Primary: Likes
         if (b.likes_count !== a.likes_count) {
@@ -633,7 +632,7 @@ const AumageDB = {
         if (b.comments_count !== a.comments_count) {
           return b.comments_count - a.comments_count;
         }
-        // 3. Last Resort: Time
+        // 3. Last Resort: Time (Newest first)
         return new Date(b.created_at) - new Date(a.created_at);
       });
 
