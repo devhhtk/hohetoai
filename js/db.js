@@ -598,8 +598,8 @@ const AumageDB = {
         .from('creatures')
         .select(`
           *,
-          total_likes:creature_likes(count),
-          total_comments:creature_comments(count)
+          likes:creature_likes!creature_id(count),
+          comments:creature_comments!creature_id(count)
         `)
         .neq('card_image_url', null)
         .neq('card_image_url', '')
@@ -608,12 +608,12 @@ const AumageDB = {
 
       if (error) throw error;
 
-      // Transform + calculate score + filter for valid card images
+      // Transform + calculate score
       const creatures = (data || [])
         .map(c => {
-          // Extract counts from the join results (standard Supabase count join structure)
-          const lCount = (c.total_likes && c.total_likes[0]) ? c.total_likes[0].count : (c.likes_count || 0);
-          const cCount = (c.total_comments && c.total_comments[0]) ? c.total_comments[0].count : (c.comments_count || 0);
+          // Robustly extract counts from potential join results
+          const lCount = (c.likes && c.likes[0]) ? c.likes[0].count : (c.likes_count || 0);
+          const cCount = (c.comments && c.comments[0]) ? c.comments[0].count : (c.comments_count || 0);
 
           return {
             ...c,
