@@ -592,51 +592,60 @@ const AumageDB = {
     if (!this.supabase || !this.user) return [];
 
     try {
-      // Fetch cards with proper relation counts
-      // We use unique aliases to avoid any potential conflicts with table columns
-      const { data, error } = await this.supabase
+      // 1. Fetch creatures first (with filters)
+      const { data: creaturesData, error: creaturesError } = await this.supabase
         .from('creatures')
-        .select(`
-          *,
-          likes:creature_likes!creature_id(count),
-          comments:creature_comments!creature_id(count)
-        `)
+        .select('*')
         .neq('card_image_url', null)
         .neq('card_image_url', '')
         .eq('user_id', this.user.id)
         .eq('is_public', true);
 
-      if (error) throw error;
+      if (creaturesError) throw creaturesError;
+      if (!creaturesData || creaturesData.length === 0) return [];
 
-      // Transform + calculate score
-      const creatures = (data || [])
-        .map(c => {
-          // Robustly extract counts from potential join results
-          const lCount = (c.likes && c.likes[0]) ? c.likes[0].count : (c.likes_count || 0);
-          const cCount = (c.comments && c.comments[0]) ? c.comments[0].count : (c.comments_count || 0);
+      const ids = creaturesData.map(c => c.id);
 
-          return {
-            ...c,
-            likes_count: lCount,
-            comments_count: cCount
-          };
-        });
+      // 2. Fetch likes and comments separately for these IDs
+      // We only fetch the creature_id to count them
+      const [likesRes, commentsRes] = await Promise.all([
+        this.supabase.from('creature_likes').select('creature_id').in('creature_id', ids),
+        this.supabase.from('creature_comments').select('creature_id').in('creature_id', ids)
+      ]);
 
-      // Sort primarily by likes (descending), then by comments, then by recency (created_at)
+      const likesData = likesRes.data || [];
+      const commentsData = commentsRes.data || [];
+
+      // 3. Aggregate counts
+      const likesMap = {};
+      const commentsMap = {};
+
+      likesData.forEach(l => {
+        likesMap[l.creature_id] = (likesMap[l.creature_id] || 0) + 1;
+      });
+      commentsData.forEach(c => {
+        commentsMap[c.creature_id] = (commentsMap[c.creature_id] || 0) + 1;
+      });
+
+      // 4. Map back to creatures
+      const creatures = creaturesData.map(c => ({
+        ...c,
+        likes_count: likesMap[c.id] || 0,
+        comments_count: commentsMap[c.id] || 0
+      }));
+
+      // 5. Sort primarily by likes (descending), then by comments, then by recency (created_at)
       creatures.sort((a, b) => {
-        // 1. Primary: Likes
         if (b.likes_count !== a.likes_count) {
           return b.likes_count - a.likes_count;
         }
-        // 2. Secondary: Comments
         if (b.comments_count !== a.comments_count) {
           return b.comments_count - a.comments_count;
         }
-        // 3. Last Resort: Time (Newest first)
         return new Date(b.created_at) - new Date(a.created_at);
       });
 
-      console.log("creatures", creatures);
+      console.log("creatures (aggregated)", creatures);
 
       return creatures.slice(0, limit);
     } catch (e) {
