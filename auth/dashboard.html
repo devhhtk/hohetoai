@@ -295,7 +295,7 @@
                 if (creatures && creatures.length > 0) {
                     grid.innerHTML = creatures.map(c => `
                         <a href="creature-details.html?${c.share_slug ? 's=' + c.share_slug : 'id=' + c.id}" class="creature-card--tall" title="${c.creature_name || 'Card'}">
-                            <img src="${c.card_image_url || c.card_url || c.image_url}" alt="${c.creature_name || 'Card'}">
+                            <img src="${c.card_image_url}" alt="${c.creature_name || 'Card'}">
                             ${(c.likes_count > 0 || c.comments_count > 0) ? `
                                 <div class="card-engagement-mini">
                                     <span>❤️ ${c.likes_count}</span>

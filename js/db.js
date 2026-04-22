@@ -601,7 +601,8 @@ const AumageDB = {
           total_likes:creature_likes(count),
           total_comments:creature_comments(count)
         `)
-        .not('card_image_url', 'is', null)
+        .neq('card_image_url', null)
+        .neq('card_image_url', '')
         .eq('user_id', this.user.id)
         .eq('is_public', true);
 
