@@ -742,6 +742,38 @@ const AumageDB = {
    * This ensures we get card_image_url filtered data.
    */
   async getExploreCards(limit = 50, sort = 'latest') {
+    if (sort === 'tradeable') {
+      if (!this.supabase) return [];
+      try {
+        const { data, error } = await this.supabase
+          .from('creatures')
+          .select(`
+            *,
+            profiles:user_id(display_name, avatar_url),
+            likes_count:creature_likes(count),
+            comments_count:creature_comments(count)
+          `)
+          .eq('is_public', true)
+          .eq('is_tradeable', true)
+          .not('card_image_url', 'is', null)
+          .neq('card_image_url', '')
+          .order('created_at', { ascending: false })
+          .limit(limit);
+
+        if (error) throw error;
+        
+        // Transform counts
+        return (data || []).map(c => ({
+          ...c,
+          likes_count: c.likes_count?.[0]?.count || 0,
+          comments_count: c.comments_count?.[0]?.count || 0,
+        }));
+      } catch (e) {
+        console.error('AumageDB.getExploreCards (tradeable) error:', e);
+        return [];
+      }
+    }
+
     try {
       // On page refresh, we must ensure the auth state has rehydrated
       // We check session first, if missing we wait a tiny bit or check user

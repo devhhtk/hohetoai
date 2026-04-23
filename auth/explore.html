@@ -53,7 +53,7 @@
                     <button class="filter-btn">Trending</button>
                     <button class="filter-btn">Latest</button>
                     <button class="filter-btn">Most Loved</button>
-                    <button class="filter-btn">Random</button>
+                    <button class="filter-btn">Tradeable</button>
                 </div>
 
                 <!-- Explore Grid -->
@@ -270,6 +270,15 @@
                 div.innerHTML = `
                     <div class="creature-card__img-wrapper">
                         <img src="${imgUrl}" class="creature-card__img" alt="${name}" loading="lazy">
+                        ${creature.is_tradeable ? `
+                            <div class="creature-card__price">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                                ${creature.price || 0}
+                            </div>
+                        ` : ''}
                     </div>
                     <div class="creature-card__content">
                         <div class="creature-card__header">
