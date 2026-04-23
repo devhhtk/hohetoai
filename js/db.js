@@ -1110,23 +1110,44 @@ const AumageDB = {
   async getNotifications(limit = 20) {
     if (!this.supabase || !this.user) return [];
 
-    const { data, error } = await this.supabase
-      .from('notifications')
-      .select(`
-        *,
-        actor:actor_id(display_name, avatar_url),
-        creature:creature_id(creature_name, image_url, card_image_url)
-      `)
-      .eq('recipient_id', this.user.id)
-      .order('created_at', { ascending: false })
-      .limit(limit);
+    try {
+      // 1. Fetch notifications with creature details
+      const { data: notifs, error } = await this.supabase
+        .from('notifications')
+        .select(`
+          *,
+          creature:creature_id(creature_name, image_url)
+        `)
+        .eq('recipient_id', this.user.id)
+        .order('created_at', { ascending: false })
+        .limit(limit);
 
-    if (error) {
-      console.error('AumageDB getNotifications error:', error);
+      if (error) throw error;
+      if (!notifs || notifs.length === 0) return [];
+
+      // 2. Fetch unique actor profiles manually
+      const actorIds = [...new Set(notifs.map(n => n.actor_id).filter(Boolean))];
+      if (actorIds.length > 0) {
+        const { data: profiles } = await this.supabase
+          .from('profiles')
+          .select('id, display_name, avatar_url')
+          .in('id', actorIds);
+
+        if (profiles) {
+          const profileMap = Object.fromEntries(profiles.map(p => [p.id, p]));
+          notifs.forEach(n => {
+            if (n.actor_id && profileMap[n.actor_id]) {
+              n.actor = profileMap[n.actor_id];
+            }
+          });
+        }
+      }
+
+      return notifs;
+    } catch (e) {
+      console.error('AumageDB.getNotifications error:', e);
       return [];
     }
-
-    return data || [];
   },
 
   /**
@@ -1460,29 +1481,40 @@ const NotificationUI = {
 
   async loadNotifications() {
     const list = document.querySelector('.noti-list');
-    if (!list) return;
-
-    list.innerHTML = '<div class="noti-loading" style="padding: 20px; text-align: center; color: var(--text-muted);">Loading...</div>';
-
-    const notifs = await window.AumageDB.getNotifications();
-    if (!notifs || notifs.length === 0) {
-      list.innerHTML = '<div class="noti-empty" style="padding: 40px 20px; text-align: center; color: var(--text-muted);">No notifications yet.</div>';
+    if (!list) {
+      console.warn('NotificationUI: .noti-list element not found');
       return;
     }
 
-    list.innerHTML = notifs.map(n => this.renderNotification(n)).join('');
+    console.log('NotificationUI: Loading notifications...');
+    list.innerHTML = '<div class="noti-loading" style="padding: 20px; text-align: center; color: var(--text-muted);">Loading...</div>';
 
-    // Add click events to mark as read
-    list.querySelectorAll('.noti-item').forEach(item => {
-      item.onclick = async () => {
-        const id = item.dataset.id;
-        if (item.classList.contains('noti-item--unread')) {
-          await window.AumageDB.markNotificationAsRead(id);
-          this.refresh();
-          item.classList.remove('noti-item--unread');
-        }
-      };
-    });
+    try {
+      const notifs = await window.AumageDB.getNotifications();
+      console.log('NotificationUI: Fetched', notifs?.length || 0, 'notifications');
+      
+      if (!notifs || notifs.length === 0) {
+        list.innerHTML = '<div class="noti-empty" style="padding: 40px 20px; text-align: center; color: var(--text-muted);">No notifications yet.</div>';
+        return;
+      }
+
+      list.innerHTML = notifs.map(n => this.renderNotification(n)).join('');
+
+      // Add click events to mark as read
+      list.querySelectorAll('.noti-item').forEach(item => {
+        item.onclick = async () => {
+          const id = item.dataset.id;
+          if (item.classList.contains('noti-item--unread')) {
+            await window.AumageDB.markNotificationAsRead(id);
+            this.refresh();
+            item.classList.remove('noti-item--unread');
+          }
+        };
+      });
+    } catch (err) {
+      console.error('NotificationUI: Error loading notifications:', err);
+      list.innerHTML = '<div class="noti-error" style="padding: 20px; text-align: center; color: var(--color-danger);">Failed to load.</div>';
+    }
   },
 
   renderNotification(n) {
