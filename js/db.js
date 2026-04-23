@@ -726,7 +726,7 @@ const AumageDB = {
       // 2. Fetch likes and comments separately for these IDs
       // We only fetch the creature_id to count them
       const [likesRes, commentsRes] = await Promise.all([
-        this.supabase.from('creature_likes').select('creature_id').in('creature_id', ids),
+        this.supabase.from('creature_likes').select('creature_id, user_id').in('creature_id', ids),
         this.supabase.from('creature_comments').select('creature_id').in('creature_id', ids)
       ]);
 
@@ -745,11 +745,16 @@ const AumageDB = {
       });
 
       // 4. Map back to creatures
-      const creatures = creaturesData.map(c => ({
-        ...c,
-        likes_count: likesMap[c.id] || 0,
-        comments_count: commentsMap[c.id] || 0
-      }));
+      const creatures = creaturesData.map(c => {
+        const isLiked = likesData.some(l => l.creature_id === c.id && l.user_id === this.user.id);
+        return {
+          ...c,
+          likes_count: likesMap[c.id] || 0,
+          comments_count: commentsMap[c.id] || 0,
+          isLiked: isLiked,
+          likedStyle: isLiked ? 'style="color: var(--color-primary)"' : ''
+        };
+      });
 
       // 5. Sort primarily by likes (descending), then by comments, then by recency (created_at)
       creatures.sort((a, b) => {
@@ -882,7 +887,12 @@ const AumageDB = {
         }
       });
       if (!resp.ok) throw new Error(`Explore API failed: ${resp.status}`);
-      return await resp.json();
+      const data = await resp.json();
+      return (data || []).map(c => ({
+        ...c,
+        isLiked: c.is_liked || false,
+        likedStyle: (c.is_liked) ? 'style="color: var(--color-primary)"' : ''
+      }));
     } catch (e) {
       console.error('AumageDB.getExploreCards error:', e);
       // Fallback to direct supabase if worker fails
@@ -892,7 +902,7 @@ const AumageDB = {
         .select(`
           *,
           profiles:user_id(display_name, avatar_url),
-          likes:creature_likes(count),
+          likes:creature_likes(user_id),
           comments:creature_comments(count)
         `)
         .eq('is_public', true)
@@ -906,11 +916,16 @@ const AumageDB = {
         return [];
       }
 
-      return (data || []).map(c => ({
-        ...c,
-        likes_count: c.likes?.[0]?.count || 0,
-        comments_count: c.comments?.[0]?.count || 0
-      }));
+      return (data || []).map(c => {
+        const isLiked = c.likes?.some(l => l.user_id === this.user?.id) || false;
+        return {
+          ...c,
+          likes_count: c.likes?.length || 0,
+          comments_count: c.comments?.[0]?.count || 0,
+          isLiked: isLiked,
+          likedStyle: isLiked ? 'style="color: var(--color-primary)"' : ''
+        };
+      });
     }
   },
 

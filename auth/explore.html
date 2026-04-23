@@ -137,7 +137,8 @@
                 <div class="loading-state">Echoes正在回响...</div>
             </div>
             <form class="comment-form" id="commentForm">
-                <textarea class="comment-input" placeholder="Write a comment..." rows="3" id="commentContent"></textarea>
+                <textarea class="comment-input" placeholder="Write a comment..." rows="3"
+                    id="commentContent"></textarea>
                 <button type="submit" class="btn-post-comment">Post Comment</button>
             </form>
         </div>
@@ -182,11 +183,11 @@
                         // Map text to sort type
                         const sortType = btn.textContent.trim().toLowerCase().replace(' ', '_');
                         console.log('Filter clicked:', sortType);
-                        
+
                         // Update Header Text dynamically
                         const headerTitle = document.querySelector('.explore-header__title');
                         const headerSub = document.querySelector('.explore-header__subtitle');
-                        
+
                         if (sortType === 'tradeable') {
                             headerTitle.textContent = 'Marketplace';
                             headerSub.textContent = 'Discover creatures listed for trade by the community.';
@@ -200,7 +201,7 @@
                             headerTitle.textContent = 'Discover Creatures';
                             headerSub.textContent = 'Explore creatures born from sound, images, and video across the world.';
                         }
-                        
+
                         loadExploreCards(sortType);
                     };
                 });
@@ -287,10 +288,6 @@
                 const isMine = creature.user_id === window.AumageDB.user?.id;
                 const showBuy = creature.is_tradeable && !isMine;
 
-                // FIX: Define missing variables to prevent ReferenceError
-                const isLiked = false; 
-                const likedStyle = isLiked ? 'style="color: var(--color-primary)"' : '';
-
                 div.innerHTML = `
                     <div class="creature-card__img-wrapper">
                         <img src="${imgUrl}" class="creature-card__img" alt="${name}" loading="lazy">
@@ -366,7 +363,7 @@
                         let current = parseInt(countSpan.textContent);
                         countSpan.textContent = result.liked ? current + 1 : current - 1;
                         likeBtn.style.color = result.liked ? 'var(--color-primary)' : '';
-                        
+
                         const svg = likeBtn.querySelector('svg');
                         if (svg) svg.setAttribute('fill', result.liked ? 'currentColor' : 'none');
                     }
@@ -383,7 +380,7 @@
                 const actionBtn = div.querySelector('[title="Buy"], [title="Connect"]');
                 actionBtn.onclick = async (e) => {
                     e.stopPropagation();
-                    
+
                     if (showBuy) {
                         if (confirm(`Purchase "${name}" for ${creature.price} tokens?`)) {
                             try {
@@ -439,11 +436,11 @@
                 currentCreatureId = creatureId;
                 modal.querySelector('.modal-title').textContent = `Comments — ${name}`;
                 modal.classList.add('modal-overlay--active');
-                
+
                 // Fetch comments
                 commentList.innerHTML = '<div class="loading-state">Summoning spirits...</div>';
                 const comments = await window.AumageDB.getComments(creatureId);
-                
+
                 commentList.innerHTML = '';
                 if (!comments || comments.length === 0) {
                     commentList.innerHTML = '<div class="no-comments">No echoes yet. Be the first to speak.</div>';
@@ -451,11 +448,11 @@
                     comments.forEach(comment => {
                         const item = document.createElement('div');
                         item.className = 'comment-item';
-                        
+
                         const author = comment.profiles?.display_name || 'Anonymous';
                         const avatar = comment.profiles?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(author)}&background=random`;
                         const date = new Date(comment.created_at).toLocaleDateString();
-                        
+
                         item.innerHTML = `
                             <div class="comment-avatar">
                                 <img src="${avatar}" alt="${author}">
