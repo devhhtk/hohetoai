@@ -291,7 +291,8 @@
                 // Extract liked state from db.js data
                 const isLiked = creature.isLiked || false;
                 const likedStyle = creature.likedStyle || '';
-
+                console.log("isLiked : ", isLiked);
+                console.log("likedStyle : ", likedStyle);
                 div.innerHTML = `
                     <div class="creature-card__img-wrapper">
                         <img src="${imgUrl}" class="creature-card__img" alt="${name}" loading="lazy">
