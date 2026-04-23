@@ -819,9 +819,10 @@ const AumageDB = {
    * This ensures we get card_image_url filtered data.
    */
   async getExploreCards(limit = 50, sort = 'latest') {
-    console.log('AumageDB.getExploreCards: sort =', sort);
+    const normalizedSort = sort.toLowerCase().trim();
+    console.log('AumageDB.getExploreCards: sort =', normalizedSort);
     
-    if (sort === 'tradeable') {
+    if (normalizedSort.includes('tradeable') || normalizedSort.includes('tradable')) {
       if (!this.supabase) {
         console.error('Supabase client not initialized');
         return [];
@@ -854,7 +855,7 @@ const AumageDB = {
           comments_count: c.comments?.[0]?.count || 0
         }));
 
-        console.log(`Found ${transformed.length} tradeable creatures`);
+        console.log(`Found ${transformed.length} tradeable creatures`, transformed);
         return transformed;
       } catch (e) {
         console.error('AumageDB.getExploreCards (tradeable) catch block:', e);
@@ -876,7 +877,7 @@ const AumageDB = {
       const token = sessionData?.data?.session?.access_token;
 
       const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
-      const resp = await fetch(`${apiBase}/api/explore?limit=${limit}&sort=${sort}`, {
+      const resp = await fetch(`${apiBase}/api/explore?limit=${limit}&sort=${normalizedSort}`, {
         headers: {
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         }
