@@ -128,12 +128,13 @@
                 // Show loading state
                 profileArea.innerHTML = '<div style="padding: 100px; text-align: center;">Loading profile...</div>';
 
-                // Fetch their creatures
-                const creatures = await window.AumageDB.getCreaturesByUserId(userId);
+                // Fetch their creatures (limit to 2)
+                const creatures = await window.AumageDB.getCreaturesByUserId(userId, 2);
 
                 const avatar = profile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.display_name)}&background=random`;
                 const bio = profile.bio || "This explorer hasn't written a bio yet.";
                 const level = profile.level || 1;
+                const creatureCount = profile.total_creatures || creatures.length; // Use profile stat if available
 
                 profileArea.innerHTML = `
                     <div class="profile-card">
@@ -150,7 +151,7 @@
                                         <span class="stat-label">Rank</span>
                                     </div>
                                     <div class="stat-item">
-                                        <span class="stat-value">${creatures.length}</span>
+                                        <span class="stat-value">${creatureCount}</span>
                                         <span class="stat-label">Creatures</span>
                                     </div>
                                     <div class="stat-item">

@@ -1479,16 +1479,28 @@ const AumageDB = {
 
       const { data: profiles } = await this.supabase
         .from('profiles')
-        .select('id, display_name, avatar_url, bio, level')
+        .select('*') // Get all fields just in case
         .in('id', Array.from(userIds));
 
-      const profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]));
+      const profileMap = {};
+      if (profiles) {
+        profiles.forEach(p => {
+          profileMap[p.id] = p;
+        });
+      }
 
       return conns.map(c => {
-        const otherUserId = c.requester_id === this.user.id ? c.receiver_id : c.requester_id;
+        // Use a more robust comparison for IDs
+        const currentId = this.user.id;
+        const isRequester = c.requester_id === currentId;
+        const otherUserId = isRequester ? c.receiver_id : c.requester_id;
+        
         return {
           ...c,
-          otherUser: profileMap[otherUserId] || { id: otherUserId, display_name: 'Explorer' }
+          otherUser: profileMap[otherUserId] || { 
+            id: otherUserId, 
+            display_name: 'Explorer #' + otherUserId.substring(0, 4) 
+          }
         };
       });
     } catch (e) {
@@ -1500,7 +1512,7 @@ const AumageDB = {
   /**
    * Fetch creatures for a specific user.
    */
-  async getCreaturesByUserId(userId, limit = 8) {
+  async getCreaturesByUserId(userId, limit = 2) {
     if (!this.supabase) return [];
 
     try {
