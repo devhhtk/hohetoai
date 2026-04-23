@@ -1112,7 +1112,11 @@ const AumageDB = {
 
     const { data, error } = await this.supabase
       .from('notifications')
-      .select('*')
+      .select(`
+        *,
+        actor:actor_id(display_name, avatar_url),
+        creature:creature_id(creature_name, image_url, card_image_url)
+      `)
       .eq('recipient_id', this.user.id)
       .order('created_at', { ascending: false })
       .limit(limit);
@@ -1484,20 +1488,35 @@ const NotificationUI = {
   renderNotification(n) {
     const isUnread = !n.is_read;
     const time = this.formatTime(n.created_at);
+    
+    // Default values
     let avatar = 'https://ui-avatars.com/api/?name=System&background=fbbf24&color=fff';
     let text = n.metadata?.message || 'New notification';
     let iconBg = '#08D2C1';
     let iconSvg = '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>';
 
+    const actorName = n.actor?.display_name || 'Someone';
+    const creatureName = n.creature?.creature_name || 'your creature';
+
+    // Set avatar from actor or creature
+    if (n.actor?.avatar_url) {
+      avatar = n.actor.avatar_url;
+    } else if (n.creature?.image_url) {
+      avatar = n.creature.image_url;
+    }
+
     // Custom rendering based on type
     if (n.type === 'like') {
       iconBg = '#ff4d4f';
       iconSvg = '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>';
-      if (n.creature?.image_url) avatar = n.creature.image_url;
+      text = `<strong>${actorName}</strong> liked your creature <strong>${creatureName}</strong>.`;
     } else if (n.type === 'comment') {
       iconBg = '#60a5fa';
       iconSvg = '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>';
-      if (n.creature?.image_url) avatar = n.creature.image_url;
+      text = `<strong>${actorName}</strong> commented on <strong>${creatureName}</strong>.`;
+    } else if (n.type === 'system') {
+      iconBg = '#fbbf24';
+      iconSvg = '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>';
     }
 
     return `
