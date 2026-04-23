@@ -339,6 +339,30 @@ const AumageDB = {
   },
 
   /**
+   * Set a creature's tradeable status and price.
+   */
+  async setTradeStatus(id, isTradeable, price) {
+    if (!this.supabase) return null;
+
+    const { data, error } = await this.supabase
+      .from('creatures')
+      .update({
+        is_tradeable: isTradeable,
+        price: price
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('AumageDB setTradeStatus error:', error);
+      throw error;
+    }
+
+    return data;
+  },
+
+  /**
    * Get a creature by its share slug (for /c/{slug} pages).
    */
   async getCreatureBySlug(slug) {

@@ -99,6 +99,42 @@
         </div>
     </main>
 
+
+    <!-- ══ Trade Modal ══ -->
+    <div class="trade-modal-overlay" id="tradeModalOverlay">
+        <div class="trade-modal">
+            <div class="trade-modal__header">
+                <h3 class="trade-modal__title">List for Trade</h3>
+                <p class="trade-modal__subtitle" id="tradeCreatureName">Unnamed Creature</p>
+                <div id="tradeRarityTag" class="rarity-tag abundant">Abundant</div>
+            </div>
+
+            <div class="trade-card-preview">
+                <img id="tradeCardImg" src="../img/placeholder2.png" alt="Card Preview">
+            </div>
+
+            <div class="trade-price-section">
+                <div class="trade-price-display">
+                    <span class="trade-price-value" id="priceDisplay">0</span>
+                    <span class="trade-price-currency">TOKENS</span>
+                </div>
+
+                <div class="price-slider-container">
+                    <input type="range" class="price-slider" id="priceSlider" min="0" max="1000" value="0">
+                    <div class="price-range-labels">
+                        <span id="minPriceLabel">0</span>
+                        <span id="maxPriceLabel">1000</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="trade-actions">
+                <button class="btn-trade-cancel" id="closeTradeModal">Cancel</button>
+                <button class="btn-trade-submit" id="submitTrade">Confirm Listing</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Supabase & DB Layer -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/db.js"></script>
@@ -152,6 +188,18 @@
 
             // 5. Fetch & Render
             let allCreatures = [];
+            let currentTradeId = null;
+
+            const rarityRanges = {
+                abundant: { min: 10, max: 200, default: 50 },
+                common: { min: 10, max: 200, default: 50 },
+                endemic: { min: 200, max: 1000, default: 400 },
+                uncommon: { min: 200, max: 1000, default: 400 },
+                holotype: { min: 1000, max: 5000, default: 2500 },
+                rare: { min: 1000, max: 5000, default: 2500 },
+                mythic: { min: 5000, max: 25000, default: 10000 },
+                legendary: { min: 10000, max: 100000, default: 50000 }
+            };
 
             const initializeFetch = async () => {
                 // Ensure auth context is ready
@@ -213,6 +261,7 @@
                             <div class="creature-card-item__info">
                                 <b>${c.creature_name || 'Unnamed Creature'}</b><br>
                                 ${c.serial_number || 'No Serial'}
+                                ${c.is_tradeable ? `<br><span style="color:#08d2c1">Listed: ${c.price} Tokens</span>` : ''}
                             </div>
                         `;
 
@@ -227,7 +276,7 @@
                         const tradeBtn = cardItem.querySelector('.trade-card-btn');
                         tradeBtn.onclick = (e) => {
                             e.stopPropagation();
-                            alert('Trading System: Coming Soon in a future protocol update.');
+                            openTradeModal(c);
                         };
 
                         cardItem.onclick = () => window.location.href = `creature-details.html?id=${c.id}`;
@@ -268,6 +317,83 @@
                     charThumb.onclick = () => window.location.href = `creature-details.html?id=${c.id}`;
                     charsGrid.appendChild(charThumb);
                 });
+            };
+
+            const openTradeModal = (creature) => {
+                currentTradeId = creature.id;
+                const modal = document.getElementById('tradeModalOverlay');
+                const nameEl = document.getElementById('tradeCreatureName');
+                const cardImg = document.getElementById('tradeCardImg');
+                const rarityTag = document.getElementById('tradeRarityTag');
+                const slider = document.getElementById('priceSlider');
+                const minLabel = document.getElementById('minPriceLabel');
+                const maxLabel = document.getElementById('maxPriceLabel');
+                const display = document.getElementById('priceDisplay');
+
+                nameEl.textContent = creature.creature_name || 'Unnamed Creature';
+                cardImg.src = creature.card_image_url;
+
+                const rarity = (creature.base_rarity || 'common').toLowerCase();
+                const range = rarityRanges[rarity] || rarityRanges.common;
+
+                rarityTag.textContent = rarity;
+                rarityTag.className = `rarity-tag ${rarity}`;
+
+                slider.min = range.min;
+                slider.max = range.max;
+                slider.value = creature.price || range.default;
+                
+                minLabel.textContent = range.min;
+                maxLabel.textContent = range.max;
+                display.textContent = slider.value;
+
+                modal.classList.add('active');
+            };
+
+            const closeTradeModal = () => {
+                document.getElementById('tradeModalOverlay').classList.remove('active');
+                currentTradeId = null;
+            };
+
+            document.getElementById('closeTradeModal').onclick = closeTradeModal;
+            document.getElementById('tradeModalOverlay').onclick = (e) => {
+                if (e.target.id === 'tradeModalOverlay') closeTradeModal();
+            };
+
+            const slider = document.getElementById('priceSlider');
+            slider.oninput = function() {
+                document.getElementById('priceDisplay').textContent = this.value;
+            };
+
+            document.getElementById('submitTrade').onclick = async () => {
+                if (!currentTradeId) return;
+
+                const price = parseInt(slider.value);
+                const btn = document.getElementById('submitTrade');
+                const originalText = btn.textContent;
+                
+                btn.disabled = true;
+                btn.textContent = 'Listing...';
+
+                try {
+                    await window.AumageDB.setTradeStatus(currentTradeId, true, price);
+                    
+                    // Update local data
+                    const idx = allCreatures.findIndex(c => c.id === currentTradeId);
+                    if (idx !== -1) {
+                        allCreatures[idx].is_tradeable = true;
+                        allCreatures[idx].price = price;
+                    }
+
+                    renderGrids(allCreatures);
+                    closeTradeModal();
+                } catch (err) {
+                    console.error('Failed to list for trade:', err);
+                    alert('Failed to list for trade. Please try again.');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }
             };
 
             const copyShareLink = (creature, btn) => {

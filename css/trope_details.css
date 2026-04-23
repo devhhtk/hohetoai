@@ -375,3 +375,199 @@ body.light-mode .empty-msg {
     background: rgba(0, 0, 0, 0.02);
     border-color: rgba(0, 0, 0, 0.1);
 }
+
+/* ── Trade Modal ── */
+.trade-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.trade-modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.trade-modal {
+    width: 100%;
+    max-width: 420px;
+    background: #0d1117;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 32px;
+    position: relative;
+    transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.trade-modal-overlay.active .trade-modal {
+    transform: translateY(0);
+}
+
+.trade-modal__header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.trade-modal__title {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.trade-modal__subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.trade-card-preview {
+    width: 120px;
+    height: 168px;
+    margin: 0 auto 24px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid #08d2c1;
+    box-shadow: 0 0 20px rgba(8, 210, 193, 0.2);
+}
+
+.trade-card-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.trade-price-section {
+    margin-bottom: 32px;
+}
+
+.trade-price-display {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.trade-price-value {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 42px;
+    font-weight: 800;
+    color: #08d2c1;
+}
+
+.trade-price-currency {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* Slider Styling */
+.price-slider-container {
+    padding: 0 10px;
+}
+
+.price-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    outline: none;
+    margin: 20px 0;
+}
+
+.price-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background: #08d2c1;
+    border: 4px solid #0d1117;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(8, 210, 193, 0.5);
+    transition: all 0.2s;
+}
+
+.price-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 15px rgba(8, 210, 193, 0.8);
+}
+
+.price-range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.trade-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.btn-trade-submit {
+    background: #08d2c1;
+    color: #0d1117;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-trade-submit:hover {
+    background: #07b5a6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(8, 210, 193, 0.3);
+}
+
+.btn-trade-cancel {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-trade-cancel:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.rarity-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+
+.rarity-tag.abundant { background: #94a3b8; color: #fff; }
+.rarity-tag.endemic { background: #3b82f6; color: #fff; }
+.rarity-tag.holotype { background: #8b5cf6; color: #fff; }
+.rarity-tag.mythic { background: #ec4899; color: #fff; }
+.rarity-tag.legendary { background: #f59e0b; color: #fff; }
