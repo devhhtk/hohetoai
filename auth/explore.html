@@ -287,6 +287,10 @@
                 const isMine = creature.user_id === window.AumageDB.user?.id;
                 const showBuy = creature.is_tradeable && !isMine;
 
+                // FIX: Define missing variables to prevent ReferenceError
+                const isLiked = false; 
+                const likedStyle = isLiked ? 'style="color: var(--color-primary)"' : '';
+
                 div.innerHTML = `
                     <div class="creature-card__img-wrapper">
                         <img src="${imgUrl}" class="creature-card__img" alt="${name}" loading="lazy">
