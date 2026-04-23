@@ -783,7 +783,12 @@ const AumageDB = {
     if (!this.supabase) return [];
     const { data, error } = await this.supabase
       .from('creatures')
-      .select('*')
+      .select(`
+        *,
+        profiles:user_id(display_name, avatar_url),
+        likes:creature_likes(user_id),
+        comments:creature_comments(count)
+      `)
       .neq('card_image_url', '')
       .not('card_image_url', 'is', null)
       .eq('is_public', true)
@@ -795,7 +800,17 @@ const AumageDB = {
       console.error('AumageDB getTrendingCardsByTrope error:', error);
       return [];
     }
-    return data || [];
+    
+    return (data || []).map(c => {
+      const isLiked = c.likes?.some(l => l.user_id === this.user?.id) || false;
+      return {
+        ...c,
+        likes_count: c.likes?.length || 0,
+        comments_count: c.comments?.[0]?.count || 0,
+        isLiked: isLiked,
+        likedStyle: isLiked ? 'style="color: #ff4d4f"' : ''
+      };
+    });
   },
 
   /**
@@ -824,13 +839,15 @@ const AumageDB = {
    * This ensures we get card_image_url filtered data.
    */
   async getExploreCards(limit = 50, sort = 'latest') {
-    console.log('AumageDB.getExploreCards: sort =', sort);
-    
+    if (!this.supabase) return [];
+
+    // Ensure auth is rehydrated before calculating isLiked
+    if (!this.user) {
+      const { data: { user } } = await this.supabase.auth.getUser();
+      this.user = user;
+    }
+
     if (sort === 'tradeable') {
-      if (!this.supabase) {
-        console.error('Supabase client not initialized');
-        return [];
-      }
       try {
         const { data, error } = await this.supabase
           .from('creatures')
@@ -893,11 +910,14 @@ const AumageDB = {
       });
       if (!resp.ok) throw new Error(`Explore API failed: ${resp.status}`);
       const data = await resp.json();
-      return (data || []).map(c => ({
-        ...c,
-        isLiked: c.is_liked || false,
-        likedStyle: (c.is_liked) ? 'style="color: #ff4d4f"' : ''
-      }));
+      return (data || []).map(c => {
+        const isLiked = c.is_liked || c.isLiked || false;
+        return {
+          ...c,
+          isLiked: isLiked,
+          likedStyle: isLiked ? 'style="color: #ff4d4f"' : ''
+        };
+      });
     } catch (e) {
       console.error('AumageDB.getExploreCards error:', e);
       // Fallback to direct supabase if worker fails
