@@ -1304,6 +1304,139 @@ const AumageDB = {
       console.error('AumageDB.getConnectionStatus error:', e);
       return null;
     }
+  },
+
+  /**
+   * Fetch all accepted conversations (connections) for the current user.
+   */
+  async getConversations() {
+    if (!this.supabase || !this.user) return [];
+
+    try {
+      const { data: conns, error } = await this.supabase
+        .from('connections')
+        .select(`
+          *,
+          requester:requester_id(id, display_name, avatar_url),
+          receiver:receiver_id(id, display_name, avatar_url)
+        `)
+        .eq('status', 'accepted')
+        .or(`requester_id.eq.${this.user.id},receiver_id.eq.${this.user.id}`)
+        .order('updated_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Transform to get "other user" info easily
+      const conversations = await Promise.all((conns || []).map(async (c) => {
+        const otherUser = c.requester_id === this.user.id ? c.receiver : c.requester;
+        
+        // Fetch last message
+        const { data: lastMsg } = await this.supabase
+          .from('messages')
+          .select('*')
+          .eq('connection_id', c.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        // Count unread
+        const { count: unreadCount } = await this.supabase
+          .from('messages')
+          .select('*', { count: 'exact', head: true })
+          .eq('connection_id', c.id)
+          .eq('is_read', false)
+          .neq('sender_id', this.user.id);
+
+        return {
+          ...c,
+          otherUser,
+          lastMessage: lastMsg,
+          unreadCount: unreadCount || 0
+        };
+      }));
+
+      return conversations;
+    } catch (e) {
+      console.error('AumageDB.getConversations error:', e);
+      return [];
+    }
+  },
+
+  /**
+   * Fetch messages for a specific connection.
+   */
+  async getMessages(connectionId, limit = 50) {
+    if (!this.supabase || !this.user) return [];
+
+    try {
+      const { data, error } = await this.supabase
+        .from('messages')
+        .select('*')
+        .eq('connection_id', connectionId)
+        .order('created_at', { ascending: true })
+        .limit(limit);
+
+      if (error) throw error;
+      return data;
+    } catch (e) {
+      console.error('AumageDB.getMessages error:', e);
+      return [];
+    }
+  },
+
+  /**
+   * Send a message.
+   */
+  async sendMessage(connectionId, content, type = 'text') {
+    if (!this.supabase || !this.user) return null;
+
+    try {
+      const { data, error } = await this.supabase
+        .from('messages')
+        .insert({
+          connection_id: connectionId,
+          sender_id: this.user.id,
+          content: content,
+          message_type: type
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Update connection's updated_at to bring it to top of inbox
+      await this.supabase
+        .from('connections')
+        .update({ updated_at: new Date().toISOString() })
+        .eq('id', connectionId);
+
+      return data;
+    } catch (e) {
+      console.error('AumageDB.sendMessage error:', e);
+      return null;
+    }
+  },
+
+  /**
+   * Mark messages as read for a connection.
+   */
+  async markMessagesAsRead(connectionId) {
+    if (!this.supabase || !this.user) return false;
+
+    try {
+      const { error } = await this.supabase
+        .from('messages')
+        .update({ is_read: true })
+        .eq('connection_id', connectionId)
+        .neq('sender_id', this.user.id)
+        .eq('is_read', false);
+
+      if (error) throw error;
+      return true;
+    } catch (e) {
+      console.error('AumageDB.markMessagesAsRead error:', e);
+      return false;
+    }
   }
 };
 

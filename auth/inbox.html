@@ -207,50 +207,200 @@
     <script src="../js/components.js"></script>
     <script src="../js/theme.js"></script>
     <script>
-        // Init Components & Functionalities
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Load Components
-            await ComponentLoader.loadAll([
-                { id: 'comp-sidebar', path: '../components/sidebar.html' },
-                { id: 'comp-header', path: '../components/header.html' },
-                { id: 'comp-footer', path: '../components/footer.html' }
-            ]);
+        // Inbox UI Controller
+        const InboxUI = {
+            activeConnId: null,
+            conversations: [],
+            messages: [],
+            pollInterval: null,
 
-            // Database & Auth Initialization
-            if (window.AumageDB) {
-                window.AumageDB.init();
-                await window.AumageDB.requireAuth();
-            }
+            async init() {
+                console.log('InboxUI: Initializing...');
+                
+                // 1. Load sidebar components
+                await ComponentLoader.loadAll([
+                    { id: 'comp-sidebar', path: '../components/sidebar.html' },
+                    { id: 'comp-header', path: '../components/header.html' },
+                    { id: 'comp-footer', path: '../components/footer.html' }
+                ]);
 
-            // Set active nav item
-            const navInbox = document.getElementById('nav-inbox');
-            if (navInbox) navInbox.classList.add('nav-item--active');
+                // 2. Wait for Auth
+                if (window.AumageDB) {
+                    window.AumageDB.init();
+                    await window.AumageDB.requireAuth();
+                }
 
-            // --- Sidebar & Profile UI ---
-            const profileToggle = document.getElementById('profileToggle');
-            const profileDropup = document.getElementById('profileDropup');
+                // 3. Set active nav item
+                const navInbox = document.getElementById('nav-inbox');
+                if (navInbox) navInbox.classList.add('nav-item--active');
 
-            if (profileToggle && profileDropup) {
-                profileToggle.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    profileDropup.classList.toggle('profile-dropup--active');
+                // 4. Initial Load
+                await this.loadConversations();
+
+                // 5. Bind Send Event
+                const chatForm = document.querySelector('.chat-footer');
+                const chatInput = document.querySelector('.chat-input');
+                const sendBtn = document.querySelector('.btn-send');
+
+                const handleSend = async () => {
+                    const content = chatInput.value.trim();
+                    if (!content || !this.activeConnId) return;
+
+                    chatInput.value = '';
+                    const msg = await window.AumageDB.sendMessage(this.activeConnId, content);
+                    if (msg) {
+                        this.messages.push(msg);
+                        this.renderMessages();
+                        this.scrollToBottom();
+                        // Update last message in sidebar
+                        this.loadConversations();
+                    }
+                };
+
+                sendBtn.onclick = handleSend;
+                chatInput.onkeypress = (e) => { if (e.key === 'Enter') handleSend(); };
+
+                // 6. Polling (every 5 seconds)
+                setInterval(() => this.poll(), 5000);
+            },
+
+            async loadConversations() {
+                this.conversations = await window.AumageDB.getConversations();
+                this.renderConversations();
+            },
+
+            renderConversations() {
+                const list = document.querySelector('.conversation-list');
+                if (!list) return;
+
+                if (this.conversations.length === 0) {
+                    list.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">No conversations yet. Connect with others to start chatting!</div>';
+                    return;
+                }
+
+                list.innerHTML = this.conversations.map(c => {
+                    const other = c.otherUser || { display_name: 'Unknown User' };
+                    const avatar = other.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(other.display_name)}&background=random`;
+                    const lastMsg = c.lastMessage?.content || 'No messages yet';
+                    const time = c.lastMessage ? this.formatTime(c.lastMessage.created_at) : '';
+                    const isActive = c.id === this.activeConnId;
+
+                    return `
+                        <div class="conversation-item ${isActive ? 'conversation-item--active' : ''}" onclick="InboxUI.selectConversation('${c.id}')">
+                            <div class="conversation-item__avatar">
+                                <img src="${avatar}" alt="${other.display_name}">
+                                <span class="status-indicator status-indicator--online"></span>
+                            </div>
+                            <div class="conversation-item__content">
+                                <div class="conversation-item__top">
+                                    <span class="conversation-item__name">${other.display_name}</span>
+                                    <span class="conversation-item__time">${time}</span>
+                                </div>
+                                <div class="conversation-item__preview">
+                                    <span>${lastMsg}</span>
+                                    ${c.unreadCount > 0 ? `<span class="unread-badge">${c.unreadCount}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            async selectConversation(connId) {
+                if (this.activeConnId === connId) return;
+                this.activeConnId = connId;
+
+                // Update UI selection
+                document.querySelectorAll('.conversation-item').forEach(item => {
+                    item.classList.remove('conversation-item--active');
+                    // This is a bit brittle, better to re-render or use a data-id
                 });
+                this.renderConversations();
 
-                document.addEventListener('click', () => {
-                    profileDropup.classList.remove('profile-dropup--active');
-                });
+                // Load Header Info
+                const conn = this.conversations.find(c => c.id === connId);
+                if (conn) {
+                    const other = conn.otherUser;
+                    document.querySelector('.chat-user-name').textContent = other.display_name;
+                    document.querySelector('.chat-user-avatar').src = other.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(other.display_name)}&background=random`;
+                }
 
-                profileDropup.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                });
+                // Show loading in chat
+                document.querySelector('.message-list').innerHTML = '<div style="padding: 20px; text-align: center;">Loading messages...</div>';
+
+                // Mark as read
+                await window.AumageDB.markMessagesAsRead(connId);
+                
+                // Fetch Messages
+                this.messages = await window.AumageDB.getMessages(connId);
+                this.renderMessages();
+                this.scrollToBottom();
+            },
+
+            renderMessages() {
+                const list = document.querySelector('.message-list');
+                if (!list) return;
+
+                if (this.messages.length === 0) {
+                    list.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-muted);">Start of your conversation. Say hi!</div>';
+                    return;
+                }
+
+                list.innerHTML = this.messages.map(m => {
+                    const isSent = m.sender_id === window.AumageDB.user.id;
+                    const time = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    return `
+                        <div class="message-group ${isSent ? 'message-group--sent' : 'message-group--received'}">
+                            <div class="message-bubble">
+                                ${m.content}
+                            </div>
+                            <span class="message-time">${time}</span>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            async poll() {
+                if (!this.activeConnId) {
+                    // Just poll for conversation list updates (new unread messages)
+                    await this.loadConversations();
+                    return;
+                }
+
+                // Poll for new messages in active chat
+                const newMessages = await window.AumageDB.getMessages(this.activeConnId);
+                if (newMessages.length > this.messages.length) {
+                    this.messages = newMessages;
+                    this.renderMessages();
+                    this.scrollToBottom();
+                    // Also mark as read
+                    await window.AumageDB.markMessagesAsRead(this.activeConnId);
+                }
+
+                // Update sidebar for unread counts
+                await this.loadConversations();
+            },
+
+            scrollToBottom() {
+                const list = document.querySelector('.message-list');
+                if (list) {
+                    list.scrollTop = list.scrollHeight;
+                }
+            },
+
+            formatTime(dateStr) {
+                const date = new Date(dateStr);
+                const now = new Date();
+                const isToday = date.toDateString() === now.toDateString();
+                if (isToday) {
+                    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+                return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
             }
+        };
 
-            // Scroll to bottom of message list
-            const messageList = document.querySelector('.message-list');
-            if (messageList) {
-                messageList.scrollTop = messageList.scrollHeight;
-            }
-        });
+        document.addEventListener('DOMContentLoaded', () => InboxUI.init());
     </script>
 </body>
 
