@@ -39,6 +39,7 @@ const AumageDB = {
         this.user = data.user;
         console.log('AumageDB: Logged in as', this.user.email || this.user.id);
         this.updateAuthUI();
+        if (window.NotificationUI) window.NotificationUI.init();
       }
     });
 
@@ -48,6 +49,7 @@ const AumageDB = {
       this.updateAuthUI();
       if (event === 'SIGNED_IN') {
         console.log('AumageDB: Signed in');
+        if (window.NotificationUI) window.NotificationUI.init();
         // Check if returning from share page
         const savedSlug = localStorage.getItem('aumage_creature_state');
         if (savedSlug) {
