@@ -761,19 +761,20 @@ body.dashboard-body {
 
 .badge--dot {
   position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 14px;
-  height: 14px;
+  top: -13px;
+  right: -11px;
+  width: 18px;
+  height: 18px;
   background: #ff4d4f;
   border-radius: 50%;
   border: 2px solid var(--bg-main);
-  font-size: 9px;
+  font-size: 11px;
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
+  padding: 9px;
 }
 
 .btn-create {
