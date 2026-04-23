@@ -181,6 +181,7 @@
 
                         // Map text to sort type
                         const sortType = btn.textContent.trim().toLowerCase().replace(' ', '_');
+                        console.log('Filter clicked:', sortType);
                         loadExploreCards(sortType);
                     };
                 });

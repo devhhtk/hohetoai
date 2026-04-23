@@ -344,12 +344,19 @@ const AumageDB = {
   async setTradeStatus(id, isTradeable, price) {
     if (!this.supabase) return null;
 
+    const updates = {
+      is_tradeable: isTradeable,
+      price: price
+    };
+
+    // If listing for trade, also make it public so it shows up in Explore/Marketplace
+    if (isTradeable) {
+      updates.is_public = true;
+    }
+
     const { data, error } = await this.supabase
       .from('creatures')
-      .update({
-        is_tradeable: isTradeable,
-        price: price
-      })
+      .update(updates)
       .eq('id', id)
       .select()
       .single();
@@ -742,16 +749,20 @@ const AumageDB = {
    * This ensures we get card_image_url filtered data.
    */
   async getExploreCards(limit = 50, sort = 'latest') {
+    console.log('AumageDB.getExploreCards: sort =', sort);
+    
     if (sort === 'tradeable') {
-      if (!this.supabase) return [];
+      if (!this.supabase) {
+        console.error('Supabase client not initialized');
+        return [];
+      }
       try {
+        // First try a simpler query to ensure columns exist and RLS allows access
         const { data, error } = await this.supabase
           .from('creatures')
           .select(`
             *,
-            profiles:user_id(display_name, avatar_url),
-            likes_count:creature_likes(count),
-            comments_count:creature_comments(count)
+            profiles:user_id(display_name, avatar_url)
           `)
           .eq('is_public', true)
           .eq('is_tradeable', true)
@@ -760,16 +771,17 @@ const AumageDB = {
           .order('created_at', { ascending: false })
           .limit(limit);
 
-        if (error) throw error;
+        if (error) {
+          console.error('AumageDB.getExploreCards (tradeable) query error:', error);
+          throw error;
+        }
         
-        // Transform counts
-        return (data || []).map(c => ({
-          ...c,
-          likes_count: c.likes_count?.[0]?.count || 0,
-          comments_count: c.comments_count?.[0]?.count || 0,
-        }));
+        console.log(`Found ${data?.length || 0} tradeable creatures`);
+
+        // We can fetch counts separately if needed, but for now let's just return the data
+        return data || [];
       } catch (e) {
-        console.error('AumageDB.getExploreCards (tradeable) error:', e);
+        console.error('AumageDB.getExploreCards (tradeable) catch block:', e);
         return [];
       }
     }
