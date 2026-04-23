@@ -1452,6 +1452,71 @@ const AumageDB = {
       console.error('AumageDB.markMessagesAsRead error:', e);
       return false;
     }
+  },
+
+  /**
+   * Fetch all connections for the current user (Pending, Accepted, etc.).
+   */
+  async getAllConnections() {
+    if (!this.supabase || !this.user) return [];
+
+    try {
+      const { data: conns, error } = await this.supabase
+        .from('connections')
+        .select('*')
+        .or(`requester_id.eq.${this.user.id},receiver_id.eq.${this.user.id}`)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      if (!conns || conns.length === 0) return [];
+
+      const userIds = new Set();
+      conns.forEach(c => {
+        userIds.add(c.requester_id);
+        userIds.add(c.receiver_id);
+      });
+      userIds.delete(this.user.id);
+
+      const { data: profiles } = await this.supabase
+        .from('profiles')
+        .select('id, display_name, avatar_url, bio, level')
+        .in('id', Array.from(userIds));
+
+      const profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]));
+
+      return conns.map(c => {
+        const otherUserId = c.requester_id === this.user.id ? c.receiver_id : c.requester_id;
+        return {
+          ...c,
+          otherUser: profileMap[otherUserId] || { id: otherUserId, display_name: 'Explorer' }
+        };
+      });
+    } catch (e) {
+      console.error('AumageDB.getAllConnections error:', e);
+      return [];
+    }
+  },
+
+  /**
+   * Fetch creatures for a specific user.
+   */
+  async getCreaturesByUserId(userId, limit = 8) {
+    if (!this.supabase) return [];
+
+    try {
+      const { data, error } = await this.supabase
+        .from('creatures')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+      return data;
+    } catch (e) {
+      console.error('AumageDB.getCreaturesByUserId error:', e);
+      return [];
+    }
   }
 };
 

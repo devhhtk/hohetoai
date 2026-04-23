@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connections — HoHeTo Kyle</title>
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/connections.css">
+</head>
+
+<body class="dashboard-body">
+
+    <!-- ══ Sidebar Placeholder ══ -->
+    <div id="comp-sidebar"></div>
+
+    <!-- ══ Main Content Area ══ -->
+    <main class="main-area">
+
+        <!-- Top Navigation Bar Placeholder -->
+        <div id="comp-header"></div>
+
+        <!-- Dynamic Content View -->
+        <div class="content-view connections-view">
+            <div class="connections-container">
+                <!-- Left Sidebar: Connections List -->
+                <aside class="connections-sidebar">
+                    <div class="connections-sidebar__header">
+                        <h2 class="connections-sidebar__title">My Connections</h2>
+                    </div>
+                    <div class="connections-list" id="connections-list">
+                        <!-- Connections will be loaded here -->
+                        <div style="padding: 20px; text-align: center;">Loading connections...</div>
+                    </div>
+                </aside>
+
+                <!-- Right Panel: Profile Details -->
+                <section class="profile-area" id="profile-area">
+                    <div class="empty-state">
+                        <div class="empty-state__icon">👋</div>
+                        <h3>Select a connection to view their profile</h3>
+                        <p>See their creatures and stats here.</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Footer Placeholder -->
+            <div id="comp-footer"></div>
+        </div>
+    </main>
+
+    <!-- Supabase & DB Layer -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/db.js"></script>
+    <script src="../js/components.js"></script>
+    <script src="../js/theme.js"></script>
+    <script>
+        const ConnectionsUI = {
+            activeUserId: null,
+            connections: [],
+
+            async init() {
+                console.log('ConnectionsUI: Initializing...');
+                
+                await ComponentLoader.loadAll([
+                    { id: 'comp-sidebar', path: '../components/sidebar.html' },
+                    { id: 'comp-header', path: '../components/header.html' },
+                    { id: 'comp-footer', path: '../components/footer.html' }
+                ]);
+
+                if (window.AumageDB) {
+                    window.AumageDB.init();
+                    await window.AumageDB.requireAuth();
+                }
+
+                const navConn = document.getElementById('nav-connections');
+                if (navConn) navConn.classList.add('nav-item--active');
+
+                await this.loadConnections();
+            },
+
+            async loadConnections() {
+                this.connections = await window.AumageDB.getAllConnections();
+                this.renderConnections();
+            },
+
+            renderConnections() {
+                const list = document.getElementById('connections-list');
+                if (!list) return;
+
+                if (this.connections.length === 0) {
+                    list.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">No connections yet. Go to Explore to meet others!</div>';
+                    return;
+                }
+
+                list.innerHTML = this.connections.map(c => {
+                    const other = c.otherUser;
+                    const avatar = other.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(other.display_name)}&background=random`;
+                    const isActive = other.id === this.activeUserId;
+                    const statusClass = `status-badge--${c.status}`;
+
+                    return `
+                        <div class="conn-item ${isActive ? 'conn-item--active' : ''}" onclick="ConnectionsUI.selectUser('${other.id}')">
+                            <div class="conn-item__avatar">
+                                <img src="${avatar}" alt="${other.display_name}">
+                            </div>
+                            <div class="conn-item__info">
+                                <span class="conn-item__name">${other.display_name}</span>
+                                <span class="status-badge ${statusClass}">${c.status}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            async selectUser(userId) {
+                if (this.activeUserId === userId) return;
+                this.activeUserId = userId;
+                this.renderConnections();
+
+                const conn = this.connections.find(c => c.otherUser.id === userId);
+                if (!conn) return;
+
+                const profile = conn.otherUser;
+                const profileArea = document.getElementById('profile-area');
+                
+                // Show loading state
+                profileArea.innerHTML = '<div style="padding: 100px; text-align: center;">Loading profile...</div>';
+
+                // Fetch their creatures
+                const creatures = await window.AumageDB.getCreaturesByUserId(userId);
+
+                const avatar = profile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.display_name)}&background=random`;
+                const bio = profile.bio || "This explorer hasn't written a bio yet.";
+                const level = profile.level || 1;
+
+                profileArea.innerHTML = `
+                    <div class="profile-card">
+                        <header class="profile-header">
+                            <div class="profile-header__avatar">
+                                <img src="${avatar}" alt="${profile.display_name}">
+                            </div>
+                            <div class="profile-header__info">
+                                <h2>${profile.display_name}</h2>
+                                <p class="profile-header__bio">${bio}</p>
+                                <div class="profile-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-value">Lv. ${level}</span>
+                                        <span class="stat-label">Rank</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">${creatures.length}</span>
+                                        <span class="stat-label">Creatures</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">${conn.status}</span>
+                                        <span class="stat-label">Status</span>
+                                    </div>
+                                </div>
+                                ${conn.status === 'pending' && conn.receiver_id === window.AumageDB.user.id ? `
+                                    <button class="btn btn-primary" style="margin-top: 20px;" onclick="ConnectionsUI.acceptRequest('${conn.id}')">Accept Request</button>
+                                ` : ''}
+                            </div>
+                        </header>
+
+                        <section class="profile-creatures">
+                            <h3 class="profile-creatures__title">Recent Discoveries</h3>
+                            <div class="creatures-grid">
+                                ${creatures.length > 0 ? creatures.map(cr => `
+                                    <div class="mini-creature-card" onclick="window.location.href='creature-details.html?id=${cr.id}'">
+                                        <img src="${cr.card_image_url || cr.image_url}" class="mini-creature-card__img" alt="${cr.creature_name}">
+                                        <div class="mini-creature-card__info">
+                                            <span class="mini-creature-card__name">${cr.creature_name}</span>
+                                        </div>
+                                    </div>
+                                `).join('') : '<p style="color: var(--text-muted);">No creatures found for this explorer.</p>'}
+                            </div>
+                        </section>
+                    </div>
+                `;
+            },
+
+            async acceptRequest(connId) {
+                const res = await window.AumageDB.acceptConnectionRequest(connId);
+                if (res && res.success) {
+                    await this.loadConnections();
+                    // Refresh current view
+                    const conn = this.connections.find(c => c.id === connId);
+                    if (conn) this.selectUser(conn.otherUser.id);
+                } else {
+                    alert('Failed to accept: ' + (res?.error || 'Unknown error'));
+                }
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => ConnectionsUI.init());
+    </script>
+</body>
+
+</html>
