@@ -1313,22 +1313,37 @@ const AumageDB = {
     if (!this.supabase || !this.user) return [];
 
     try {
+      // 1. Fetch connection records
       const { data: conns, error } = await this.supabase
         .from('connections')
-        .select(`
-          *,
-          requester:requester_id(id, display_name, avatar_url),
-          receiver:receiver_id(id, display_name, avatar_url)
-        `)
+        .select('*')
         .eq('status', 'accepted')
         .or(`requester_id.eq.${this.user.id},receiver_id.eq.${this.user.id}`)
         .order('updated_at', { ascending: false });
 
       if (error) throw error;
+      if (!conns || conns.length === 0) return [];
 
-      // Transform to get "other user" info easily
-      const conversations = await Promise.all((conns || []).map(async (c) => {
-        const otherUser = c.requester_id === this.user.id ? c.receiver : c.requester;
+      // 2. Collect unique user IDs to fetch profiles
+      const userIds = new Set();
+      conns.forEach(c => {
+        userIds.add(c.requester_id);
+        userIds.add(c.receiver_id);
+      });
+      userIds.delete(this.user.id); // We don't need our own profile here
+
+      // 3. Fetch profiles
+      const { data: profiles } = await this.supabase
+        .from('profiles')
+        .select('id, display_name, avatar_url')
+        .in('id', Array.from(userIds));
+
+      const profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]));
+
+      // 4. Transform and fetch last message/unread count
+      const conversations = await Promise.all(conns.map(async (c) => {
+        const otherUserId = c.requester_id === this.user.id ? c.receiver_id : c.requester_id;
+        const otherUser = profileMap[otherUserId] || { id: otherUserId, display_name: 'Explorer' };
         
         // Fetch last message
         const { data: lastMsg } = await this.supabase
