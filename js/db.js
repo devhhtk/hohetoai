@@ -1112,7 +1112,7 @@ const AumageDB = {
       .from('notifications')
       .select(`
         *,
-        actor:auth.users!notifications_actor_fkey(id, email),
+        actor:profiles!notifications_actor_id_fkey(display_name, avatar_url),
         creature:creatures(id, creature_name, image_url)
       `)
       .eq('recipient_id', this.user.id)
