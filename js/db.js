@@ -255,7 +255,8 @@ const AumageDB = {
     stats, traits, flavorText, creatureName,
     serialNumber, catalogId, ars,
     isPublic, folderId, frameVariant,
-    promptHash, waveformHash
+    promptHash, waveformHash,
+    isTradeable, price
   }) {
     if (!this.supabase) return null;
 
@@ -301,6 +302,8 @@ const AumageDB = {
       creature_name: creatureName || null,
       flavor_text: flavorText || null,
       frame_variant: frameVariant || 'standard',
+      is_tradeable: isTradeable || false,
+      price: price || 0
     };
 
     const { data, error } = await this.supabase
@@ -367,6 +370,73 @@ const AumageDB = {
     }
 
     return data;
+  },
+
+  /**
+   * Purchase a creature from another user.
+   */
+  async purchaseCreature(creature) {
+    if (!this.supabase || !this.user) throw new Error('Auth required');
+    if (creature.user_id === this.user.id) throw new Error('You already own this creature');
+    if (!creature.is_tradeable) throw new Error('Creature not for sale');
+
+    try {
+      // 1. Get buyer profile to check currency
+      const { data: buyerProfile, error: buyerErr } = await this.supabase
+        .from('profiles')
+        .select('currency')
+        .eq('id', this.user.id)
+        .single();
+      
+      if (buyerErr) throw buyerErr;
+      if ((buyerProfile.currency || 0) < creature.price) {
+        throw new Error(`Insufficient funds. You need ${creature.price} tokens.`);
+      }
+
+      // 2. Get seller profile (if it exists) to add currency
+      if (creature.user_id) {
+        const { data: sellerProfile, error: sellerErr } = await this.supabase
+          .from('profiles')
+          .select('currency')
+          .eq('id', creature.user_id)
+          .single();
+        
+        if (!sellerErr && sellerProfile) {
+          await this.supabase
+            .from('profiles')
+            .update({ currency: (sellerProfile.currency || 0) + creature.price })
+            .eq('id', creature.user_id);
+        }
+      }
+
+      // 3. Deduct from buyer
+      await this.supabase
+        .from('profiles')
+        .update({ currency: buyerProfile.currency - creature.price })
+        .eq('id', this.user.id);
+
+      // 4. Transfer ownership and delist
+      const { data: updated, error: transferErr } = await this.supabase
+        .from('creatures')
+        .update({
+          user_id: this.user.id,
+          is_tradeable: false,
+          is_public: true // Keep public but not tradeable
+        })
+        .eq('id', creature.id)
+        .select()
+        .single();
+
+      if (transferErr) throw transferErr;
+      
+      // Update sidebar stats to reflect new currency
+      this.updateSidebarStats();
+      
+      return updated;
+    } catch (e) {
+      console.error('AumageDB.purchaseCreature error:', e);
+      throw e;
+    }
   },
 
   /**
@@ -757,12 +827,13 @@ const AumageDB = {
         return [];
       }
       try {
-        // First try a simpler query to ensure columns exist and RLS allows access
         const { data, error } = await this.supabase
           .from('creatures')
           .select(`
             *,
-            profiles:user_id(display_name, avatar_url)
+            profiles:user_id(display_name, avatar_url),
+            likes:creature_likes(count),
+            comments:creature_comments(count)
           `)
           .eq('is_public', true)
           .eq('is_tradeable', true)
@@ -776,10 +847,15 @@ const AumageDB = {
           throw error;
         }
         
-        console.log(`Found ${data?.length || 0} tradeable creatures`);
+        // Transform counts and ensure format matches Worker API
+        const transformed = (data || []).map(c => ({
+          ...c,
+          likes_count: c.likes?.[0]?.count || 0,
+          comments_count: c.comments?.[0]?.count || 0
+        }));
 
-        // We can fetch counts separately if needed, but for now let's just return the data
-        return data || [];
+        console.log(`Found ${transformed.length} tradeable creatures`);
+        return transformed;
       } catch (e) {
         console.error('AumageDB.getExploreCards (tradeable) catch block:', e);
         return [];
@@ -811,15 +887,30 @@ const AumageDB = {
       console.error('AumageDB.getExploreCards error:', e);
       // Fallback to direct supabase if worker fails
       if (!this.supabase) return [];
-      const { data } = await this.supabase
+      const { data, error } = await this.supabase
         .from('creatures')
-        .select('*')
+        .select(`
+          *,
+          profiles:user_id(display_name, avatar_url),
+          likes:creature_likes(count),
+          comments:creature_comments(count)
+        `)
         .eq('is_public', true)
         .not('card_image_url', 'is', null)
         .neq('card_image_url', '')
         .order('created_at', { ascending: false })
         .limit(limit);
-      return data || [];
+
+      if (error) {
+        console.error('AumageDB.getExploreCards fallback error:', error);
+        return [];
+      }
+
+      return (data || []).map(c => ({
+        ...c,
+        likes_count: c.likes?.[0]?.count || 0,
+        comments_count: c.comments?.[0]?.count || 0
+      }));
     }
   },
 

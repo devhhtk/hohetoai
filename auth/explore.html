@@ -182,6 +182,25 @@
                         // Map text to sort type
                         const sortType = btn.textContent.trim().toLowerCase().replace(' ', '_');
                         console.log('Filter clicked:', sortType);
+                        
+                        // Update Header Text dynamically
+                        const headerTitle = document.querySelector('.explore-header__title');
+                        const headerSub = document.querySelector('.explore-header__subtitle');
+                        
+                        if (sortType === 'tradeable') {
+                            headerTitle.textContent = 'Marketplace';
+                            headerSub.textContent = 'Discover creatures listed for trade by the community.';
+                        } else if (sortType === 'trending') {
+                            headerTitle.textContent = 'Trending Creatures';
+                            headerSub.textContent = 'The most popular biological manifestations this week.';
+                        } else if (sortType === 'most_loved') {
+                            headerTitle.textContent = 'Most Loved';
+                            headerSub.textContent = 'Creatures that have captured the hearts of fellow explorers.';
+                        } else {
+                            headerTitle.textContent = 'Discover Creatures';
+                            headerSub.textContent = 'Explore creatures born from sound, images, and video across the world.';
+                        }
+                        
                         loadExploreCards(sortType);
                     };
                 });
@@ -265,8 +284,8 @@
 
                 const type = (creature.audio_source === 'upload' ? 'Imagen Born' : 'Resogen Born');
 
-                const isLiked = creature.user_has_liked === true;
-                const likedStyle = isLiked ? 'style="color: var(--color-primary)"' : '';
+                const isMine = creature.user_id === window.AumageDB.user?.id;
+                const showBuy = creature.is_tradeable && !isMine;
 
                 div.innerHTML = `
                     <div class="creature-card__img-wrapper">
@@ -307,12 +326,21 @@
                                 </svg>
                                 <span>${creature.comments_count || 0}</span>
                             </div>
-                            <div class="action-item" title="Connect">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                </svg>
-                                Connect
+                            <div class="action-item" title="${showBuy ? 'Buy' : 'Connect'}">
+                                ${showBuy ? `
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2">
+                                        <circle cx="9" cy="21" r="1"></circle>
+                                        <circle cx="20" cy="21" r="1"></circle>
+                                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                    </svg>
+                                    <span style="color: var(--color-primary)">Buy Now</span>
+                                ` : `
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                    </svg>
+                                    ${isMine && creature.is_tradeable ? 'Listed' : 'Connect'}
+                                `}
                             </div>
                         </div>
                     </div>
@@ -347,19 +375,42 @@
                     openCommentsModal(creature.id, name);
                 };
 
-                // Add connect listener
-                const connectBtn = div.querySelector('[title="Connect"]');
-                connectBtn.onclick = async (e) => {
+                // Add action listener (Buy or Connect)
+                const actionBtn = div.querySelector('[title="Buy"], [title="Connect"]');
+                actionBtn.onclick = async (e) => {
                     e.stopPropagation();
-                    if (connectBtn.textContent.trim() !== 'Connect') return;
+                    
+                    if (showBuy) {
+                        if (confirm(`Purchase "${name}" for ${creature.price} tokens?`)) {
+                            try {
+                                actionBtn.innerHTML = 'Processing...';
+                                await window.AumageDB.purchaseCreature(creature);
+                                alert('Success! You now own this creature.');
+                                loadExploreCards(document.querySelector('.filter-btn--active').textContent.trim().toLowerCase().replace(' ', '_'));
+                            } catch (err) {
+                                alert(err.message);
+                                actionBtn.innerHTML = `
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2">
+                                        <circle cx="9" cy="21" r="1"></circle>
+                                        <circle cx="20" cy="21" r="1"></circle>
+                                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                    </svg>
+                                    <span style="color: var(--color-primary)">Buy Now</span>
+                                `;
+                            }
+                        }
+                        return;
+                    }
 
-                    connectBtn.innerHTML = 'Connecting...';
+                    if (actionBtn.textContent.trim() !== 'Connect') return;
+
+                    actionBtn.innerHTML = 'Connecting...';
                     const res = await window.AumageDB.sendConnectionRequest(creature.user_id);
                     if (res && res.success) {
                         connectionCache.set(creature.user_id, 'pending');
                         updateConnectionButton(div, creature.user_id);
                     } else {
-                        connectBtn.innerHTML = `
+                        actionBtn.innerHTML = `
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
