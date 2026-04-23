@@ -1096,6 +1096,97 @@ const AumageDB = {
       console.error('AumageDB.getAchievements error:', e);
       return null;
     }
+  },
+
+  // ============================================================
+  // NOTIFICATIONS
+  // ============================================================
+
+  /**
+   * Fetch notifications for the current user.
+   */
+  async getNotifications(limit = 20) {
+    if (!this.supabase || !this.user) return [];
+
+    const { data, error } = await this.supabase
+      .from('notifications')
+      .select(`
+        *,
+        actor:auth.users!notifications_actor_fkey(id, email),
+        creature:creatures(id, creature_name, image_url)
+      `)
+      .eq('recipient_id', this.user.id)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error('AumageDB getNotifications error:', error);
+      return [];
+    }
+
+    return data || [];
+  },
+
+  /**
+   * Get unread notification count for the current user.
+   */
+  async getUnreadNotificationCount() {
+    if (!this.supabase || !this.user) return 0;
+
+    const { count, error } = await this.supabase
+      .from('notifications')
+      .select('*', { count: 'exact', head: true })
+      .eq('recipient_id', this.user.id)
+      .eq('is_read', false);
+
+    if (error) {
+      console.error('AumageDB getUnreadNotificationCount error:', error);
+      return 0;
+    }
+
+    return count || 0;
+  },
+
+  /**
+   * Mark a notification as read.
+   */
+  async markNotificationAsRead(id) {
+    if (!this.supabase || !this.user) return null;
+
+    const { data, error } = await this.supabase
+      .from('notifications')
+      .update({ is_read: true })
+      .eq('id', id)
+      .eq('recipient_id', this.user.id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('AumageDB markNotificationAsRead error:', error);
+      return null;
+    }
+
+    return data;
+  },
+
+  /**
+   * Mark all notifications as read.
+   */
+  async markAllNotificationsAsRead() {
+    if (!this.supabase || !this.user) return false;
+
+    const { error } = await this.supabase
+      .from('notifications')
+      .update({ is_read: true })
+      .eq('recipient_id', this.user.id)
+      .eq('is_read', false);
+
+    if (error) {
+      console.error('AumageDB markAllNotificationsAsRead error:', error);
+      return false;
+    }
+
+    return true;
   }
 };
 
@@ -1314,15 +1405,147 @@ const ConfettiEngine = {
   }
 };
 
+/**
+ * Notification System Controller
+ * Handles fetching, counting, and displaying notifications.
+ */
+const NotificationUI = {
+  pollInterval: null,
+
+  async init() {
+    console.log('NotificationUI: Initializing...');
+    await this.refresh();
+
+    // Set up polling (every 30 seconds)
+    if (this.pollInterval) clearInterval(this.pollInterval);
+    this.pollInterval = setInterval(() => this.refresh(), 30000);
+
+    // Listen for offcanvas open to refresh or mark as read
+    document.addEventListener('change', (e) => {
+      if (e.target.id === 'notiOffcanvasToggle' && e.target.checked) {
+        this.loadNotifications();
+      }
+    });
+
+    // Mark all as read button
+    document.addEventListener('click', async (e) => {
+      if (e.target.closest('.noti-action-btn')) {
+        await window.AumageDB.markAllNotificationsAsRead();
+        this.refresh();
+        this.loadNotifications();
+      }
+    });
+  },
+
+  async refresh() {
+    if (!window.AumageDB || !window.AumageDB.user) return;
+
+    const count = await window.AumageDB.getUnreadNotificationCount();
+    this.updateCounter(count);
+  },
+
+  updateCounter(count) {
+    const badge = document.getElementById('noti-badge');
+    if (badge) {
+      if (count > 0) {
+        badge.style.display = 'flex';
+        badge.textContent = count > 99 ? '99+' : count;
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+  },
+
+  async loadNotifications() {
+    const list = document.querySelector('.noti-list');
+    if (!list) return;
+
+    list.innerHTML = '<div class="noti-loading" style="padding: 20px; text-align: center; color: var(--text-muted);">Loading...</div>';
+
+    const notifs = await window.AumageDB.getNotifications();
+    if (!notifs || notifs.length === 0) {
+      list.innerHTML = '<div class="noti-empty" style="padding: 40px 20px; text-align: center; color: var(--text-muted);">No notifications yet.</div>';
+      return;
+    }
+
+    list.innerHTML = notifs.map(n => this.renderNotification(n)).join('');
+
+    // Add click events to mark as read
+    list.querySelectorAll('.noti-item').forEach(item => {
+      item.onclick = async () => {
+        const id = item.dataset.id;
+        if (item.classList.contains('noti-item--unread')) {
+          await window.AumageDB.markNotificationAsRead(id);
+          this.refresh();
+          item.classList.remove('noti-item--unread');
+        }
+      };
+    });
+  },
+
+  renderNotification(n) {
+    const isUnread = !n.is_read;
+    const time = this.formatTime(n.created_at);
+    let avatar = 'https://ui-avatars.com/api/?name=System&background=fbbf24&color=fff';
+    let text = n.metadata?.message || 'New notification';
+    let iconBg = '#08D2C1';
+    let iconSvg = '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>';
+
+    // Custom rendering based on type
+    if (n.type === 'like') {
+      iconBg = '#ff4d4f';
+      iconSvg = '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>';
+      text = `<strong>Someone</strong> liked your creature ${n.creature?.creature_name ? `<strong>${n.creature.creature_name}</strong>` : ''}`;
+      if (n.creature?.image_url) avatar = n.creature.image_url;
+    } else if (n.type === 'comment') {
+      iconBg = '#60a5fa';
+      iconSvg = '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>';
+      text = `<strong>Someone</strong> commented on your creature ${n.creature?.creature_name ? `<strong>${n.creature.creature_name}</strong>` : ''}`;
+      if (n.creature?.image_url) avatar = n.creature.image_url;
+    }
+
+    return `
+      <div class="noti-item ${isUnread ? 'noti-item--unread' : ''}" data-id="${n.id}">
+        <div class="noti-item__avatar">
+          <img src="${avatar}" alt="Notification">
+          <div class="noti-item__type-icon" style="background: ${iconBg};">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+              ${iconSvg}
+            </svg>
+          </div>
+        </div>
+        <div class="noti-item__info">
+          <p class="noti-item__text">${text}</p>
+          <span class="noti-item__time">${time}</span>
+        </div>
+        ${isUnread ? '<div class="noti-item__status"></div>' : ''}
+      </div>
+    `;
+  },
+
+  formatTime(dateStr) {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diff = (now - date) / 1000; // seconds
+
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+    return date.toLocaleDateString();
+  }
+};
+
 window.StreakUI = StreakUI;
+window.NotificationUI = NotificationUI;
 window.ConfettiEngine = ConfettiEngine;
 
 // Auto-initialize when possible
 (function () {
   const tryInit = () => {
-    if (window.AumageDB && window.AumageDB.user && document.getElementById('streakGrid')) {
-      window.StreakUI.init();
-      window.ConfettiEngine.init();
+    if (window.AumageDB && window.AumageDB.user) {
+      if (document.getElementById('streakGrid')) window.StreakUI.init();
+      if (document.getElementById('levelUpCanvas')) window.ConfettiEngine.init();
+      window.NotificationUI.init();
       return true;
     }
     return false;
