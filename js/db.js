@@ -847,6 +847,7 @@ const AumageDB = {
       this.user = user;
     }
 
+    let creatures = [];
     if (sort === 'tradeable') {
       try {
         const { data, error } = await this.supabase
@@ -854,8 +855,8 @@ const AumageDB = {
           .select(`
             *,
             profiles:user_id(display_name, avatar_url),
-            likes:creature_likes(user_id),
-            comments:creature_comments(count)
+            likes_count:creature_likes(count),
+            comments_count:creature_comments(count)
           `)
           .eq('is_public', true)
           .eq('is_tradeable', true)
@@ -864,94 +865,81 @@ const AumageDB = {
           .order('created_at', { ascending: false })
           .limit(limit);
 
-        if (error) {
-          console.error('AumageDB.getExploreCards (tradeable) query error:', error);
-          throw error;
-        }
+        if (error) throw error;
         
-        // Transform counts and ensure format matches Worker API
-        const transformed = (data || []).map(c => {
-          const isLiked = c.likes?.some(l => l.user_id === this.user?.id) || false;
-          return {
-            ...c,
-            likes_count: c.likes?.length || 0,
-            comments_count: c.comments?.[0]?.count || 0,
-            isLiked: isLiked,
-            likedStyle: isLiked ? 'style="color: #ff4d4f"' : ''
-          };
-        });
-
-        console.log(`Found ${transformed.length} tradeable creatures`);
-        return transformed;
+        creatures = (data || []).map(c => ({
+          ...c,
+          likes_count: c.likes_count?.[0]?.count || 0,
+          comments_count: c.comments_count?.[0]?.count || 0
+        }));
       } catch (e) {
-        console.error('AumageDB.getExploreCards (tradeable) catch block:', e);
-        return [];
+        console.error('AumageDB.getExploreCards (tradeable) error:', e);
       }
-    }
-
-    try {
-      // On page refresh, we must ensure the auth state has rehydrated
-      // We check session first, if missing we wait a tiny bit or check user
-      let sessionData = await this.supabase.auth.getSession();
-
-      // If we don't have a session immediately, try getUser which is more definitive on load
-      if (!sessionData?.data?.session) {
-        await this.supabase.auth.getUser();
-        sessionData = await this.supabase.auth.getSession();
-      }
-
-      const token = sessionData?.data?.session?.access_token;
-
-      const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
-      const resp = await fetch(`${apiBase}/api/explore?limit=${limit}&sort=${sort}`, {
-        headers: {
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    } else {
+      try {
+        let sessionData = await this.supabase.auth.getSession();
+        if (!sessionData?.data?.session) {
+          await this.supabase.auth.getUser();
+          sessionData = await this.supabase.auth.getSession();
         }
-      });
-      if (!resp.ok) throw new Error(`Explore API failed: ${resp.status}`);
-      const data = await resp.json();
-      return (data || []).map(c => {
-        const isLiked = c.is_liked || c.isLiked || false;
-        return {
-          ...c,
-          isLiked: isLiked,
-          likedStyle: isLiked ? 'style="color: #ff4d4f"' : ''
-        };
-      });
-    } catch (e) {
-      console.error('AumageDB.getExploreCards error:', e);
-      // Fallback to direct supabase if worker fails
-      if (!this.supabase) return [];
-      const { data, error } = await this.supabase
-        .from('creatures')
-        .select(`
-          *,
-          profiles:user_id(display_name, avatar_url),
-          likes:creature_likes(user_id),
-          comments:creature_comments(count)
-        `)
-        .eq('is_public', true)
-        .not('card_image_url', 'is', null)
-        .neq('card_image_url', '')
-        .order('created_at', { ascending: false })
-        .limit(limit);
-
-      if (error) {
-        console.error('AumageDB.getExploreCards fallback error:', error);
-        return [];
+        const token = sessionData?.data?.session?.access_token;
+        const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+        const resp = await fetch(`${apiBase}/api/explore?limit=${limit}&sort=${sort}`, {
+          headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }
+        });
+        if (resp.ok) {
+          creatures = await resp.json();
+        } else {
+          throw new Error(`Worker failed: ${resp.status}`);
+        }
+      } catch (e) {
+        console.error('AumageDB.getExploreCards worker error:', e);
+        // Fallback
+        const { data, error } = await this.supabase
+          .from('creatures')
+          .select(`
+            *,
+            profiles:user_id(display_name, avatar_url),
+            likes_count:creature_likes(count),
+            comments_count:creature_comments(count)
+          `)
+          .eq('is_public', true)
+          .not('card_image_url', 'is', null)
+          .neq('card_image_url', '')
+          .order('created_at', { ascending: false })
+          .limit(limit);
+        
+        if (!error && data) {
+          creatures = data.map(c => ({
+            ...c,
+            likes_count: c.likes_count?.[0]?.count || 0,
+            comments_count: c.comments_count?.[0]?.count || 0
+          }));
+        }
       }
-
-      return (data || []).map(c => {
-        const isLiked = c.likes?.some(l => l.user_id === this.user?.id) || false;
-        return {
-          ...c,
-          likes_count: c.likes?.length || 0,
-          comments_count: c.comments?.[0]?.count || 0,
-          isLiked: isLiked,
-          likedStyle: isLiked ? 'style="color: #ff4d4f"' : ''
-        };
-      });
     }
+
+    // FINAL STEP: MANUALLY CHECK LIKES FOR CURRENT USER
+    let likedIds = new Set();
+    if (this.user && creatures.length > 0) {
+      const ids = creatures.map(c => c.id);
+      const { data: myLikes } = await this.supabase
+        .from('creature_likes')
+        .select('creature_id')
+        .eq('user_id', this.user.id)
+        .in('creature_id', ids);
+      
+      likedIds = new Set(myLikes?.map(l => l.creature_id) || []);
+    }
+
+    return creatures.map(c => {
+      const isLiked = likedIds.has(c.id) || c.is_liked || c.isLiked || false;
+      return {
+        ...c,
+        isLiked: !!isLiked,
+        likedStyle: isLiked ? 'style="color: #ff4d4f"' : ''
+      };
+    });
   },
 
   /**
