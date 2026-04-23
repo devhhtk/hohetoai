@@ -1110,11 +1110,7 @@ const AumageDB = {
 
     const { data, error } = await this.supabase
       .from('notifications')
-      .select(`
-        *,
-        actor:profiles!notifications_actor_id_fkey(display_name, avatar_url),
-        creature:creatures(id, creature_name, image_url)
-      `)
+      .select('*')
       .eq('recipient_id', this.user.id)
       .order('created_at', { ascending: false })
       .limit(limit);
@@ -1495,12 +1491,10 @@ const NotificationUI = {
     if (n.type === 'like') {
       iconBg = '#ff4d4f';
       iconSvg = '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>';
-      text = `<strong>Someone</strong> liked your creature ${n.creature?.creature_name ? `<strong>${n.creature.creature_name}</strong>` : ''}`;
       if (n.creature?.image_url) avatar = n.creature.image_url;
     } else if (n.type === 'comment') {
       iconBg = '#60a5fa';
       iconSvg = '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>';
-      text = `<strong>Someone</strong> commented on your creature ${n.creature?.creature_name ? `<strong>${n.creature.creature_name}</strong>` : ''}`;
       if (n.creature?.image_url) avatar = n.creature.image_url;
     }
 
