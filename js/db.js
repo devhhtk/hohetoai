@@ -192,6 +192,21 @@ const AumageDB = {
     const greetName = document.getElementById('dash-greeting-name');
     const headerTokens = document.getElementById('header-token-count');
 
+    // Fetch latest currency directly from Supabase to ensure it's fresh
+    let currentCurrency = profile.currency || 0;
+    try {
+      const { data: latestProf } = await this.supabase
+        .from('profiles')
+        .select('currency')
+        .eq('id', this.user.id)
+        .maybeSingle();
+      if (latestProf && latestProf.currency !== undefined) {
+        currentCurrency = latestProf.currency;
+      }
+    } catch (e) {
+      console.warn('Failed to fetch latest currency from Supabase:', e);
+    }
+
     const name = profile.display_name || this.user.email?.split('@')[0] || 'Storyteller';
     const uidTruncated = this.user.id.substring(0, 12).toUpperCase() + '...';
 
@@ -200,8 +215,7 @@ const AumageDB = {
     if (greetName) greetName.textContent = name;
 
     if (headerTokens) {
-      // Assuming 'tokens' or 'currency' exists in profile, otherwise default to 0
-      headerTokens.textContent = (profile.tokens !== undefined ? profile.tokens : (profile.currency || 0)).toLocaleString();
+      headerTokens.textContent = currentCurrency.toLocaleString();
     }
 
     if (profAvatar) {
