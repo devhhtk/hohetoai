@@ -387,7 +387,7 @@ const AumageDB = {
         .select('currency')
         .eq('id', this.user.id)
         .single();
-      
+
       if (buyerErr) throw buyerErr;
       if ((buyerProfile.currency || 0) < creature.price) {
         throw new Error(`Insufficient funds. You need ${creature.price} tokens.`);
@@ -400,7 +400,7 @@ const AumageDB = {
           .select('currency')
           .eq('id', creature.user_id)
           .single();
-        
+
         if (!sellerErr && sellerProfile) {
           await this.supabase
             .from('profiles')
@@ -428,10 +428,10 @@ const AumageDB = {
         .single();
 
       if (transferErr) throw transferErr;
-      
+
       // Update sidebar stats to reflect new currency
       this.updateSidebarStats();
-      
+
       return updated;
     } catch (e) {
       console.error('AumageDB.purchaseCreature error:', e);
@@ -800,7 +800,7 @@ const AumageDB = {
       console.error('AumageDB getTrendingCardsByTrope error:', error);
       return [];
     }
-    
+
     return (data || []).map(c => {
       const isLiked = c.likes?.some(l => l.user_id === this.user?.id) || false;
       return {
@@ -847,7 +847,6 @@ const AumageDB = {
       this.user = user;
     }
 
-    let creatures = [];
     if (sort === 'tradeable') {
       try {
         const { data, error } = await this.supabase
@@ -855,8 +854,8 @@ const AumageDB = {
           .select(`
             *,
             profiles:user_id(display_name, avatar_url),
-            likes_count:creature_likes(count),
-            comments_count:creature_comments(count)
+            likes:creature_likes(user_id),
+            comments:creature_comments(count)
           `)
           .eq('is_public', true)
           .eq('is_tradeable', true)
@@ -865,81 +864,94 @@ const AumageDB = {
           .order('created_at', { ascending: false })
           .limit(limit);
 
-        if (error) throw error;
-        
-        creatures = (data || []).map(c => ({
-          ...c,
-          likes_count: c.likes_count?.[0]?.count || 0,
-          comments_count: c.comments_count?.[0]?.count || 0
-        }));
-      } catch (e) {
-        console.error('AumageDB.getExploreCards (tradeable) error:', e);
-      }
-    } else {
-      try {
-        let sessionData = await this.supabase.auth.getSession();
-        if (!sessionData?.data?.session) {
-          await this.supabase.auth.getUser();
-          sessionData = await this.supabase.auth.getSession();
+        if (error) {
+          console.error('AumageDB.getExploreCards (tradeable) query error:', error);
+          throw error;
         }
-        const token = sessionData?.data?.session?.access_token;
-        const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
-        const resp = await fetch(`${apiBase}/api/explore?limit=${limit}&sort=${sort}`, {
-          headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }
-        });
-        if (resp.ok) {
-          creatures = await resp.json();
-        } else {
-          throw new Error(`Worker failed: ${resp.status}`);
-        }
-      } catch (e) {
-        console.error('AumageDB.getExploreCards worker error:', e);
-        // Fallback
-        const { data, error } = await this.supabase
-          .from('creatures')
-          .select(`
-            *,
-            profiles:user_id(display_name, avatar_url),
-            likes_count:creature_likes(count),
-            comments_count:creature_comments(count)
-          `)
-          .eq('is_public', true)
-          .not('card_image_url', 'is', null)
-          .neq('card_image_url', '')
-          .order('created_at', { ascending: false })
-          .limit(limit);
-        
-        if (!error && data) {
-          creatures = data.map(c => ({
+
+        // Transform counts and ensure format matches Worker API
+        const transformed = (data || []).map(c => {
+          const isLiked = c.likes?.some(l => l.user_id === this.user?.id) || false;
+          return {
             ...c,
-            likes_count: c.likes_count?.[0]?.count || 0,
-            comments_count: c.comments_count?.[0]?.count || 0
-          }));
-        }
+            likes_count: c.likes?.length || 0,
+            comments_count: c.comments?.[0]?.count || 0,
+            isLiked: isLiked,
+            likedStyle: isLiked ? 'style="color: #ff4d4f"' : ''
+          };
+        });
+
+        console.log(`Found ${transformed.length} tradeable creatures`);
+        return transformed;
+      } catch (e) {
+        console.error('AumageDB.getExploreCards (tradeable) catch block:', e);
+        return [];
       }
     }
 
-    // FINAL STEP: MANUALLY CHECK LIKES FOR CURRENT USER
-    let likedIds = new Set();
-    if (this.user && creatures.length > 0) {
-      const ids = creatures.map(c => c.id);
-      const { data: myLikes } = await this.supabase
-        .from('creature_likes')
-        .select('creature_id')
-        .eq('user_id', this.user.id)
-        .in('creature_id', ids);
-      
-      likedIds = new Set(myLikes?.map(l => l.creature_id) || []);
-    }
+    try {
+      // On page refresh, we must ensure the auth state has rehydrated
+      // We check session first, if missing we wait a tiny bit or check user
+      let sessionData = await this.supabase.auth.getSession();
 
-    return creatures.map(c => {
-      const isLiked = likedIds.has(c.id) || c.is_liked || c.isLiked || false;
-      return {
-        ...c,
-        isLiked: !!isLiked,
-        likedStyle: isLiked ? 'style="color: #ff4d4f"' : ''
-      };
-    });
+      // If we don't have a session immediately, try getUser which is more definitive on load
+      if (!sessionData?.data?.session) {
+        await this.supabase.auth.getUser();
+        sessionData = await this.supabase.auth.getSession();
+      }
+
+      const token = sessionData?.data?.session?.access_token;
+
+      const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+      const resp = await fetch(`${apiBase}/api/explore?limit=${limit}&sort=${sort}`, {
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
+      });
+      if (!resp.ok) throw new Error(`Explore API failed: ${resp.status}`);
+      const data = await resp.json();
+      return (data || []).map(c => {
+        const isLiked = c.is_liked || c.isLiked || false;
+        return {
+          ...c,
+          isLiked: isLiked,
+          likedStyle: isLiked ? 'style="color: #ff4d4f"' : ''
+        };
+      });
+    } catch (e) {
+      console.error('AumageDB.getExploreCards error:', e);
+      // Fallback to direct supabase if worker fails
+      if (!this.supabase) return [];
+      const { data, error } = await this.supabase
+        .from('creatures')
+        .select(`
+          *,
+          profiles:user_id(display_name, avatar_url),
+          likes:creature_likes(user_id),
+          comments:creature_comments(count)
+        `)
+        .eq('is_public', true)
+        .not('card_image_url', 'is', null)
+        .neq('card_image_url', '')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) {
+        console.error('AumageDB.getExploreCards fallback error:', error);
+        return [];
+      }
+
+      return (data || []).map(c => {
+        const isLiked = c.likes?.some(l => l.user_id === this.user?.id) || false;
+        return {
+          ...c,
+          likes_count: c.likes?.length || 0,
+          comments_count: c.comments?.[0]?.count || 0,
+          isLiked: isLiked,
+          likedStyle: isLiked ? 'style="color: #ff4d4f"' : ''
+        };
+      });
+    }
   },
 
   /**
@@ -1426,8 +1438,8 @@ const AumageDB = {
 
       if (error) {
         if (error.code === '23505') {
-           // Duplicate connection
-           return { success: false, error: 'Connection already exists or is pending.' };
+          // Duplicate connection
+          return { success: false, error: 'Connection already exists or is pending.' };
         }
         throw error;
       }
@@ -1545,7 +1557,7 @@ const AumageDB = {
       const conversations = await Promise.all(conns.map(async (c) => {
         const otherUserId = c.requester_id === this.user.id ? c.receiver_id : c.requester_id;
         const otherUser = profileMap[otherUserId] || { id: otherUserId, display_name: 'Explorer' };
-        
+
         // Fetch last message
         const { data: lastMsg } = await this.supabase
           .from('messages')
@@ -1695,12 +1707,12 @@ const AumageDB = {
         const currentId = this.user.id;
         const isRequester = c.requester_id === currentId;
         const otherUserId = isRequester ? c.receiver_id : c.requester_id;
-        
+
         return {
           ...c,
-          otherUser: profileMap[otherUserId] || { 
-            id: otherUserId, 
-            display_name: 'Explorer #' + otherUserId.substring(0, 4) 
+          otherUser: profileMap[otherUserId] || {
+            id: otherUserId,
+            display_name: 'Explorer #' + otherUserId.substring(0, 4)
           }
         };
       });
@@ -1986,14 +1998,14 @@ const NotificationUI = {
       if (filterBtn) {
         const filter = filterBtn.dataset.filter;
         this.currentFilter = filter;
-        
+
         // Update active class
         const filterContainer = filterBtn.parentElement;
         if (filterContainer) {
           filterContainer.querySelectorAll('.noti-filter').forEach(btn => btn.classList.remove('active'));
           filterBtn.classList.add('active');
         }
-        
+
         this.loadNotifications();
       }
     });
@@ -2031,7 +2043,7 @@ const NotificationUI = {
     try {
       const notifs = await window.AumageDB.getNotifications();
       console.log('NotificationUI: Fetched', notifs?.length || 0, 'notifications');
-      
+
       if (!notifs || notifs.length === 0) {
         list.innerHTML = '<div class="noti-empty" style="padding: 40px 20px; text-align: center; color: var(--text-muted);">No notifications yet.</div>';
         return;
@@ -2063,7 +2075,7 @@ const NotificationUI = {
             item.classList.remove('noti-item--unread');
             const statusDot = item.querySelector('.noti-item__status');
             if (statusDot) statusDot.remove();
-            
+
             // If we are in "unread" filter, remove it from list
             if (this.currentFilter === 'unread') {
               item.style.opacity = '0';
@@ -2119,7 +2131,7 @@ const NotificationUI = {
   renderNotification(n) {
     const isUnread = !n.is_read;
     const time = this.formatTime(n.created_at);
-    
+
     // Default values
     let avatar = 'https://ui-avatars.com/api/?name=System&background=fbbf24&color=fff';
     let text = n.metadata?.message || 'New notification';
