@@ -752,7 +752,7 @@ const AumageDB = {
           likes_count: likesMap[c.id] || 0,
           comments_count: commentsMap[c.id] || 0,
           isLiked: isLiked,
-          likedStyle: isLiked ? 'style="color: var(--color-primary)"' : ''
+          likedStyle: isLiked ? 'style="color: #ff4d4f"' : ''
         };
       });
 
@@ -891,7 +891,7 @@ const AumageDB = {
       return (data || []).map(c => ({
         ...c,
         isLiked: c.is_liked || false,
-        likedStyle: (c.is_liked) ? 'style="color: var(--color-primary)"' : ''
+        likedStyle: (c.is_liked) ? 'style="color: #ff4d4f"' : ''
       }));
     } catch (e) {
       console.error('AumageDB.getExploreCards error:', e);
@@ -923,7 +923,7 @@ const AumageDB = {
           likes_count: c.likes?.length || 0,
           comments_count: c.comments?.[0]?.count || 0,
           isLiked: isLiked,
-          likedStyle: isLiked ? 'style="color: var(--color-primary)"' : ''
+          likedStyle: isLiked ? 'style="color: #ff4d4f"' : ''
         };
       });
     }
