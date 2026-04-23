@@ -62,7 +62,7 @@
 
             async init() {
                 console.log('ConnectionsUI: Initializing...');
-                
+
                 await ComponentLoader.loadAll([
                     { id: 'comp-sidebar', path: '../components/sidebar.html' },
                     { id: 'comp-header', path: '../components/header.html' },
@@ -124,7 +124,7 @@
 
                 const profile = conn.otherUser;
                 const profileArea = document.getElementById('profile-area');
-                
+
                 // Show loading state
                 profileArea.innerHTML = '<div style="padding: 100px; text-align: center;">Loading profile...</div>';
 
@@ -137,7 +137,7 @@
                 const creatureCount = profile.total_creatures || creatures.length; // Use profile stat if available
 
                 profileArea.innerHTML = `
-                    <div class="profile-card">
+                    <div class="connection-profile-card">
                         <header class="profile-header">
                             <div class="profile-header__avatar">
                                 <img src="${avatar}" alt="${profile.display_name}">
