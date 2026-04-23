@@ -366,7 +366,7 @@
                         const countSpan = likeBtn.querySelector('span');
                         let current = parseInt(countSpan.textContent);
                         countSpan.textContent = result.liked ? current + 1 : current - 1;
-                        likeBtn.style.color = result.liked ? 'var(--color-primary)' : '';
+                        likeBtn.style.color = result.liked ? '#ff4d4f' : '';
 
                         const svg = likeBtn.querySelector('svg');
                         if (svg) svg.setAttribute('fill', result.liked ? 'currentColor' : 'none');

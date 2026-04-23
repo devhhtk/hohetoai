@@ -837,7 +837,7 @@ const AumageDB = {
           .select(`
             *,
             profiles:user_id(display_name, avatar_url),
-            likes:creature_likes(count),
+            likes:creature_likes(user_id),
             comments:creature_comments(count)
           `)
           .eq('is_public', true)
@@ -853,11 +853,16 @@ const AumageDB = {
         }
         
         // Transform counts and ensure format matches Worker API
-        const transformed = (data || []).map(c => ({
-          ...c,
-          likes_count: c.likes?.[0]?.count || 0,
-          comments_count: c.comments?.[0]?.count || 0
-        }));
+        const transformed = (data || []).map(c => {
+          const isLiked = c.likes?.some(l => l.user_id === this.user?.id) || false;
+          return {
+            ...c,
+            likes_count: c.likes?.length || 0,
+            comments_count: c.comments?.[0]?.count || 0,
+            isLiked: isLiked,
+            likedStyle: isLiked ? 'style="color: #ff4d4f"' : ''
+          };
+        });
 
         console.log(`Found ${transformed.length} tradeable creatures`);
         return transformed;
