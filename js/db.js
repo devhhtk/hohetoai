@@ -1198,18 +1198,112 @@ const AumageDB = {
   async markAllNotificationsAsRead() {
     if (!this.supabase || !this.user) return false;
 
-    const { error } = await this.supabase
-      .from('notifications')
-      .update({ is_read: true })
-      .eq('recipient_id', this.user.id)
-      .eq('is_read', false);
-
-    if (error) {
-      console.error('AumageDB markAllNotificationsAsRead error:', error);
-      return false;
-    }
-
     return true;
+  },
+
+  // ============================================================
+  // CONNECTIONS
+  // ============================================================
+
+  /**
+   * Send a connection request to another user.
+   */
+  async sendConnectionRequest(receiverId) {
+    if (!this.supabase || !this.user) return null;
+
+    try {
+      // 1. Create connection record
+      const { data, error } = await this.supabase
+        .from('connections')
+        .insert({
+          requester_id: this.user.id,
+          receiver_id: receiverId,
+          status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (error) {
+        if (error.code === '23505') {
+           // Duplicate connection
+           return { success: false, error: 'Connection already exists or is pending.' };
+        }
+        throw error;
+      }
+
+      // 2. Create notification for receiver
+      await this.supabase.from('notifications').insert({
+        recipient_id: receiverId,
+        actor_id: this.user.id,
+        type: 'connection_request',
+        metadata: {
+          connection_id: data.id,
+          message: 'wants to connect with you'
+        }
+      });
+
+      return { success: true, data };
+    } catch (e) {
+      console.error('AumageDB.sendConnectionRequest error:', e);
+      return { success: false, error: e.message };
+    }
+  },
+
+  /**
+   * Accept a connection request.
+   */
+  async acceptConnectionRequest(connectionId) {
+    if (!this.supabase || !this.user) return null;
+
+    try {
+      // 1. Update connection status
+      const { data: connection, error } = await this.supabase
+        .from('connections')
+        .update({ status: 'accepted' })
+        .eq('id', connectionId)
+        .eq('receiver_id', this.user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // 2. Notify the requester
+      await this.supabase.from('notifications').insert({
+        recipient_id: connection.requester_id,
+        actor_id: this.user.id,
+        type: 'connection_accepted',
+        metadata: {
+          connection_id: connection.id,
+          message: 'accepted your connection request'
+        }
+      });
+
+      return { success: true, connection };
+    } catch (e) {
+      console.error('AumageDB.acceptConnectionRequest error:', e);
+      return { success: false, error: e.message };
+    }
+  },
+
+  /**
+   * Get connection status with another user.
+   */
+  async getConnectionStatus(otherUserId) {
+    if (!this.supabase || !this.user) return null;
+
+    try {
+      const { data, error } = await this.supabase
+        .from('connections')
+        .select('*')
+        .or(`and(requester_id.eq.${this.user.id},receiver_id.eq.${otherUserId}),and(requester_id.eq.${otherUserId},receiver_id.eq.${this.user.id})`)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data;
+    } catch (e) {
+      console.error('AumageDB.getConnectionStatus error:', e);
+      return null;
+    }
   }
 };
 
@@ -1551,6 +1645,44 @@ const NotificationUI = {
             }
           }
         };
+
+        // Handle Connection Accept/Reject buttons
+        const acceptBtn = item.querySelector('.btn-noti-accept');
+        const rejectBtn = item.querySelector('.btn-noti-reject');
+
+        if (acceptBtn) {
+          acceptBtn.onclick = async (e) => {
+            e.stopPropagation();
+            const connId = acceptBtn.dataset.connId;
+            acceptBtn.disabled = true;
+            acceptBtn.textContent = '...';
+            const res = await window.AumageDB.acceptConnectionRequest(connId);
+            if (res.success) {
+              acceptBtn.parentElement.innerHTML = '<span style="color: var(--color-primary); font-size: 12px;">Connected ✓</span>';
+              // Mark notification as read
+              await window.AumageDB.markNotificationAsRead(item.dataset.id);
+              item.classList.remove('noti-item--unread');
+              const statusDot = item.querySelector('.noti-item__status');
+              if (statusDot) statusDot.remove();
+              this.refresh();
+            } else {
+              acceptBtn.disabled = false;
+              acceptBtn.textContent = 'Accept';
+              alert('Failed to accept: ' + res.error);
+            }
+          };
+        }
+
+        if (rejectBtn) {
+          rejectBtn.onclick = async (e) => {
+            e.stopPropagation();
+            // Just mark as read for now, we don't have a "reject" logic that does more
+            await window.AumageDB.markNotificationAsRead(item.dataset.id);
+            item.style.opacity = '0.5';
+            rejectBtn.parentElement.innerHTML = '<span style="color: #888; font-size: 12px;">Ignored</span>';
+            this.refresh();
+          };
+        }
       });
     } catch (err) {
       console.error('NotificationUI: Error loading notifications:', err);
@@ -1590,6 +1722,25 @@ const NotificationUI = {
     } else if (n.type === 'system') {
       iconBg = '#fbbf24';
       iconSvg = '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>';
+    } else if (n.type === 'connection_request') {
+      iconBg = '#8b5cf6';
+      iconSvg = '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line>';
+      text = `<strong>${actorName}</strong> wants to connect with you.`;
+    } else if (n.type === 'connection_accepted') {
+      iconBg = '#10b981';
+      iconSvg = '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline>';
+      text = `<strong>${actorName}</strong> accepted your connection request.`;
+    }
+
+    // Add buttons for connection requests
+    let actions = '';
+    if (n.type === 'connection_request' && isUnread) {
+      actions = `
+        <div class="noti-item__actions" style="margin-top: 8px; display: flex; gap: 8px;">
+          <button class="btn-noti-accept" data-conn-id="${n.metadata?.connection_id}" style="padding: 4px 12px; background: var(--color-primary); color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;">Accept</button>
+          <button class="btn-noti-reject" data-conn-id="${n.metadata?.connection_id}" style="padding: 4px 12px; background: #eee; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;">Ignore</button>
+        </div>
+      `;
     }
 
     return `
@@ -1602,9 +1753,10 @@ const NotificationUI = {
             </svg>
           </div>
         </div>
-        <div class="noti-item__info">
-          <p class="noti-item__text">${text}</p>
-          <span class="noti-item__time">${time}</span>
+        <div class="noti-item__content">
+          <div class="noti-item__text">${text}</div>
+          <div class="noti-item__time">${time}</div>
+          ${actions}
         </div>
         ${isUnread ? '<div class="noti-item__status"></div>' : ''}
       </div>

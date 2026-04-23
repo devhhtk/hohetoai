@@ -186,6 +186,9 @@
                 });
             }
 
+            // Cache for connection statuses to avoid redundant queries
+            const connectionCache = new Map();
+
             async function loadExploreCards(sort = 'all') {
                 const grid = document.getElementById('explore-grid');
                 if (!grid) return;
@@ -204,7 +207,47 @@
                 creatures.forEach(creature => {
                     const card = createCreatureCard(creature);
                     grid.appendChild(card);
+                    // Check connection status after rendering
+                    updateConnectionButton(card, creature.user_id);
                 });
+            }
+
+            async function updateConnectionButton(card, otherUserId) {
+                if (!window.AumageDB.user || window.AumageDB.user.id === otherUserId) {
+                    const connectBtn = card.querySelector('[title="Connect"]');
+                    if (connectBtn) connectBtn.style.display = 'none';
+                    return;
+                }
+
+                let status = connectionCache.get(otherUserId);
+                if (!status) {
+                    const conn = await window.AumageDB.getConnectionStatus(otherUserId);
+                    status = conn ? conn.status : 'none';
+                    connectionCache.set(otherUserId, status);
+                }
+
+                const connectBtn = card.querySelector('[title="Connect"]');
+                if (!connectBtn) return;
+
+                if (status === 'accepted') {
+                    connectBtn.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="var(--color-primary)" stroke="var(--color-primary)" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <polyline points="17 11 19 13 23 9"></polyline>
+                        </svg>
+                        Connected
+                    `;
+                    connectBtn.style.color = 'var(--color-primary)';
+                } else if (status === 'pending') {
+                    connectBtn.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Pending
+                    `;
+                }
             }
 
             function createCreatureCard(creature) {
@@ -292,6 +335,29 @@
                 commentBtn.onclick = (e) => {
                     e.stopPropagation();
                     openCommentsModal(creature.id, name);
+                };
+
+                // Add connect listener
+                const connectBtn = div.querySelector('[title="Connect"]');
+                connectBtn.onclick = async (e) => {
+                    e.stopPropagation();
+                    if (connectBtn.textContent.trim() !== 'Connect') return;
+
+                    connectBtn.innerHTML = 'Connecting...';
+                    const res = await window.AumageDB.sendConnectionRequest(creature.user_id);
+                    if (res && res.success) {
+                        connectionCache.set(creature.user_id, 'pending');
+                        updateConnectionButton(div, creature.user_id);
+                    } else {
+                        connectBtn.innerHTML = `
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                            </svg>
+                            Connect
+                        `;
+                        alert(res?.error || 'Failed to send request.');
+                    }
                 };
 
                 return div;
