@@ -1434,6 +1434,7 @@ const ConfettiEngine = {
  */
 const NotificationUI = {
   pollInterval: null,
+  currentFilter: 'all',
 
   async init() {
     console.log('NotificationUI: Initializing...');
@@ -1455,6 +1456,24 @@ const NotificationUI = {
       if (e.target.closest('.noti-action-btn')) {
         await window.AumageDB.markAllNotificationsAsRead();
         this.refresh();
+        this.loadNotifications();
+      }
+    });
+
+    // Filter buttons
+    document.addEventListener('click', (e) => {
+      const filterBtn = e.target.closest('.noti-filter');
+      if (filterBtn) {
+        const filter = filterBtn.dataset.filter;
+        this.currentFilter = filter;
+        
+        // Update active class
+        const filterContainer = filterBtn.parentElement;
+        if (filterContainer) {
+          filterContainer.querySelectorAll('.noti-filter').forEach(btn => btn.classList.remove('active'));
+          filterBtn.classList.add('active');
+        }
+        
         this.loadNotifications();
       }
     });
@@ -1498,7 +1517,20 @@ const NotificationUI = {
         return;
       }
 
-      list.innerHTML = notifs.map(n => this.renderNotification(n)).join('');
+      // Filter logic
+      let filtered = notifs;
+      if (this.currentFilter === 'unread') {
+        filtered = notifs.filter(n => !n.is_read);
+      } else if (this.currentFilter === 'read') {
+        filtered = notifs.filter(n => n.is_read);
+      }
+
+      if (filtered.length === 0) {
+        list.innerHTML = `<div class="noti-empty" style="padding: 40px 20px; text-align: center; color: var(--text-muted);">No ${this.currentFilter} notifications.</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map(n => this.renderNotification(n)).join('');
 
       // Add click events to mark as read
       list.querySelectorAll('.noti-item').forEach(item => {
@@ -1507,7 +1539,16 @@ const NotificationUI = {
           if (item.classList.contains('noti-item--unread')) {
             await window.AumageDB.markNotificationAsRead(id);
             this.refresh();
+            // Instead of reloading everything, just update the local item state
             item.classList.remove('noti-item--unread');
+            const statusDot = item.querySelector('.noti-item__status');
+            if (statusDot) statusDot.remove();
+            
+            // If we are in "unread" filter, remove it from list
+            if (this.currentFilter === 'unread') {
+              item.style.opacity = '0';
+              setTimeout(() => item.remove(), 300);
+            }
           }
         };
       });
