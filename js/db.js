@@ -911,7 +911,7 @@ const AumageDB = {
       if (!resp.ok) throw new Error(`Explore API failed: ${resp.status}`);
       const data = await resp.json();
       return (data || []).map(c => {
-        const isLiked = c.is_liked || c.isLiked || false;
+        const isLiked = c.user_has_liked || c.is_liked || c.isLiked || false;
         return {
           ...c,
           isLiked: isLiked,
