@@ -19,17 +19,28 @@
         <div class="library-container">
             <!-- Page Header -->
             <header class="library-header">
-                <h1 class="library-title">Sound Library</h1>
+                <div>
+                    <h1 class="library-title">Sound Library</h1>
+                    <p class="library-subtitle">Manage your sonic DNA collection</p>
+                </div>
+                <button class="btn-upload">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    Upload Sound
+                </button>
             </header>
 
             <!-- Controls -->
             <div class="library-controls">
                 <div class="search-wrap">
-                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="8"></circle>
                         <path d="M21 21l-4.35-4.35"></path>
                     </svg>
-                    <input type="text" class="search-input" placeholder="Search sounds...">
+                    <input type="text" class="search-input" placeholder="Search your library...">
                 </div>
 
                 <select class="sort-select">
@@ -37,140 +48,118 @@
                     <option>Sort: Oldest First</option>
                     <option>Sort: Name A-Z</option>
                 </select>
-
-                <button class="btn-upload">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="17 8 12 3 7 8"></polyline>
-                        <line x1="12" y1="3" x2="12" y2="15"></line>
-                    </svg>
-                    Upload
-                </button>
             </div>
 
-            <!-- Sound List -->
-            <div class="sound-list" id="sound-list">
-                
-                <!-- Sound Item 1 -->
-                <div class="sound-row-wrapper">
-                    <div class="sound-row" onclick="toggleLibraryItem(this)">
-                        <div class="sound-info">
-                            <span class="sound-name">Aqua Dreams</span>
-                        </div>
-                        <div class="mini-player">
-                            <button class="btn-play-toggle">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                            </button>
-                            <span class="player-duration">0:28</span>
-                            <div class="player-progress-wrap">
-                                <div class="player-progress-bar" style="width: 45%;"></div>
-                            </div>
-                            <div class="player-volume">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="row-actions">
-                            <button class="row-action-btn">Edit Name</button>
-                            <button class="row-action-btn">Download</button>
-                            <button class="row-action-btn">Remove</button>
-                            <button class="row-action-btn" style="color: var(--color-primary); border-color: rgba(8,210,193,0.2);">Use in Lab</button>
-                        </div>
-                    </div>
-                    <div class="dna-expanded-view">
-                        <div class="dna-main-viz">
-                            <div class="dna-circle-metrics">
-                                <div class="circle-metric">
-                                    <span class="metric-label">Harmony</span>
-                                    <svg class="circle-svg"><circle class="circle-bg" cx="30" cy="30" r="26"></circle><circle class="circle-progress" cx="30" cy="30" r="26" style="stroke-dashoffset: 80;"></circle></svg>
-                                    <span class="metric-value">53%</span>
-                                </div>
-                                <div class="circle-metric">
-                                    <span class="metric-label">Complexity</span>
-                                    <svg class="circle-svg"><circle class="circle-bg" cx="30" cy="30" r="26"></circle><circle class="circle-progress" cx="30" cy="30" r="26" style="stroke-dashoffset: 150;"></circle></svg>
-                                    <span class="metric-value">18%</span>
-                                </div>
-                                <div class="circle-metric">
-                                    <span class="metric-label">Intensity</span>
-                                    <svg class="circle-svg"><circle class="circle-bg" cx="30" cy="30" r="26"></circle><circle class="circle-progress" cx="30" cy="30" r="26" style="stroke-dashoffset: 40;"></circle></svg>
-                                    <span class="metric-value">79%</span>
-                                </div>
-                            </div>
-                            <canvas class="dna-waveform-canvas"></canvas>
-                            <div class="expanded-dna-player">
-                                <button class="btn-play-toggle"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></button>
-                                <span class="player-duration">0:00</span>
-                                <div class="player-progress-wrap"><div class="player-progress-bar"></div></div>
-                                <div class="player-volume"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg></div>
-                            </div>
-                        </div>
-                        <div class="dna-stats-grid">
-                            <div class="dna-stat-item stat-complexity"><div class="dna-stat-label-row"><span class="dna-stat-name">Complexity</span><span class="dna-stat-percent">30%</span></div><div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" style="width: 30%;"></div></div></div>
-                            <div class="dna-stat-item stat-intensity"><div class="dna-stat-label-row"><span class="dna-stat-name">Intensity</span><span class="dna-stat-percent">18%</span></div><div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" style="width: 18%;"></div></div></div>
-                            <div class="dna-stat-item stat-harmony"><div class="dna-stat-label-row"><span class="dna-stat-name">Harmony</span><span class="dna-stat-percent">50%</span></div><div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" style="width: 50%;"></div></div></div>
-                            <div class="dna-stat-item stat-warmth"><div class="dna-stat-label-row"><span class="dna-stat-name">Warmth</span><span class="dna-stat-percent">90%</span></div><div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" style="width: 90%;"></div></div></div>
-                            <div class="dna-stat-item stat-roughness"><div class="dna-stat-label-row"><span class="dna-stat-name">Roughness</span><span class="dna-stat-percent">23%</span></div><div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" style="width: 23%;"></div></div></div>
-                            <div class="dna-stat-item stat-brightness"><div class="dna-stat-label-row"><span class="dna-stat-name">Brightness</span><span class="dna-stat-percent">28%</span></div><div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" style="width: 28%;"></div></div></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sound Item 2 -->
-                <div class="sound-row-wrapper">
-                    <div class="sound-row" onclick="toggleLibraryItem(this)">
-                        <div class="sound-info"><span class="sound-name">Mystic Portal</span></div>
-                        <div class="mini-player">
-                            <button class="btn-play-toggle"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></button>
-                            <span class="player-duration">0:11</span>
-                            <div class="player-progress-wrap"><div class="player-progress-bar"></div></div>
-                            <div class="player-volume"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg></div>
-                        </div>
-                        <div class="row-actions">
-                            <button class="action-btn">Edit Name</button><button class="action-btn">Download</button><button class="action-btn">Remove</button><button class="action-btn">Use in Lab</button>
-                        </div>
-                    </div>
-                    <div class="dna-expanded-view"></div>
-                </div>
-
-                <!-- Repeat Demo Rows -->
-                <script>
-                    const demoNames = ["Neon Lights", "Crimson Tide", "Amber Waves", "Frozen Tundra", "Solar Wind", "Lunar Landing", "Galactic Core", "Supernova"];
-                    const list = document.getElementById('sound-list');
-                    demoNames.forEach(name => {
-                        const wrapper = document.createElement('div');
-                        wrapper.className = 'sound-row-wrapper';
-                        wrapper.innerHTML = `
-                            <div class="sound-row" onclick="toggleLibraryItem(this)">
-                                <div class="sound-info"><span class="sound-name">${name}</span></div>
-                                <div class="mini-player">
-                                    <button class="btn-play-toggle"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></button>
-                                    <span class="player-duration">0:15</span>
-                                    <div class="player-progress-wrap"><div class="player-progress-bar"></div></div>
-                                    <div class="player-volume"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg></div>
-                                </div>
-                                <div class="row-actions">
-                                    <button class="row-action-btn">Edit Name</button><button class="row-action-btn">Download</button><button class="row-action-btn">Remove</button><button class="row-action-btn">Use in Lab</button>
-                                </div>
-                            </div>
-                            <div class="dna-expanded-view"></div>
-                        `;
-                        list.appendChild(wrapper);
-                    });
-                </script>
-
+            <!-- Sound Grid -->
+            <div class="sound-grid" id="sound-grid">
+                <!-- Cards will be injected here -->
             </div>
         </div>
     </main>
+
+    <!-- Sound Player Modal -->
+    <div class="modal-overlay" id="playerModal">
+        <div class="modal-container">
+            <button class="btn-close-modal" onclick="closeModal()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            
+            <div class="modal-body">
+                <!-- Left: Player -->
+                <div class="modal-player-section">
+                    <div class="modal-artwork-large">
+                        <canvas id="modalWaveform" style="width: 100%; height: 100%; border-radius: 30px;"></canvas>
+                        <div class="artwork-visual" style="position: absolute; pointer-events: none; opacity: 0.3;">
+                            <svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h2 class="modal-sound-name" id="modalSoundName">Aqua Dreams</h2>
+                    <p class="modal-sound-meta" id="modalSoundMeta">Created 2 days ago • 0:28</p>
+                    
+                    <div class="modal-controls">
+                        <div class="modal-progress-wrap" id="progressWrap">
+                            <div class="modal-progress-bar" id="modalProgressBar" style="width: 0%;"></div>
+                        </div>
+                        <div class="modal-time-row">
+                            <span id="currentTime">0:00</span>
+                            <span id="totalTime">0:28</span>
+                        </div>
+                        <div class="player-main-ctrls">
+                            <button class="btn-main-play" id="modalPlayBtn" onclick="togglePlayback()">
+                                <svg id="playIcon" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                                <svg id="pauseIcon" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                                    <rect x="6" y="4" width="4" height="16"></rect>
+                                    <rect x="14" y="4" width="4" height="16"></rect>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Stats -->
+                <div class="modal-stats-section">
+                    <h3 style="font-family: 'Outfit'; font-size: 14px; color: var(--color-primary); margin-bottom: 20px; letter-spacing: 2px;">SONIC DNA ANALYSIS</h3>
+                    
+                    <div class="dna-stat-item stat-complexity">
+                        <div class="dna-stat-label-row"><span class="dna-stat-name">Complexity</span><span class="dna-stat-percent" id="stat-complexity-val">75%</span></div>
+                        <div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" id="stat-complexity-bar" style="width: 75%;"></div></div>
+                    </div>
+                    <div class="dna-stat-item stat-harmony">
+                        <div class="dna-stat-label-row"><span class="dna-stat-name">Harmony</span><span class="dna-stat-percent" id="stat-harmony-val">60%</span></div>
+                        <div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" id="stat-harmony-bar" style="width: 60%;"></div></div>
+                    </div>
+                    <div class="dna-stat-item stat-roughness">
+                        <div class="dna-stat-label-row"><span class="dna-stat-name">Roughness</span><span class="dna-stat-percent" id="stat-roughness-val">20%</span></div>
+                        <div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" id="stat-roughness-bar" style="width: 20%;"></div></div>
+                    </div>
+                    <div class="dna-stat-item stat-intensity">
+                        <div class="dna-stat-label-row"><span class="dna-stat-name">Intensity</span><span class="dna-stat-percent" id="stat-intensity-val">85%</span></div>
+                        <div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" id="stat-intensity-bar" style="width: 85%;"></div></div>
+                    </div>
+                    <div class="dna-stat-item stat-warmth">
+                        <div class="dna-stat-label-row"><span class="dna-stat-name">Warmth</span><span class="dna-stat-percent" id="stat-warmth-val">45%</span></div>
+                        <div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" id="stat-warmth-bar" style="width: 45%;"></div></div>
+                    </div>
+                    <div class="dna-stat-item stat-brightness">
+                        <div class="dna-stat-label-row"><span class="dna-stat-name">Brightness</span><span class="dna-stat-percent" id="stat-brightness-val">90%</span></div>
+                        <div class="dna-stat-bar-outer"><div class="dna-stat-bar-inner" id="stat-brightness-bar" style="width: 90%;"></div></div>
+                    </div>
+
+                    <div style="margin-top: auto; display: flex; gap: 12px;">
+                        <button class="card-btn card-btn--primary" style="height: 44px; font-size: 13px;">Use in Lab</button>
+                        <button class="card-btn" style="height: 44px; font-size: 13px;">Download</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/db.js"></script>
     <script src="../js/components.js"></script>
     <script>
+        const demoSounds = [
+            { id: 1, name: "Aqua Dreams", duration: "0:28", seconds: 28, date: "2 days ago", stats: { complexity: 75, harmony: 60, roughness: 20, intensity: 85, warmth: 45, brightness: 90 } },
+            { id: 2, name: "Mystic Portal", duration: "0:15", seconds: 15, date: "3 days ago", stats: { complexity: 40, harmony: 80, roughness: 10, intensity: 30, warmth: 70, brightness: 50 } },
+            { id: 3, name: "Neon Lights", duration: "0:12", seconds: 12, date: "4 days ago", stats: { complexity: 90, harmony: 40, roughness: 60, intensity: 95, warmth: 20, brightness: 95 } },
+            { id: 4, name: "Crimson Tide", duration: "0:45", seconds: 45, date: "1 week ago", stats: { complexity: 55, harmony: 50, roughness: 40, intensity: 60, warmth: 80, brightness: 30 } },
+            { id: 5, name: "Solar Wind", duration: "0:20", seconds: 20, date: "1 week ago", stats: { complexity: 30, harmony: 90, roughness: 5, intensity: 20, warmth: 60, brightness: 80 } },
+            { id: 6, name: "Galactic Core", duration: "1:05", seconds: 65, date: "2 weeks ago", stats: { complexity: 85, harmony: 30, roughness: 70, intensity: 90, warmth: 10, brightness: 40 } }
+        ];
+
+        let isPlaying = false;
+        let playInterval;
+        let currentSeconds = 0;
+        let totalSeconds = 0;
+
         document.addEventListener('DOMContentLoaded', async () => {
             // Database Init
             if (window.AumageDB) {
@@ -189,76 +178,162 @@
             const navItem = document.getElementById('nav-library');
             if (navItem) navItem.classList.add('nav-item--active');
 
-            // Update stats
-            if (window.AumageDB) {
-                await window.AumageDB.updateSidebarStats();
-            }
-
-            // Profile Dropdown Logic
-            const profileToggle = document.getElementById('profileToggle');
-            const profileDropup = document.getElementById('profileDropup');
-
-            if (profileToggle && profileDropup) {
-                profileToggle.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    profileDropup.classList.toggle('profile-dropup--active');
-                });
-
-                document.addEventListener('click', () => {
-                    profileDropup.classList.remove('profile-dropup--active');
-                });
-
-                profileDropup.addEventListener('click', (e) => e.stopPropagation());
-            }
-
-            // Draw waveforms
-            function drawWaveforms() {
-                document.querySelectorAll('.dna-waveform-canvas').forEach(canvas => {
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = canvas.offsetWidth;
-                    canvas.height = canvas.offsetHeight;
-                    ctx.strokeStyle = '#08D2C1';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    const centerY = canvas.height / 2;
-                    for (let x = 0; x < canvas.width; x += 4) {
-                        const h = Math.abs(Math.sin(x * 0.05)) * 40 + Math.random() * 10;
-                        ctx.moveTo(x, centerY - h/2);
-                        ctx.lineTo(x, centerY + h/2);
-                    }
-                    ctx.stroke();
-                });
-            }
-            
-            drawWaveforms();
-            // Re-draw on expand
-            window.drawWaveforms = drawWaveforms;
+            // Render Sounds
+            renderSounds();
         });
 
-        function toggleLibraryItem(row) {
-            const wrapper = row.parentElement;
-            const dnaView = wrapper.querySelector('.dna-expanded-view');
+        function renderSounds() {
+            const grid = document.getElementById('sound-grid');
+            grid.innerHTML = '';
             
-            // Close all others
-            document.querySelectorAll('.sound-row-wrapper').forEach(w => {
-                if (w !== wrapper) {
-                    w.querySelector('.sound-row').classList.remove('sound-row--active');
-                    w.querySelector('.dna-expanded-view').classList.remove('active');
-                }
+            demoSounds.forEach(sound => {
+                const card = document.createElement('div');
+                card.className = 'sound-card';
+                card.onclick = () => openModal(sound);
+                
+                card.innerHTML = `
+                    <div class="card-artwork">
+                        <div class="artwork-visual">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">${sound.name}</h3>
+                        <div class="card-meta">
+                            <span>${sound.duration}</span>
+                            <span>${sound.date}</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="card-btn card-btn--primary">Play</button>
+                        <button class="card-btn">Edit</button>
+                    </div>
+                `;
+                grid.appendChild(card);
             });
+        }
 
-            // Toggle current
-            row.classList.toggle('sound-row--active');
-            dnaView.classList.toggle('active');
+        function openModal(sound) {
+            const modal = document.getElementById('playerModal');
+            document.getElementById('modalSoundName').innerText = sound.name;
+            document.getElementById('modalSoundMeta').innerText = `Created ${sound.date} • ${sound.duration}`;
+            document.getElementById('totalTime').innerText = sound.duration;
             
-            // If it's empty (demo), add some dummy DNA content if needed
-            if (dnaView.classList.contains('active')) {
-                if (dnaView.innerHTML === '') {
-                    dnaView.innerHTML = document.querySelector('.dna-expanded-view').innerHTML;
-                }
-                setTimeout(() => window.drawWaveforms(), 50);
+            totalSeconds = sound.seconds;
+            currentSeconds = 0;
+            updateProgress();
+            
+            // Update Stats
+            updateStat('complexity', sound.stats.complexity);
+            updateStat('harmony', sound.stats.harmony);
+            updateStat('roughness', sound.stats.roughness);
+            updateStat('intensity', sound.stats.intensity);
+            updateStat('warmth', sound.stats.warmth);
+            updateStat('brightness', sound.stats.brightness);
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Draw Waveform
+            setTimeout(drawWaveform, 100);
+        }
+
+        function updateStat(key, val) {
+            document.getElementById(`stat-${key}-val`).innerText = val + '%';
+            document.getElementById(`stat-${key}-bar`).style.width = val + '%';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('playerModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            stopPlayback();
+        }
+
+        function togglePlayback() {
+            if (isPlaying) {
+                stopPlayback();
+            } else {
+                startPlayback();
             }
         }
+
+        function startPlayback() {
+            isPlaying = true;
+            document.getElementById('playIcon').style.display = 'none';
+            document.getElementById('pauseIcon').style.display = 'block';
+            
+            playInterval = setInterval(() => {
+                currentSeconds += 0.1;
+                if (currentSeconds >= totalSeconds) {
+                    currentSeconds = totalSeconds;
+                    stopPlayback();
+                }
+                updateProgress();
+            }, 100);
+        }
+
+        function stopPlayback() {
+            isPlaying = false;
+            clearInterval(playInterval);
+            document.getElementById('playIcon').style.display = 'block';
+            document.getElementById('pauseIcon').style.display = 'none';
+        }
+
+        function updateProgress() {
+            const percent = (currentSeconds / totalSeconds) * 100;
+            document.getElementById('modalProgressBar').style.width = percent + '%';
+            
+            const mins = Math.floor(currentSeconds / 60);
+            const secs = Math.floor(currentSeconds % 60);
+            document.getElementById('currentTime').innerText = `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function drawWaveform() {
+            const canvas = document.getElementById('modalWaveform');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient.addColorStop(0, '#08D2C1');
+            gradient.addColorStop(1, '#00f2e0');
+            
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            
+            const centerY = canvas.height / 2;
+            const barWidth = 4;
+            const gap = 4;
+            const bars = Math.floor(canvas.width / (barWidth + gap));
+            
+            for (let i = 0; i < bars; i++) {
+                const x = i * (barWidth + gap);
+                const h = 20 + Math.random() * (canvas.height - 40);
+                
+                ctx.beginPath();
+                ctx.moveTo(x, centerY - h/2);
+                ctx.lineTo(x, centerY + h/2);
+                ctx.stroke();
+            }
+        }
+
+        // Close on overlay click
+        document.getElementById('playerModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('playerModal')) closeModal();
+        });
+
+        // Handle window resize for canvas
+        window.addEventListener('resize', () => {
+            if (document.getElementById('playerModal').classList.contains('active')) {
+                drawWaveform();
+            }
+        });
     </script>
 </body>
 </html>
