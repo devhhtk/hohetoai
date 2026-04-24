@@ -168,7 +168,7 @@ body.dashboard-body:not(.light-mode) .filter-btn:hover {
     bottom: 12px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(8, 210, 193, 0.9);
+    background: rgb(237 255 0);
     color: #011616;
     padding: 4px 14px;
     border-radius: 20px;
@@ -181,6 +181,9 @@ body.dashboard-body:not(.light-mode) .filter-btn:hover {
     display: flex;
     align-items: center;
     gap: 4px;
+    width: 75%;
+    align-items: center;
+    justify-content: center;
 }
 
 .creature-card__price svg {
