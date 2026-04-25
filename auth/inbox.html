@@ -158,6 +158,7 @@
             activeConnId: null,
             conversations: [],
             messages: [],
+            searchTerm: '',
             pollInterval: null,
 
             async init() {
@@ -206,7 +207,16 @@
                 sendBtn.onclick = handleSend;
                 chatInput.onkeypress = (e) => { if (e.key === 'Enter') handleSend(); };
 
-                // 6. Polling (every 5 seconds)
+                // 6. Bind Search Event
+                const searchInput = document.querySelector('.inbox-search input');
+                if (searchInput) {
+                    searchInput.oninput = (e) => {
+                        this.searchTerm = e.target.value.toLowerCase();
+                        this.renderConversations();
+                    };
+                }
+
+                // 7. Polling (every 5 seconds)
                 setInterval(() => this.poll(), 5000);
             },
 
@@ -219,12 +229,20 @@
                 const list = document.querySelector('.conversation-list');
                 if (!list) return;
 
-                if (this.conversations.length === 0) {
-                    list.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">No conversations yet. Connect with others to start chatting!</div>';
+                const filtered = this.conversations.filter(c => {
+                    if (!this.searchTerm) return true;
+                    const name = (c.otherUser?.display_name || '').toLowerCase();
+                    const lastMsg = (c.lastMessage?.content || '').toLowerCase();
+                    return name.includes(this.searchTerm) || lastMsg.includes(this.searchTerm);
+                });
+
+                if (filtered.length === 0) {
+                    const msg = this.searchTerm ? `No results for "${this.searchTerm}"` : 'No conversations yet. Connect with others to start chatting!';
+                    list.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--text-muted);">${msg}</div>`;
                     return;
                 }
 
-                list.innerHTML = this.conversations.map(c => {
+                list.innerHTML = filtered.map(c => {
                     const other = c.otherUser || { display_name: 'Unknown User' };
                     const avatar = other.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(other.display_name)}&background=random`;
                     const lastMsg = c.lastMessage?.content || 'No messages yet';
