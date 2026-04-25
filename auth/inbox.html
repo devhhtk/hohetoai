@@ -37,65 +37,26 @@
                         </div>
                     </div>
                     <div class="conversation-list">
-                        <!-- Active Conversation -->
-                        <div class="conversation-item conversation-item--active">
-                            <div class="conversation-item__avatar">
-                                <img src="https://i.pravatar.cc/150?u=a" alt="User">
-                                <span class="status-indicator status-indicator--online"></span>
-                            </div>
-                            <div class="conversation-item__content">
-                                <div class="conversation-item__top">
-                                    <span class="conversation-item__name">Aumage Support</span>
-                                    <span class="conversation-item__time">12:45 PM</span>
-                                </div>
-                                <div class="conversation-item__preview">
-                                    <span>Welcome to the new inbox! How can we help?</span>
-                                    <span class="unread-badge">1</span>
-                                </div>
+                        <!-- Skeleton Loaders -->
+                        <div class="skeleton-item">
+                            <div class="skeleton-avatar"></div>
+                            <div class="skeleton-content">
+                                <div class="skeleton-line"></div>
+                                <div class="skeleton-line"></div>
                             </div>
                         </div>
-                        <!-- Other Conversations -->
-                        <div class="conversation-item">
-                            <div class="conversation-item__avatar">
-                                <img src="https://i.pravatar.cc/150?u=b" alt="User">
-                                <span class="status-indicator status-indicator--online"></span>
-                            </div>
-                            <div class="conversation-item__content">
-                                <div class="conversation-item__top">
-                                    <span class="conversation-item__name">Alex Rivera</span>
-                                    <span class="conversation-item__time">Yesterday</span>
-                                </div>
-                                <div class="conversation-item__preview">
-                                    <span>That Floratrope looks amazing!</span>
-                                </div>
+                        <div class="skeleton-item">
+                            <div class="skeleton-avatar"></div>
+                            <div class="skeleton-content">
+                                <div class="skeleton-line"></div>
+                                <div class="skeleton-line"></div>
                             </div>
                         </div>
-                        <div class="conversation-item">
-                            <div class="conversation-item__avatar">
-                                <img src="https://i.pravatar.cc/150?u=c" alt="User">
-                            </div>
-                            <div class="conversation-item__content">
-                                <div class="conversation-item__top">
-                                    <span class="conversation-item__name">Sarah Chen</span>
-                                    <span class="conversation-item__time">Tue</span>
-                                </div>
-                                <div class="conversation-item__preview">
-                                    <span>Check out my new card!</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="conversation-item">
-                            <div class="conversation-item__avatar">
-                                <img src="https://i.pravatar.cc/150?u=d" alt="User">
-                            </div>
-                            <div class="conversation-item__content">
-                                <div class="conversation-item__top">
-                                    <span class="conversation-item__name">Marcus Thorne</span>
-                                    <span class="conversation-item__time">Mon</span>
-                                </div>
-                                <div class="conversation-item__preview">
-                                    <span>Are you coming to the raid?</span>
-                                </div>
+                        <div class="skeleton-item">
+                            <div class="skeleton-avatar"></div>
+                            <div class="skeleton-content">
+                                <div class="skeleton-line"></div>
+                                <div class="skeleton-line"></div>
                             </div>
                         </div>
                     </div>
@@ -103,94 +64,79 @@
 
                 <!-- Chat Area -->
                 <section class="chat-area">
-                    <!-- Chat Header -->
-                    <div class="chat-header">
-                        <div class="chat-user-info">
-                            <img src="https://i.pravatar.cc/150?u=a" alt="Aumage Support" class="chat-user-avatar">
-                            <div class="chat-user-details">
-                                <span class="chat-user-name">Aumage Support</span>
-                                <span class="chat-user-status">Online</span>
-                            </div>
+                    <!-- Default Empty State -->
+                    <div class="chat-empty-state">
+                        <div class="chat-empty-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
                         </div>
-                        <div class="chat-actions">
-                            <button class="chat-action-btn" title="Call">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                                </svg>
-                            </button>
-                            <button class="chat-action-btn" title="Video">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polygon points="23 7 16 12 23 17 23 7"></polygon>
-                                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-                                </svg>
-                            </button>
-                            <button class="chat-action-btn" title="Info">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                                </svg>
-                            </button>
-                        </div>
+                        <h3 class="chat-empty-title">Your Messages</h3>
+                        <p class="chat-empty-text">Select a conversation from the left to start chatting with your friends and teammates.</p>
                     </div>
 
-                    <!-- Message List -->
-                    <div class="message-list">
-                        <div class="message-group message-group--received">
-                            <div class="message-bubble">
-                                Hello! Welcome to HoHeTo Kyle. How can I assist you today?
+                    <!-- Chat Content (Hidden by default) -->
+                    <div class="chat-main" style="display: none; height: 100%; flex-direction: column;">
+                        <!-- Chat Header -->
+                        <div class="chat-header">
+                            <div class="chat-user-info">
+                                <img src="" alt="User" class="chat-user-avatar">
+                                <div class="chat-user-details">
+                                    <span class="chat-user-name">Select a user</span>
+                                    <span class="chat-user-status">Online</span>
+                                </div>
                             </div>
-                            <span class="message-time">12:30 PM</span>
-                        </div>
-                        <div class="message-group message-group--sent">
-                            <div class="message-bubble">
-                                Hi! I'm just exploring the new inbox feature. It looks great!
+                            <div class="chat-actions">
+                                <button class="chat-action-btn" title="Call">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                    </svg>
+                                </button>
+                                <button class="chat-action-btn" title="Video">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                                    </svg>
+                                </button>
+                                <button class="chat-action-btn" title="Info">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                    </svg>
+                                </button>
                             </div>
-                            <span class="message-time">12:35 PM</span>
                         </div>
-                        <div class="message-group message-group--received">
-                            <div class="message-bubble">
-                                We're glad you like it! You can now chat with other storytellers and share your creatures directly here.
-                            </div>
-                            <span class="message-time">12:40 PM</span>
-                        </div>
-                        <div class="message-group message-group--received">
-                            <div class="message-bubble">
-                                Is there anything specific you'd like to know about the platform?
-                            </div>
-                            <span class="message-time">12:40 PM</span>
-                        </div>
-                        <div class="message-group message-group--sent">
-                            <div class="message-bubble">
-                                Not right now, thanks! Just testing things out.
-                            </div>
-                            <span class="message-time">12:45 PM</span>
-                        </div>
-                    </div>
 
-                    <!-- Chat Footer -->
-                    <div class="chat-footer">
-                        <div class="chat-input-wrapper">
-                            <button class="chat-footer-btn" title="Attach">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
-                                </svg>
-                            </button>
-                            <input type="text" class="chat-input" placeholder="Type a message...">
-                            <button class="chat-footer-btn" title="Emoji">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
-                                    <line x1="9" y1="9" x2="9.01" y2="9"></line>
-                                    <line x1="15" y1="9" x2="15.01" y2="9"></line>
-                                </svg>
-                            </button>
-                            <button class="chat-footer-btn btn-send" title="Send">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                                </svg>
-                            </button>
+                        <!-- Message List -->
+                        <div class="message-list">
+                            <!-- Messages will be rendered here -->
+                        </div>
+
+                        <!-- Chat Footer -->
+                        <div class="chat-footer">
+                            <div class="chat-input-wrapper">
+                                <button class="chat-footer-btn" title="Attach">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                                    </svg>
+                                </button>
+                                <input type="text" class="chat-input" placeholder="Type a message...">
+                                <button class="chat-footer-btn" title="Emoji">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                                        <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                                        <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                                    </svg>
+                                </button>
+                                <button class="chat-footer-btn btn-send" title="Send">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -310,11 +256,11 @@
                 if (this.activeConnId === connId) return;
                 this.activeConnId = connId;
 
+                // Show chat area, hide empty state
+                document.querySelector('.chat-empty-state').style.display = 'none';
+                document.querySelector('.chat-main').style.display = 'flex';
+
                 // Update UI selection
-                document.querySelectorAll('.conversation-item').forEach(item => {
-                    item.classList.remove('conversation-item--active');
-                    // This is a bit brittle, better to re-render or use a data-id
-                });
                 this.renderConversations();
 
                 // Load Header Info
@@ -326,7 +272,7 @@
                 }
 
                 // Show loading in chat
-                document.querySelector('.message-list').innerHTML = '<div style="padding: 20px; text-align: center;">Loading messages...</div>';
+                document.querySelector('.message-list').innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">Loading messages...</div>';
 
                 // Mark as read
                 await window.AumageDB.markMessagesAsRead(connId);
