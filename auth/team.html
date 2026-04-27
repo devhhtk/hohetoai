@@ -24,7 +24,7 @@
         <!-- Dynamic Content View -->
         <div class="content-view">
             <div class="team-page-container">
-
+                
                 <header class="team-header">
                     <h1 class="team-title">My Battle Squad</h1>
                     <p class="team-subtitle">Manage your top 3 creatures for the upcoming Resonance Clashes.</p>
@@ -109,18 +109,18 @@
             async function loadActiveTeam() {
                 if (!window.AumageDB) return;
                 const team = await window.AumageDB.getTeam();
-
+                
                 if (team && team.creature_ids && team.creature_ids.length > 0) {
                     // Fetch creature details
                     const creatures = await Promise.all(
-                        team.creature_ids.map(id =>
+                        team.creature_ids.map(id => 
                             window.AumageDB.supabase.from('creatures').select('*').eq('id', id).single().then(r => r.data)
                         )
                     );
 
                     activeTeamGrid.innerHTML = creatures.map((c, i) => c ? `
                         <div class="team-slot" data-slot="${i}">
-                            <img src="${c.card_image_url}" class="slot-img">
+                            <img src="${c.card_image_url || c.image_url}" class="slot-img">
                             <div class="slot-info">
                                 <span class="slot-name">${c.creature_name || 'Unnamed'}</span>
                                 <div class="slot-stats">
@@ -134,11 +134,11 @@
                         <div class="team-slot empty-slot" data-slot="${i}">
                             <div class="slot-inner">
                                 <span class="slot-plus">+</span>
-                                <span class="slot-label">Slot ${i + 1}</span>
+                                <span class="slot-label">Slot ${i+1}</span>
                             </div>
                         </div>
                     `).join('');
-
+                    
                     selectedCreatures = team.creature_ids.filter(id => id);
                     updateSelectionUI();
                 }
@@ -146,13 +146,20 @@
 
             async function loadSelectionGrid() {
                 if (!window.AumageDB) return;
-
-                const creatures = await window.AumageDB.getMyCreatures();
-
+                
+                // Fetch all my creatures that HAVE a card image
+                const { data: creatures, error } = await window.AumageDB.supabase
+                    .from('creatures')
+                    .select('*')
+                    .eq('user_id', window.AumageDB.user.id)
+                    .not('card_image_url', 'is', null)
+                    .neq('card_image_url', '')
+                    .order('created_at', { ascending: false });
+                
                 if (creatures && creatures.length > 0) {
                     selectionGrid.innerHTML = creatures.map(c => `
                         <div class="creature-select-card ${selectedCreatures.includes(c.id) ? 'selected' : ''}" data-id="${c.id}">
-                            <img src="${c.image_url}" alt="${c.creature_name}">
+                            <img src="${c.card_image_url || c.image_url}" alt="${c.creature_name}">
                             <div class="card-overlay">${c.creature_name || 'Creature'}</div>
                         </div>
                     `).join('');
@@ -179,7 +186,7 @@
             function updateSelectionUI() {
                 selectionCount.textContent = `${selectedCreatures.length}/3`;
                 btnSaveTeam.disabled = selectedCreatures.length === 0;
-
+                
                 // Highlight corresponding cards in grid (if already loaded)
                 document.querySelectorAll('.creature-select-card').forEach(card => {
                     if (selectedCreatures.includes(card.dataset.id)) {
