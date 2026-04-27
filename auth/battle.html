@@ -42,25 +42,55 @@
             <!-- Battlefield: 3 Lanes -->
             <div class="battlefield">
                 <div class="lane" id="lane-0">
-                    <div class="card-slot card-slot--opponent" id="opp-slot-0"></div>
+                    <div class="card-slot card-slot--opponent" id="opp-slot-0">
+                        <div class="card-inner">
+                            <div class="card-front" id="opp-front-0"></div>
+                            <div class="card-back"></div>
+                        </div>
+                    </div>
                     <div class="clash-indicator" id="clash-0">VS</div>
-                    <div class="card-slot card-slot--me" id="my-slot-0"></div>
+                    <div class="card-slot card-slot--me" id="my-slot-0">
+                        <div class="card-inner">
+                            <div class="card-front" id="my-front-0"></div>
+                            <div class="card-back"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="lane" id="lane-1">
-                    <div class="card-slot card-slot--opponent" id="opp-slot-1"></div>
+                    <div class="card-slot card-slot--opponent" id="opp-slot-1">
+                        <div class="card-inner">
+                            <div class="card-front" id="opp-front-1"></div>
+                            <div class="card-back"></div>
+                        </div>
+                    </div>
                     <div class="clash-indicator" id="clash-1">VS</div>
-                    <div class="card-slot card-slot--me" id="my-slot-1"></div>
+                    <div class="card-slot card-slot--me" id="my-slot-1">
+                        <div class="card-inner">
+                            <div class="card-front" id="my-front-1"></div>
+                            <div class="card-back"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="lane" id="lane-2">
-                    <div class="card-slot card-slot--opponent" id="opp-slot-2"></div>
+                    <div class="card-slot card-slot--opponent" id="opp-slot-2">
+                        <div class="card-inner">
+                            <div class="card-front" id="opp-front-2"></div>
+                            <div class="card-back"></div>
+                        </div>
+                    </div>
                     <div class="clash-indicator" id="clash-2">VS</div>
-                    <div class="card-slot card-slot--me" id="my-slot-2"></div>
+                    <div class="card-slot card-slot--me" id="my-slot-2">
+                        <div class="card-inner">
+                            <div class="card-front" id="my-front-2"></div>
+                            <div class="card-back"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Footer: Controls -->
             <footer class="battle-controls">
-                <button id="btn-start-clash" class="btn-clash">Engage Resonance</button>
+                <div id="battle-tip" style="color: var(--color-primary); font-size: 14px; margin-bottom: 10px; font-weight: 700;">CHOOSE A ROUND CARD TO REVEAL</div>
             </footer>
         </div>
 
@@ -102,7 +132,10 @@
             let oppSquad = [];
             let myWins = 0;
             let oppWins = 0;
-            let currentRound = 0;
+            let currentRound = 0; // 0, 1, 2
+            let isPlayerA = false;
+            let battleData = null;
+            let roundActive = false;
 
             // Load Squads
             async function initBattle() {
@@ -111,16 +144,15 @@
                 let oppUser = null;
 
                 if (battleId) {
-                    const battle = await window.AumageDB.getBattleStatus(battleId);
-                    if (!battle) return;
+                    battleData = await window.AumageDB.getBattleStatus(battleId);
+                    if (!battleData) return;
 
-                    const isPlayerA = battle.player_a_id === window.AumageDB.user.id;
-                    oppUser = isPlayerA ? battle.player_b : battle.player_a;
-                    const oppUserId = isPlayerA ? battle.player_b_id : battle.player_a_id;
+                    isPlayerA = battleData.player_a_id === window.AumageDB.user.id;
+                    oppUser = isPlayerA ? battleData.player_b : battleData.player_a;
 
                     // Fetch teams
-                    const { data: teamA } = await window.AumageDB.supabase.from('teams').select('creature_ids').eq('id', battle.player_a_team_id).single();
-                    const { data: teamB } = await window.AumageDB.supabase.from('teams').select('creature_ids').eq('id', battle.player_b_team_id).single();
+                    const { data: teamA } = await window.AumageDB.supabase.from('teams').select('creature_ids').eq('id', battleData.player_a_team_id).single();
+                    const { data: teamB } = await window.AumageDB.supabase.from('teams').select('creature_ids').eq('id', battleData.player_b_team_id).single();
 
                     myTeamIds = isPlayerA ? teamA.creature_ids : teamB.creature_ids;
                     oppTeamIds = isPlayerA ? teamB.creature_ids : teamA.creature_ids;
@@ -128,8 +160,11 @@
                     // Set UI names/avatars
                     document.getElementById('opp-name').textContent = oppUser?.display_name || 'Opponent';
                     document.getElementById('opp-avatar').src = oppUser?.avatar_url || `https://ui-avatars.com/api/?name=${oppUser?.display_name || 'Opponent'}`;
+                    
+                    // Start polling for moves
+                    startMovePolling();
                 } else {
-                    // Manual Challenge path
+                    // Manual Challenge path (Simulated/Bot)
                     const myTeam = await window.AumageDB.getTeam();
                     myTeamIds = myTeam?.creature_ids || [];
 
@@ -141,12 +176,6 @@
                     document.getElementById('opp-avatar').src = oppProfile?.avatar_url || `https://ui-avatars.com/api/?name=${oppProfile?.display_name}`;
                 }
 
-                if (myTeamIds.length === 0) {
-                    alert('You need a squad to battle!');
-                    window.location.href = 'team.html';
-                    return;
-                }
-
                 // Load My Profile
                 document.getElementById('my-name').textContent = window.AumageDB.user.user_metadata?.full_name || 'Me';
                 document.getElementById('my-avatar').src = window.AumageDB.user.user_metadata?.avatar_url || '../img/avatar_placeholder.png';
@@ -155,63 +184,126 @@
                 mySquad = await Promise.all(myTeamIds.map(id => window.AumageDB.supabase.from('creatures').select('*').eq('id', id).single().then(r => r.data)));
                 oppSquad = await Promise.all(oppTeamIds.map(id => window.AumageDB.supabase.from('creatures').select('*').eq('id', id).single().then(r => r.data)));
 
-                // Populate slots (initially hidden)
+                // Populate slots
                 for (let i = 0; i < 3; i++) {
                     if (mySquad[i]) {
-                        document.getElementById(`my-slot-${i}`).innerHTML = `<img src="${mySquad[i].card_image_url || mySquad[i].image_url}">`;
+                        document.getElementById(`my-front-${i}`).innerHTML = `<img src="${mySquad[i].card_image_url || mySquad[i].image_url}">`;
+                        document.getElementById(`my-slot-${i}`).onclick = () => handleCardClick(i);
                     }
                     if (oppSquad[i]) {
-                        document.getElementById(`opp-slot-${i}`).innerHTML = `<img src="${oppSquad[i].card_image_url || oppSquad[i].image_url}">`;
+                        document.getElementById(`opp-front-${i}`).innerHTML = `<img src="${oppSquad[i].card_image_url || oppSquad[i].image_url}">`;
                     }
+                }
+
+                updateRoundUI();
+            }
+
+            function updateRoundUI() {
+                document.getElementById('clash-round-text').textContent = `ROUND ${currentRound + 1} / 3`;
+                document.querySelectorAll('.lane').forEach((l, idx) => {
+                    l.classList.toggle('lane--active', idx === currentRound);
+                });
+            }
+
+            async function handleCardClick(roundIdx) {
+                if (roundIdx !== currentRound || roundActive) return;
+
+                // Mark current player as revealed locally
+                document.getElementById(`my-slot-${roundIdx}`).classList.add('revealed');
+                
+                if (battleId) {
+                    await syncMove(roundIdx);
+                } else {
+                    // Simulated Battle: Opponent reveals after a delay
+                    roundActive = true;
+                    setTimeout(async () => {
+                        document.getElementById(`opp-slot-${roundIdx}`).classList.add('revealed');
+                        await processRoundResult(roundIdx);
+                        roundActive = false;
+                        advanceRound();
+                    }, 1000);
                 }
             }
 
-            async function runClash() {
-                const btn = document.getElementById('btn-start-clash');
-                btn.disabled = true;
+            async function syncMove(roundIdx) {
+                const log = battleData.battle_log || [
+                    { a_rev: false, b_rev: false },
+                    { a_rev: false, b_rev: false },
+                    { a_rev: false, b_rev: false }
+                ];
 
-                for (let i = 0; i < 3; i++) {
-                    currentRound = i + 1;
-                    document.getElementById('clash-round-text').textContent = `ROUND ${currentRound} / 3`;
+                if (isPlayerA) log[roundIdx].a_rev = true;
+                else log[roundIdx].b_rev = true;
+
+                await window.AumageDB.supabase.from('battles').update({ battle_log: log }).eq('id', battleId);
+                battleData.battle_log = log;
+            }
+
+            function startMovePolling() {
+                setInterval(async () => {
+                    if (currentRound >= 3 || roundActive) return;
+
+                    const { data } = await window.AumageDB.supabase.from('battles').select('*').eq('id', battleId).single();
+                    if (!data) return;
                     
-                    // Highlight Lane
-                    document.querySelectorAll('.lane').forEach(l => l.classList.remove('lane--active'));
-                    document.getElementById(`lane-${i}`).classList.add('lane--active');
+                    battleData = data;
+                    const log = battleData.battle_log || [];
+                    const roundLog = log[currentRound];
 
-                    // Reveal Cards
-                    await sleep(1000);
-                    document.getElementById(`my-slot-${i}`).classList.add('revealed');
-                    await sleep(500);
-                    document.getElementById(`opp-slot-${i}`).classList.add('revealed');
+                    if (!roundLog) return;
 
-                    // Calculate Winner
-                    await sleep(1000);
-                    const myPower = mySquad[i]?.variant_tags?.power || 50;
-                    const oppPower = oppSquad[i]?.variant_tags?.power || 50;
-                    
-                    const indicator = document.getElementById(`clash-${i}`);
-                    indicator.classList.add('clash-shake');
-
-                    if (myPower > oppPower) {
-                        indicator.textContent = 'WIN';
-                        indicator.style.color = 'var(--color-primary)';
-                        myWins++;
-                    } else if (oppPower > myPower) {
-                        indicator.textContent = 'LOSS';
-                        indicator.style.color = '#ff4b4b';
-                        oppWins++;
-                    } else {
-                        indicator.textContent = 'DRAW';
-                        indicator.style.color = '#fff';
+                    // Update UI based on log
+                    if ((isPlayerA && roundLog.b_rev) || (!isPlayerA && roundLog.a_rev)) {
+                        // Opponent revealed!
+                        const oppSlot = document.getElementById(`opp-slot-${currentRound}`);
+                        if (!oppSlot.classList.contains('revealed')) {
+                            oppSlot.classList.add('revealed');
+                        }
                     }
 
-                    document.getElementById('my-wins').textContent = myWins;
-                    document.getElementById('opp-wins').textContent = oppWins;
+                    if (roundLog.a_rev && roundLog.b_rev && !roundActive) {
+                        roundActive = true;
+                        // Both revealed! Process result
+                        await processRoundResult(currentRound);
+                        setTimeout(() => {
+                            roundActive = false;
+                            advanceRound();
+                        }, 2000);
+                    }
+                }, 2000);
+            }
 
-                    await sleep(1500);
+            async function processRoundResult(idx) {
+                const myPower = mySquad[idx]?.variant_tags?.power || 50;
+                const oppPower = oppSquad[idx]?.variant_tags?.power || 50;
+                
+                const indicator = document.getElementById(`clash-${idx}`);
+                indicator.classList.add('clash-shake');
+
+                if (myPower > oppPower) {
+                    indicator.textContent = 'WIN';
+                    indicator.style.color = 'var(--color-primary)';
+                    myWins++;
+                } else if (oppPower > myPower) {
+                    indicator.textContent = 'LOSS';
+                    indicator.style.color = '#ff4b4b';
+                    oppWins++;
+                } else {
+                    indicator.textContent = 'DRAW';
+                    indicator.style.color = '#fff';
                 }
 
-                showFinalResult();
+                document.getElementById('my-wins').textContent = myWins;
+                document.getElementById('opp-wins').textContent = oppWins;
+            }
+
+            function advanceRound() {
+                currentRound++;
+                if (currentRound < 3) {
+                    updateRoundUI();
+                } else {
+                    showFinalResult();
+                }
             }
 
             function showFinalResult() {
@@ -225,7 +317,6 @@
                     title.textContent = 'VICTORY';
                     title.style.color = 'var(--color-primary)';
                     xp.textContent = '+150 Resonance XP';
-                    // Reward API call would go here
                 } else if (oppWins > myWins) {
                     title.textContent = 'DEFEAT';
                     title.style.color = '#ff4b4b';
@@ -237,15 +328,10 @@
                 }
             }
 
-            function sleep(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms));
-            }
-
-            document.getElementById('btn-start-clash').onclick = runClash;
-
             await initBattle();
         });
     </script>
 </body>
+
 
 </html>
