@@ -667,10 +667,10 @@ const AumageDB = {
         body: JSON.stringify({ id: battleId, updates })
       });
       const result = await response.json();
-      return result.success;
+      return result;
     } catch (e) {
       console.error('AumageDB.updateBattle error:', e);
-      return false;
+      return { success: false, error: e.message };
     }
   },
 

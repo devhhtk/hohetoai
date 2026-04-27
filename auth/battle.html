@@ -302,7 +302,7 @@
                 clearInterval(pollTimer);
                 const winnerId = oppEliminated > myEliminated ? window.AumageDB.user.id : (isPlayerA ? battleData.player_b_id : battleData.player_a_id);
 
-                await window.AumageDB.updateBattle(battleId, {
+                const response = await window.AumageDB.updateBattle(battleId, {
                     status: 'completed',
                     winner_id: winnerId
                 });
@@ -310,9 +310,25 @@
                 const overlay = document.getElementById('result-overlay');
                 const isWinner = winnerId === window.AumageDB.user.id;
                 document.getElementById('result-title').textContent = isWinner ? 'VICTORY' : 'DEFEAT';
-                document.getElementById('result-detail').textContent = isWinner
+                
+                let detailText = isWinner
                     ? `You eliminated ${oppEliminated} creatures!`
                     : `Your squad was overwhelmed.`;
+
+                // Show rewards if available
+                if (response && response.rewards) {
+                    const myRewards = isWinner ? response.rewards.winner : response.rewards.loser;
+                    if (myRewards) {
+                        detailText += `<br><br><span style="color: #FFD700; font-weight: 900; font-size: 1.2rem;">REWARDS: +${myRewards.xpGained} XP ${myRewards.currencyGained > 0 ? ' & ' + myRewards.currencyGained + ' TOKENS' : ''}</span>`;
+                        if (myRewards.leveledUp) {
+                            detailText += `<br><span style="color: #08D2C1; font-weight: 900;">LEVEL UP!</span>`;
+                        }
+                        // Refresh sidebar stats if possible
+                        if (window.AumageDB) window.AumageDB.updateSidebarStats();
+                    }
+                }
+
+                document.getElementById('result-detail').innerHTML = detailText;
                 overlay.classList.add('result-overlay--show');
             }
 
