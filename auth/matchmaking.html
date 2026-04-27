@@ -55,17 +55,77 @@
                 { id: 'comp-footer', path: '../components/footer.html' }
             ]);
 
-            const navMatch = document.getElementById('nav-matchmaking');
-            if (navMatch) navMatch.classList.add('nav-item--active');
-
             if (window.AumageDB) {
                 window.AumageDB.init();
                 await window.AumageDB.requireAuth();
             }
 
             const grid = document.getElementById('opponent-grid');
+            const statusText = document.querySelector('.match-status');
+            const loadingOverlay = document.getElementById('battle-loading');
 
-            async function loadOpponents() {
+            // --- Automated Matchmaking Flow ---
+            async function startMatchmaking() {
+                try {
+                    statusText.textContent = "INITIALIZING RESONANCE SYNC...";
+                    
+                    const result = await window.AumageDB.startBattleMatch();
+                    const { battle, role } = result;
+
+                    if (role === 'player_b') {
+                        // We joined an existing battle! Redirect immediately.
+                        statusText.textContent = "OPPONENT FOUND! REDIRECTING...";
+                        loadingOverlay.classList.add('loading-overlay--active');
+                        setTimeout(() => {
+                            window.location.href = `battle.html?id=${battle.id}`;
+                        }, 1500);
+                    } else {
+                        // We created a battle. Wait for player B.
+                        statusText.textContent = "WAITING FOR CHALLENGER (60s)...";
+                        pollBattleStatus(battle.id);
+                    }
+                } catch (e) {
+                    statusText.textContent = "ERROR: " + e.message.toUpperCase();
+                    if (e.message.includes('team')) {
+                        setTimeout(() => window.location.href = 'team.html', 2000);
+                    } else {
+                        loadManualOpponents(); // Fallback to list
+                    }
+                }
+            }
+
+            let pollInterval;
+            let pollStart = Date.now();
+
+            async function pollBattleStatus(battleId) {
+                pollInterval = setInterval(async () => {
+                    const elapsed = Math.floor((Date.now() - pollStart) / 1000);
+                    const remaining = 60 - elapsed;
+
+                    if (remaining <= 0) {
+                        clearInterval(pollInterval);
+                        statusText.textContent = "MATCHMAKING TIMED OUT.";
+                        loadManualOpponents();
+                        return;
+                    }
+
+                    statusText.textContent = `WAITING FOR CHALLENGER (${remaining}s)...`;
+
+                    const battle = await window.AumageDB.getBattleStatus(battleId);
+                    if (battle && battle.status === 'ongoing') {
+                        clearInterval(pollInterval);
+                        statusText.textContent = "CHALLENGER JOINED! STARTING...";
+                        loadingOverlay.classList.add('loading-overlay--active');
+                        setTimeout(() => {
+                            window.location.href = `battle.html?id=${battleId}`;
+                        }, 2000);
+                    }
+                }, 2000);
+            }
+
+            // --- Fallback: Manual Opponents ---
+            async function loadManualOpponents() {
+                statusText.textContent = "DISPLAYING RECENTLY ACTIVE WALKERS";
                 const opponents = await window.AumageDB.findOpponents();
                 
                 if (!opponents || opponents.length === 0) {
@@ -79,13 +139,11 @@
                 }
 
                 grid.innerHTML = '';
-
                 for (const opp of opponents) {
                     const profile = opp.profiles || {};
                     const card = document.createElement('div');
                     card.className = 'opponent-card';
                     
-                    // Fetch creature previews for the opponent
                     const creatureDetails = await Promise.all(
                         (opp.creature_ids || []).slice(0, 3).map(id => 
                             window.AumageDB.supabase.from('creatures').select('card_image_url, image_url').eq('id', id).single().then(r => r.data)
@@ -97,7 +155,7 @@
                             <img src="${profile.avatar_url || 'https://ui-avatars.com/api/?name=' + (profile.display_name || 'User')}" class="opponent-avatar">
                             <div class="opponent-info">
                                 <h3>${profile.display_name || 'Aether Walker'}</h3>
-                                <span class="opponent-level">Active Competitor</span>
+                                <span class="opponent-level">Available for Battle</span>
                             </div>
                         </div>
                         <div class="opponent-squad-preview">
@@ -108,33 +166,25 @@
                             `).join('')}
                             ${Array(3 - creatureDetails.length).fill('<div class="squad-slot-mini"></div>').join('')}
                         </div>
-                        <button class="btn-battle" data-user-id="${opp.user_id}">
+                        <button class="btn-battle" onclick="challengeDirect('${opp.user_id}')">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
                             </svg>
-                            Challenge Squad
+                            Direct Challenge
                         </button>
                     `;
-                    
                     grid.appendChild(card);
                 }
-
-                // Add Challenge Listeners
-                document.querySelectorAll('.btn-battle').forEach(btn => {
-                    btn.onclick = () => challengeOpponent(btn.dataset.userId);
-                });
             }
 
-            function challengeOpponent(opponentId) {
-                document.getElementById('battle-loading').classList.add('loading-overlay--active');
-                
-                // Simulate resonance sync
+            window.challengeDirect = function(opponentId) {
+                loadingOverlay.classList.add('loading-overlay--active');
                 setTimeout(() => {
                     window.location.href = `battle.html?opponent=${opponentId}`;
                 }, 2000);
-            }
+            };
 
-            loadOpponents();
+            startMatchmaking();
         });
     </script>
 </body>

@@ -79,14 +79,15 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
             const opponentId = params.get('opponent');
+            const battleId = params.get('id');
 
             if (window.AumageDB) {
                 window.AumageDB.init();
                 await window.AumageDB.requireAuth();
             }
 
-            if (!opponentId) {
-                alert('No opponent selected!');
+            if (!opponentId && !battleId) {
+                alert('No session or opponent specified!');
                 window.location.href = 'matchmaking.html';
                 return;
             }
@@ -105,23 +106,45 @@
 
             // Load Squads
             async function initBattle() {
-                // 1. Get My Team
-                const myTeam = await window.AumageDB.getTeam();
-                if (!myTeam || !myTeam.creature_ids) {
-                    alert('You need a squad to battle! Go to Battle Squad page.');
-                    window.location.href = 'team.html';
-                    return;
+                let myTeamIds = [];
+                let oppTeamIds = [];
+                let oppUser = null;
+
+                if (battleId) {
+                    const battle = await window.AumageDB.getBattleStatus(battleId);
+                    if (!battle) return;
+
+                    const isPlayerA = battle.player_a_id === window.AumageDB.user.id;
+                    oppUser = isPlayerA ? battle.player_b : battle.player_a;
+                    const oppUserId = isPlayerA ? battle.player_b_id : battle.player_a_id;
+
+                    // Fetch teams
+                    const { data: teamA } = await window.AumageDB.supabase.from('teams').select('creature_ids').eq('id', battle.player_a_team_id).single();
+                    const { data: teamB } = await window.AumageDB.supabase.from('teams').select('creature_ids').eq('id', battle.player_b_team_id).single();
+
+                    myTeamIds = isPlayerA ? teamA.creature_ids : teamB.creature_ids;
+                    oppTeamIds = isPlayerA ? teamB.creature_ids : teamA.creature_ids;
+
+                    // Set UI names/avatars
+                    document.getElementById('opp-name').textContent = oppUser?.display_name || 'Opponent';
+                    document.getElementById('opp-avatar').src = oppUser?.avatar_url || `https://ui-avatars.com/api/?name=${oppUser?.display_name || 'Opponent'}`;
+                } else {
+                    // Manual Challenge path
+                    const myTeam = await window.AumageDB.getTeam();
+                    myTeamIds = myTeam?.creature_ids || [];
+
+                    const { data: oppTeam } = await window.AumageDB.supabase.from('teams').select('creature_ids').eq('user_id', opponentId).eq('is_active', true).single();
+                    oppTeamIds = oppTeam?.creature_ids || [];
+
+                    const { data: oppProfile } = await window.AumageDB.supabase.from('profiles').select('*').eq('id', opponentId).single();
+                    document.getElementById('opp-name').textContent = oppProfile?.display_name || 'Opponent';
+                    document.getElementById('opp-avatar').src = oppProfile?.avatar_url || `https://ui-avatars.com/api/?name=${oppProfile?.display_name}`;
                 }
 
-                // 2. Get Opponent Team
-                const { data: oppTeam } = await window.AumageDB.supabase.from('teams').select('*').eq('user_id', opponentId).eq('is_active', true).single();
-                
-                // 3. Get Opponent Profile
-                const { data: oppProfile } = await window.AumageDB.supabase.from('profiles').select('*').eq('id', opponentId).single();
-                
-                if (oppProfile) {
-                    document.getElementById('opp-name').textContent = oppProfile.display_name;
-                    document.getElementById('opp-avatar').src = oppProfile.avatar_url || `https://ui-avatars.com/api/?name=${oppProfile.display_name}`;
+                if (myTeamIds.length === 0) {
+                    alert('You need a squad to battle!');
+                    window.location.href = 'team.html';
+                    return;
                 }
 
                 // Load My Profile
@@ -129,8 +152,8 @@
                 document.getElementById('my-avatar').src = window.AumageDB.user.user_metadata?.avatar_url || '../img/avatar_placeholder.png';
 
                 // Fetch all creature details
-                mySquad = await Promise.all(myTeam.creature_ids.map(id => window.AumageDB.supabase.from('creatures').select('*').eq('id', id).single().then(r => r.data)));
-                oppSquad = await Promise.all(oppTeam.creature_ids.map(id => window.AumageDB.supabase.from('creatures').select('*').eq('id', id).single().then(r => r.data)));
+                mySquad = await Promise.all(myTeamIds.map(id => window.AumageDB.supabase.from('creatures').select('*').eq('id', id).single().then(r => r.data)));
+                oppSquad = await Promise.all(oppTeamIds.map(id => window.AumageDB.supabase.from('creatures').select('*').eq('id', id).single().then(r => r.data)));
 
                 // Populate slots (initially hidden)
                 for (let i = 0; i < 3; i++) {

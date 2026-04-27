@@ -601,6 +601,42 @@ const AumageDB = {
     }
   },
 
+  async startBattleMatch() {
+    if (!this.user) throw new Error('Auth required');
+
+    try {
+      const session = await this.supabase.auth.getSession();
+      const token = session?.data?.session?.access_token;
+      const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+
+      const response = await fetch(`${apiBase}/api/battle/match`, {
+        method: 'POST',
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
+      });
+
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error || 'Matchmaking failed');
+      return result;
+    } catch (e) {
+      console.error('AumageDB.startBattleMatch error:', e);
+      throw e;
+    }
+  },
+
+  async getBattleStatus(battleId) {
+    try {
+      const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+      const response = await fetch(`${apiBase}/api/battle/status?id=${battleId}`);
+      const result = await response.json();
+      return result.success ? result.battle : null;
+    } catch (e) {
+      console.error('AumageDB.getBattleStatus error:', e);
+      return null;
+    }
+  },
+
   // ============================================================
 
   // FOLDERS
