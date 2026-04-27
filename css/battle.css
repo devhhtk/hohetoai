@@ -47,28 +47,28 @@
 
 
 .platform--opponent {
-  top: 10%;
-  right: 10%;
-  transform: scale(0.8);
-  opacity: 0.7;
+  top: 15%;
+  right: 15%;
+  transform: scale(0.9);
+  opacity: 0.8;
 }
 
 .platform--player {
-  bottom: 100px;
-  left: 50%;
-  transform: translateX(-50%) scale(1.4);
+  bottom: 15%;
+  left: 10%;
+  transform: scale(1);
 }
 
 /* ── Creature Cards (Standing on Platforms) ── */
 .creature-card {
   position: absolute;
-  width: 240px;
+  width: 160px;
   aspect-ratio: 2/3;
-  bottom: 25%;
+  bottom: 20%;
   left: 50%;
   transform: translateX(-50%);
   transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 300;
+  z-index: 10;
 }
 
 .creature-card.hidden {
@@ -181,13 +181,13 @@
 
 
 .status-panel--opponent {
-  top: 24px;
-  left: 24px;
+  top: 15%;
+  left: 10%;
 }
 
 .status-panel--player {
-  top: 24px;
-  right: 24px;
+  bottom: 25%;
+  right: 10%;
 }
 
 .status-header {
@@ -233,14 +233,14 @@
 /* ── Command Bar (Footer) ── */
 .battle-footer {
   height: 100px;
-  background: rgba(2, 6, 23, 0.98);
+  background: rgba(2, 6, 23, 0.95);
   border-top: 1px solid var(--glass-border);
   backdrop-filter: blur(20px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 40px;
-  z-index: 250;
+  z-index: 200;
 }
 
 .command-grid {
@@ -291,15 +291,22 @@
   font-weight: 600;
   color: #fff;
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   animation: logFadeIn 0.3s ease-out;
   pointer-events: none;
   max-width: 300px;
 }
 
 @keyframes logFadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .team-preview {
@@ -363,9 +370,17 @@
 
 /* Animations */
 @keyframes pulse {
-  0% { transform: translateX(-50%) scale(1); }
-  50% { transform: translateX(-50%) scale(1.05); }
-  100% { transform: translateX(-50%) scale(1); }
+  0% {
+    transform: translateX(-50%) scale(1);
+  }
+
+  50% {
+    transform: translateX(-50%) scale(1.05);
+  }
+
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
 }
 
 .creature-card--active {
@@ -377,7 +392,17 @@
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(-50%); }
-  25% { transform: translateX(-55%); }
-  75% { transform: translateX(-45%); }
+
+  0%,
+  100% {
+    transform: translateX(-50%);
+  }
+
+  25% {
+    transform: translateX(-55%);
+  }
+
+  75% {
+    transform: translateX(-45%);
+  }
 }
