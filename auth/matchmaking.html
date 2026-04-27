@@ -105,30 +105,39 @@
                     if (remaining <= 0) {
                         clearInterval(pollInterval);
                         statusText.textContent = "MATCHMAKING TIMED OUT.";
+                        await window.AumageDB.timeoutBattle(battleId);
                         loadManualOpponents();
                         return;
                     }
 
                     statusText.textContent = `WAITING FOR CHALLENGER (${remaining}s)...`;
 
-                    // Use a slightly faster interval (1.5s) for better responsiveness
                     const battle = await window.AumageDB.getBattleStatus(battleId);
                     
-                    // Always log for debugging if needed (can be removed later)
-                    console.log("Checking Battle Status:", battle?.status, battle?.player_b_id);
+                    if (battle) {
+                        console.log("Matchmaking Check:", {
+                            status: battle.status,
+                            player_b: battle.player_b_id,
+                            id: battle.id
+                        });
 
-                    if (battle && (battle.status === 'ongoing' || battle.player_b_id)) {
-                        clearInterval(pollInterval);
-                        statusText.textContent = "CHALLENGER JOINED! STARTING...";
-                        loadingOverlay.classList.add('loading-overlay--active');
-                        
-                        // Force a small delay to ensure Player B is fully initialized
-                        setTimeout(() => {
-                            window.location.href = `battle.html?id=${battleId}`;
-                        }, 1000);
+                        if (battle.status === 'ongoing' || battle.player_b_id) {
+                            clearInterval(pollInterval);
+                            statusText.textContent = "CHALLENGER JOINED! STARTING...";
+                            loadingOverlay.classList.add('loading-overlay--active');
+                            
+                            setTimeout(() => {
+                                window.location.href = `battle.html?id=${battleId}`;
+                            }, 1000);
+                        } else if (battle.status === 'timeout') {
+                            clearInterval(pollInterval);
+                            statusText.textContent = "BATTLE TIMED OUT.";
+                            loadManualOpponents();
+                        }
                     }
                 }, 1500);
             }
+
 
             // --- Fallback: Manual Opponents ---
             async function loadManualOpponents() {

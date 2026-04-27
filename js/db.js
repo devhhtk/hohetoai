@@ -637,6 +637,23 @@ const AumageDB = {
     }
   },
 
+  async timeoutBattle(battleId) {
+    try {
+      const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+      const response = await fetch(`${apiBase}/api/battle/timeout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: battleId })
+      });
+      const result = await response.json();
+      return result.success;
+    } catch (e) {
+      console.error('AumageDB.timeoutBattle error:', e);
+      return false;
+    }
+  },
+
+
   // ============================================================
 
   // FOLDERS
