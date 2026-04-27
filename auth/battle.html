@@ -29,7 +29,7 @@
                     <div class="hp-bar-container">
                         <div id="opp-hp-fill" class="hp-bar-fill"></div>
                     </div>
-                    <div class="status-wins">WINS: <span id="opp-wins-count">0</span></div>
+                    <div class="status-wins">ELIMINATED: <span id="opp-elim-count">0</span>/3</div>
                 </div>
             </div>
 
@@ -56,7 +56,7 @@
                     <div class="hp-bar-container">
                         <div id="player-hp-fill" class="hp-bar-fill"></div>
                     </div>
-                    <div class="status-wins">WINS: <span id="player-wins-count">0</span></div>
+                    <div class="status-wins">ELIMINATED: <span id="player-elim-count">0</span>/3</div>
                 </div>
             </div>
 
@@ -93,13 +93,14 @@
         </footer>
 
         <div class="battle-log" id="battle-log">
-            Synchronizing resonance frequencies...
+            Connecting to stadium...
         </div>
 
         <!-- Result Overlay -->
         <div id="result-overlay" class="result-overlay">
             <h1 id="result-title" class="result-title">VICTORY</h1>
-            <button onclick="window.location.href='dashboard.html'" class="btn-command" style="padding: 15px 40px;">CONTINUE</button>
+            <p id="result-detail" style="margin-bottom: 20px; color: var(--color-primary);"></p>
+            <button onclick="window.location.href='dashboard.html'" class="btn-command" style="padding: 15px 40px;">EXIT STADIUM</button>
         </div>
     </div>
 
@@ -124,12 +125,12 @@
             // Data State
             let mySquad = [];
             let oppSquad = [];
-            let myWins = 0;
-            let oppWins = 0;
+            let myEliminated = 0;
+            let oppEliminated = 0;
             let currentRound = 0;
             let isPlayerA = false;
             let battleData = null;
-            let roundActive = false;
+            let turnActive = false;
             let pollTimer = null;
 
             async function initBattle() {
@@ -161,18 +162,18 @@
                 });
 
                 loadRound(0);
-                startMovePolling();
+                startTurnPolling();
             }
 
             function loadRound(idx) {
+                if (idx >= 3) return;
                 currentRound = idx;
-                roundActive = false;
-                document.getElementById('battle-log').textContent = `Round ${idx + 1}: Prepare to reveal.`;
                 
                 document.querySelectorAll('.team-slot').forEach((s, i) => s.classList.toggle('team-slot--active', i === idx));
 
                 const pCreature = document.getElementById('player-creature');
                 const oCreature = document.getElementById('opp-creature');
+                
                 pCreature.classList.add('hidden');
                 oCreature.classList.add('hidden');
                 pCreature.classList.remove('revealed');
@@ -193,75 +194,112 @@
 
                     pCreature.classList.remove('hidden');
                     oCreature.classList.remove('hidden');
-                    document.getElementById('btn-reveal').disabled = false;
+                    updateTurnUI();
                 }, 600);
             }
 
-            async function handleReveal() {
-                if (roundActive) return;
-                document.getElementById('btn-reveal').disabled = true;
-                document.getElementById('player-creature').classList.add('revealed');
-                document.getElementById('battle-log').textContent = "Waiting for opponent...";
+            function updateTurnUI() {
+                const log = battleData.battle_log || [];
+                const roundLog = log[currentRound] || { a_rev: false, b_rev: false };
+                
+                // Turn Order: Player A then Player B
+                const isMyTurn = (isPlayerA && !roundLog.a_rev) || (!isPlayerA && roundLog.a_rev && !roundLog.b_rev);
+                
+                const btn = document.getElementById('btn-reveal');
+                btn.disabled = !isMyTurn;
 
+                if (isMyTurn) {
+                    document.getElementById('battle-log').textContent = "Your turn: Reveal your creature!";
+                } else {
+                    document.getElementById('battle-log').textContent = "Waiting for opponent...";
+                }
+
+                // Sync UI revealed states
+                if (roundLog.a_rev) {
+                    if (isPlayerA) document.getElementById('player-creature').classList.add('revealed');
+                    else document.getElementById('opp-creature').classList.add('revealed');
+                }
+                if (roundLog.b_rev) {
+                    if (isPlayerA) document.getElementById('opp-creature').classList.add('revealed');
+                    else document.getElementById('player-creature').classList.add('revealed');
+                }
+            }
+
+            async function handleReveal() {
                 const log = battleData.battle_log || [];
                 if (!log[currentRound]) log[currentRound] = { a_rev: false, b_rev: false };
                 
                 if (isPlayerA) log[currentRound].a_rev = true;
                 else log[currentRound].b_rev = true;
 
+                document.getElementById(isPlayerA ? 'player-creature' : 'opp-creature').classList.add('revealed');
+                document.getElementById('btn-reveal').disabled = true;
+
                 await window.AumageDB.updateBattle(battleId, { battle_log: log });
+                
+                // If this move completes the round, it will be handled in polling
             }
 
-            function startMovePolling() {
+            function startTurnPolling() {
                 pollTimer = setInterval(async () => {
-                    if (roundActive) return;
-
                     const data = await window.AumageDB.getBattleStatus(battleId);
                     if (!data) return;
+                    
+                    // Update local data
                     battleData = data;
-
+                    
                     const roundLog = (battleData.battle_log || [])[currentRound];
                     if (!roundLog) return;
 
-                    const oppRev = isPlayerA ? roundLog.b_rev : roundLog.a_rev;
-                    const meRev = isPlayerA ? roundLog.a_rev : roundLog.b_rev;
+                    updateTurnUI();
 
-                    if (oppRev) document.getElementById('opp-creature').classList.add('revealed');
-
-                    if (oppRev && meRev) {
-                        roundActive = true;
-                        document.getElementById('battle-log').textContent = "Resonance Clash!";
-                        await processRound();
+                    // If both revealed, process round
+                    if (roundLog.a_rev && roundLog.b_rev && !turnActive) {
+                        turnActive = true;
+                        await processClash();
                     }
-                }, 2000);
+                }, 2500);
             }
 
-            async function processRound() {
-                const myP = mySquad[currentRound]?.variant_tags?.power || 50;
-                const opP = oppSquad[currentRound]?.variant_tags?.power || 50;
+            async function processClash() {
+                document.getElementById('battle-log').textContent = "Resonance Clash!";
+                
+                const myC = mySquad[currentRound];
+                const opC = oppSquad[currentRound];
+                
+                const myP = myC?.variant_tags?.power || 50;
+                const opP = opC?.variant_tags?.power || 50;
 
                 setTimeout(() => {
                     if (myP > opP) {
-                        myWins++;
+                        oppEliminated++;
                         document.getElementById('opp-hp-fill').style.width = '0%';
-                    } else if (opP > myP) {
-                        oppWins++;
+                        document.getElementById('opp-elim-count').textContent = oppEliminated;
+                        document.getElementById('battle-log').textContent = `${myC.name} eliminated ${opC.name}!`;
+                    } else {
+                        myEliminated++;
                         document.getElementById('player-hp-fill').style.width = '0%';
+                        document.getElementById('player-elim-count').textContent = myEliminated;
+                        document.getElementById('battle-log').textContent = `${opC.name} eliminated ${myC.name}!`;
                     }
                     
-                    document.getElementById('player-wins-count').textContent = myWins;
-                    document.getElementById('opp-wins-count').textContent = oppWins;
-
                     setTimeout(() => {
-                        if (currentRound < 2) loadRound(currentRound + 1);
-                        else finishBattle();
-                    }, 2000);
-                }, 1000);
+                        turnActive = false;
+                        document.getElementById('player-hp-fill').style.width = '100%';
+                        document.getElementById('opp-hp-fill').style.width = '100%';
+                        
+                        if (currentRound < 2) {
+                            loadRound(currentRound + 1);
+                        } else {
+                            finishBattle();
+                        }
+                    }, 3000);
+                }, 1500);
             }
 
             async function finishBattle() {
                 clearInterval(pollTimer);
-                const winnerId = myWins > oppWins ? window.AumageDB.user.id : (isPlayerA ? battleData.player_b_id : battleData.player_a_id);
+                const winnerId = oppEliminated > myEliminated ? window.AumageDB.user.id : (isPlayerA ? battleData.player_b_id : battleData.player_a_id);
                 
                 await window.AumageDB.updateBattle(battleId, { 
                     status: 'completed', 
@@ -269,7 +307,11 @@
                 });
 
                 const overlay = document.getElementById('result-overlay');
-                document.getElementById('result-title').textContent = myWins > oppWins ? 'VICTORY' : 'DEFEAT';
+                const isWinner = winnerId === window.AumageDB.user.id;
+                document.getElementById('result-title').textContent = isWinner ? 'VICTORY' : 'DEFEAT';
+                document.getElementById('result-detail').textContent = isWinner 
+                    ? `You eliminated ${oppEliminated} creatures!` 
+                    : `Your squad was overwhelmed.`;
                 overlay.classList.add('result-overlay--show');
             }
 
