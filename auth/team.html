@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle Squad — HoHeTo Kyle</title>
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/team.css">
+</head>
+
+<body class="dashboard-body">
+
+    <!-- ══ Sidebar Placeholder ══ -->
+    <div id="comp-sidebar"></div>
+
+    <!-- ══ Main Content Area ══ -->
+    <main class="main-area">
+
+        <!-- Top Navigation Bar Placeholder -->
+        <div id="comp-header"></div>
+
+        <!-- Dynamic Content View -->
+        <div class="content-view">
+            <div class="team-page-container">
+                
+                <header class="team-header">
+                    <h1 class="team-title">My Battle Squad</h1>
+                    <p class="team-subtitle">Manage your top 3 creatures for the upcoming Resonance Clashes.</p>
+                </header>
+
+                <!-- Active Squad Display -->
+                <section class="active-team-grid" id="active-team-grid">
+                    <div class="team-slot empty-slot" data-slot="0">
+                        <div class="slot-inner">
+                            <span class="slot-plus">+</span>
+                            <span class="slot-label">Slot 1</span>
+                        </div>
+                    </div>
+                    <div class="team-slot empty-slot" data-slot="1">
+                        <div class="slot-inner">
+                            <span class="slot-plus">+</span>
+                            <span class="slot-label">Slot 2</span>
+                        </div>
+                    </div>
+                    <div class="team-slot empty-slot" data-slot="2">
+                        <div class="slot-inner">
+                            <span class="slot-plus">+</span>
+                            <span class="slot-label">Slot 3</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Selection Section -->
+                <section class="selection-section">
+                    <div class="selection-header">
+                        <h3 class="selection-title">All Creatures</h3>
+                        <div class="selection-controls">
+                            <div class="selection-count">Selected: <span id="selection-count">0/3</span></div>
+                            <button id="btn-save-team" class="btn-save-team" disabled>Update Squad</button>
+                        </div>
+                    </div>
+
+                    <div id="selection-grid" class="creatures-selection-grid">
+                        <div class="streak-loading"></div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Footer Placeholder -->
+            <div id="comp-footer"></div>
+
+        </div>
+    </main>
+
+    <!-- Supabase & DB Layer -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/db.js"></script>
+    <script src="../js/components.js"></script>
+    <script src="../js/theme.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load Components
+            await ComponentLoader.loadAll([
+                { id: 'comp-sidebar', path: '../components/sidebar.html' },
+                { id: 'comp-header', path: '../components/header.html' },
+                { id: 'comp-footer', path: '../components/footer.html' }
+            ]);
+
+            // Set active nav item
+            const navTeam = document.getElementById('nav-team');
+            if (navTeam) navTeam.classList.add('nav-item--active');
+
+            // Database & Auth Initialization
+            if (window.AumageDB) {
+                window.AumageDB.init();
+                await window.AumageDB.requireAuth();
+            }
+
+            // --- Team Logic ---
+            let selectedCreatures = [];
+            const selectionGrid = document.getElementById('selection-grid');
+            const selectionCount = document.getElementById('selection-count');
+            const btnSaveTeam = document.getElementById('btn-save-team');
+            const activeTeamGrid = document.getElementById('active-team-grid');
+
+            async function loadActiveTeam() {
+                if (!window.AumageDB) return;
+                const team = await window.AumageDB.getTeam();
+                
+                if (team && team.creature_ids && team.creature_ids.length > 0) {
+                    // Fetch creature details
+                    const creatures = await Promise.all(
+                        team.creature_ids.map(id => 
+                            window.AumageDB.supabase.from('creatures').select('*').eq('id', id).single().then(r => r.data)
+                        )
+                    );
+
+                    activeTeamGrid.innerHTML = creatures.map((c, i) => c ? `
+                        <div class="team-slot" data-slot="${i}">
+                            <img src="${c.image_url}" class="slot-img">
+                            <div class="slot-info">
+                                <span class="slot-name">${c.creature_name || 'Unnamed'}</span>
+                                <div class="slot-stats">
+                                    <span>PWR: ${c.variant_tags?.power || 0}</span>
+                                    <span>AGI: ${c.variant_tags?.agility || 0}</span>
+                                    <span>ARC: ${c.variant_tags?.arcana || 0}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="team-slot empty-slot" data-slot="${i}">
+                            <div class="slot-inner">
+                                <span class="slot-plus">+</span>
+                                <span class="slot-label">Slot ${i+1}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    selectedCreatures = team.creature_ids.filter(id => id);
+                    updateSelectionUI();
+                }
+            }
+
+            async function loadSelectionGrid() {
+                if (!window.AumageDB) return;
+                
+                const creatures = await window.AumageDB.getMyCreatures();
+                
+                if (creatures && creatures.length > 0) {
+                    selectionGrid.innerHTML = creatures.map(c => `
+                        <div class="creature-select-card ${selectedCreatures.includes(c.id) ? 'selected' : ''}" data-id="${c.id}">
+                            <img src="${c.image_url}" alt="${c.creature_name}">
+                            <div class="card-overlay">${c.creature_name || 'Creature'}</div>
+                        </div>
+                    `).join('');
+
+                    // Add click listeners
+                    document.querySelectorAll('.creature-select-card').forEach(card => {
+                        card.onclick = () => {
+                            const id = card.dataset.id;
+                            if (selectedCreatures.includes(id)) {
+                                selectedCreatures = selectedCreatures.filter(cid => cid !== id);
+                                card.classList.remove('selected');
+                            } else if (selectedCreatures.length < 3) {
+                                selectedCreatures.push(id);
+                                card.classList.add('selected');
+                            }
+                            updateSelectionUI();
+                        };
+                    });
+                } else {
+                    selectionGrid.innerHTML = '<p class="no-data-msg">No creatures found in your collection. <a href="create-creature.html" style="color:var(--color-primary);">Go to Lab</a></p>';
+                }
+            }
+
+            function updateSelectionUI() {
+                selectionCount.textContent = `${selectedCreatures.length}/3`;
+                btnSaveTeam.disabled = selectedCreatures.length === 0;
+                
+                // Highlight corresponding cards in grid (if already loaded)
+                document.querySelectorAll('.creature-select-card').forEach(card => {
+                    if (selectedCreatures.includes(card.dataset.id)) {
+                        card.classList.add('selected');
+                    } else {
+                        card.classList.remove('selected');
+                    }
+                });
+            }
+
+            btnSaveTeam.onclick = async () => {
+                btnSaveTeam.disabled = true;
+                btnSaveTeam.textContent = 'Saving Squad...';
+                try {
+                    await window.AumageDB.saveTeam(selectedCreatures);
+                    await loadActiveTeam();
+                    window.NotificationUI?.show('Team updated successfully!', 'success');
+                } catch (e) {
+                    window.NotificationUI?.show('Failed to save team: ' + e.message, 'error');
+                } finally {
+                    btnSaveTeam.textContent = 'Update Squad';
+                    btnSaveTeam.disabled = false;
+                }
+            };
+
+            // Initial Load
+            await loadActiveTeam();
+            await loadSelectionGrid();
+        });
+    </script>
+</body>
+
+</html>

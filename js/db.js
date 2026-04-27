@@ -526,6 +526,60 @@ const AumageDB = {
   },
 
   // ============================================================
+  // TEAMS
+  // ============================================================
+
+  async getTeam() {
+    if (!this.user) return null;
+
+    try {
+      const session = await this.supabase.auth.getSession();
+      const token = session?.data?.session?.access_token;
+      const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+
+      const response = await fetch(`${apiBase}/api/teams`, {
+        method: 'GET',
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
+      });
+
+      const result = await response.json();
+      return result.success ? result.team : null;
+    } catch (e) {
+      console.error('AumageDB.getTeam error:', e);
+      return null;
+    }
+  },
+
+  async saveTeam(creatureIds, name = 'My Squad') {
+    if (!this.user) throw new Error('Auth required');
+
+    try {
+      const session = await this.supabase.auth.getSession();
+      const token = session?.data?.session?.access_token;
+      const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+
+      const response = await fetch(`${apiBase}/api/teams`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ creature_ids: creatureIds, name })
+      });
+
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error || 'Failed to save team');
+      return result.team;
+    } catch (e) {
+      console.error('AumageDB.saveTeam error:', e);
+      throw e;
+    }
+  },
+
+  // ============================================================
+
   // FOLDERS
   // ============================================================
 
