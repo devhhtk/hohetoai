@@ -7,6 +7,12 @@
     <title>Resonance Clash — Stadium</title>
     <link rel="stylesheet" href="../css/battle.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        .team-slot { cursor: pointer; transition: transform 0.2s; }
+        .team-slot:hover { transform: scale(1.1); }
+        .team-slot--selected { border-color: #08d2c1 !important; box-shadow: 0 0 20px rgba(8, 210, 193, 0.6) !important; opacity: 1 !important; }
+        .team-slot--used { opacity: 0.2 !important; pointer-events: none; filter: grayscale(1); }
+    </style>
 </head>
 
 <body>
@@ -86,9 +92,9 @@
             </div>
 
             <div class="team-preview" id="team-preview">
-                <div class="team-slot" id="slot-0"></div>
-                <div class="team-slot" id="slot-1"></div>
-                <div class="team-slot" id="slot-2"></div>
+                <div class="team-slot" id="slot-0" onclick="selectCard(0)"></div>
+                <div class="team-slot" id="slot-1" onclick="selectCard(1)"></div>
+                <div class="team-slot" id="slot-2" onclick="selectCard(2)"></div>
             </div>
         </footer>
 
@@ -108,6 +114,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/db.js"></script>
     <script>
+        // Global for onclick
+        let selectCard;
+
         document.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
             const battleId = params.get('id');
@@ -132,6 +141,32 @@
             let battleData = null;
             let turnActive = false;
             let pollTimer = null;
+            let selectedCardIndex = -1;
+            let usedIndices = new Set();
+
+            selectCard = (idx) => {
+                if (usedIndices.has(idx) || turnActive) return;
+                
+                const log = battleData.battle_log || [];
+                const roundLog = log[currentRound] || {};
+                const alreadyMoved = isPlayerA ? roundLog.a_idx !== undefined : roundLog.b_idx !== undefined;
+                if (alreadyMoved) return;
+
+                selectedCardIndex = idx;
+                document.querySelectorAll('.team-slot').forEach((s, i) => {
+                    s.classList.toggle('team-slot--selected', i === idx);
+                });
+
+                // Show preview on platform
+                const myC = mySquad[idx];
+                const pCreature = document.getElementById('player-creature');
+                pCreature.classList.add('hidden');
+                setTimeout(() => {
+                    document.getElementById('player-card-img').innerHTML = `<img src="${myC.card_image_url || myC.image_url}">`;
+                    document.getElementById('player-level-text').textContent = `Lv. ${myC.tier || 1}`;
+                    pCreature.classList.remove('hidden');
+                }, 300);
+            };
 
             async function initBattle() {
                 battleData = await window.AumageDB.getBattleStatus(battleId);
@@ -150,7 +185,6 @@
                 // UI Setup
                 document.getElementById('player-display-name').textContent = myUser?.display_name || 'Me';
                 document.getElementById('player-avatar-img').src = myUser?.avatar_url || `https://ui-avatars.com/api/?name=Me&background=08D2C1&color=fff`;
-                
                 document.getElementById('opp-display-name').textContent = oppUser?.display_name || 'Opponent';
                 document.getElementById('opp-avatar-img').src = oppUser?.avatar_url || `https://ui-avatars.com/api/?name=Opp&background=ff4b4b&color=fff`;
 
@@ -168,84 +202,85 @@
             function loadRound(idx) {
                 if (idx >= 3) return;
                 currentRound = idx;
-                
-                document.querySelectorAll('.team-slot').forEach((s, i) => s.classList.toggle('team-slot--active', i === idx));
+                selectedCardIndex = -1;
+                turnActive = false;
+
+                // Sync used indices from log for previous rounds
+                const log = battleData.battle_log || [];
+                usedIndices.clear();
+                log.slice(0, idx).forEach(r => {
+                    usedIndices.add(isPlayerA ? r.a_idx : r.b_idx);
+                });
+
+                document.querySelectorAll('.team-slot').forEach((s, i) => {
+                    s.classList.toggle('team-slot--used', usedIndices.has(i));
+                    s.classList.remove('team-slot--selected');
+                    s.classList.remove('team-slot--active');
+                });
 
                 const pCreature = document.getElementById('player-creature');
                 const oCreature = document.getElementById('opp-creature');
-                
                 pCreature.classList.add('hidden');
                 oCreature.classList.add('hidden');
                 pCreature.classList.remove('revealed');
                 oCreature.classList.remove('revealed');
 
-                setTimeout(() => {
-                    const myC = mySquad[idx];
-                    const opC = oppSquad[idx];
-
-                    if (myC) {
-                        document.getElementById('player-card-img').innerHTML = `<img src="${myC.card_image_url || myC.image_url}">`;
-                        document.getElementById('player-level-text').textContent = `Lv. ${myC.tier || 1}`;
-                    }
-                    if (opC) {
-                        document.getElementById('opp-card-img').innerHTML = `<img src="${opC.card_image_url || opC.image_url}">`;
-                        document.getElementById('opp-level-text').textContent = `Lv. ${opC.tier || 1}`;
-                    }
-
-                    pCreature.classList.remove('hidden');
-                    oCreature.classList.remove('hidden');
-                    updateTurnUI();
-                }, 600);
+                document.getElementById('battle-log').textContent = `Round ${idx + 1}: Select a card to reveal.`;
+                updateTurnUI();
             }
 
             function updateTurnUI() {
                 const log = battleData.battle_log || [];
-                const roundLog = log[currentRound] || { a_rev: false, b_rev: false };
+                const roundLog = log[currentRound] || {};
                 
-                // Turn Order: Player A then Player B
-                const isMyTurn = (isPlayerA && !roundLog.a_rev) || (!isPlayerA && roundLog.a_rev && !roundLog.b_rev);
+                const myMove = isPlayerA ? roundLog.a_idx : roundLog.b_idx;
+                const oppMove = isPlayerA ? roundLog.b_idx : roundLog.a_idx;
+
+                const isMyTurn = (isPlayerA && myMove === undefined) || (!isPlayerA && log[currentRound]?.a_idx !== undefined && myMove === undefined);
                 
                 const btn = document.getElementById('btn-reveal');
-                btn.disabled = !isMyTurn;
+                btn.disabled = !isMyTurn || selectedCardIndex === -1;
 
                 if (isMyTurn) {
-                    document.getElementById('battle-log').textContent = "Your turn: Reveal your creature!";
+                    document.getElementById('battle-log').textContent = selectedCardIndex === -1 ? "Select a card from your squad!" : "Ready! Reveal your resonance.";
                 } else {
                     document.getElementById('battle-log').textContent = "Waiting for opponent...";
                 }
 
-                // Sync UI revealed states
-                if (roundLog.a_rev) {
-                    if (isPlayerA) document.getElementById('player-creature').classList.add('revealed');
-                    else document.getElementById('opp-creature').classList.add('revealed');
+                // Visual reveals
+                if (myMove !== undefined) {
+                    document.getElementById('player-creature').classList.add('revealed');
                 }
-                if (roundLog.b_rev) {
-                    if (isPlayerA) document.getElementById('opp-creature').classList.add('revealed');
-                    else document.getElementById('player-creature').classList.add('revealed');
+                if (oppMove !== undefined) {
+                    const oppC = oppSquad[oppMove];
+                    document.getElementById('opp-card-img').innerHTML = `<img src="${oppC.card_image_url || oppC.image_url}">`;
+                    document.getElementById('opp-level-text').textContent = `Lv. ${oppC.tier || 1}`;
+                    document.getElementById('opp-creature').classList.remove('hidden');
+                    document.getElementById('opp-creature').classList.add('revealed');
                 }
             }
 
             async function handleReveal() {
-                const log = battleData.battle_log || [];
-                if (!log[currentRound]) log[currentRound] = { a_rev: false, b_rev: false };
+                if (selectedCardIndex === -1) return;
                 
-                if (isPlayerA) log[currentRound].a_rev = true;
-                else log[currentRound].b_rev = true;
+                const log = battleData.battle_log || [];
+                if (!log[currentRound]) log[currentRound] = {};
+                
+                if (isPlayerA) log[currentRound].a_idx = selectedCardIndex;
+                else log[currentRound].b_idx = selectedCardIndex;
 
-                document.getElementById(isPlayerA ? 'player-creature' : 'opp-creature').classList.add('revealed');
+                document.getElementById('player-creature').classList.add('revealed');
                 document.getElementById('btn-reveal').disabled = true;
+                usedIndices.add(selectedCardIndex);
+                document.getElementById(`slot-${selectedCardIndex}`).classList.add('team-slot--used');
 
                 await window.AumageDB.updateBattle(battleId, { battle_log: log });
-                
-                // If this move completes the round, it will be handled in polling
             }
 
             function startTurnPolling() {
                 pollTimer = setInterval(async () => {
                     const data = await window.AumageDB.getBattleStatus(battleId);
                     if (!data) return;
-                    
-                    // Update local data
                     battleData = data;
                     
                     const roundLog = (battleData.battle_log || [])[currentRound];
@@ -253,8 +288,7 @@
 
                     updateTurnUI();
 
-                    // If both revealed, process round
-                    if (roundLog.a_rev && roundLog.b_rev && !turnActive) {
+                    if (roundLog.a_idx !== undefined && roundLog.b_idx !== undefined && !turnActive) {
                         turnActive = true;
                         await processClash();
                     }
@@ -264,11 +298,15 @@
             async function processClash() {
                 document.getElementById('battle-log').textContent = "Resonance Clash!";
                 
-                const myC = mySquad[currentRound];
-                const opC = oppSquad[currentRound];
+                const roundLog = battleData.battle_log[currentRound];
+                const myIdx = isPlayerA ? roundLog.a_idx : roundLog.b_idx;
+                const opIdx = isPlayerA ? roundLog.b_idx : roundLog.a_idx;
+
+                const myC = mySquad[myIdx];
+                const opC = oppSquad[opIdx];
                 
-                const myP = myC?.variant_tags?.power || 50;
-                const opP = opC?.variant_tags?.power || 50;
+                const myP = myC?.variant_tags?.stats?.atk || 50;
+                const opP = opC?.variant_tags?.stats?.atk || 50;
 
                 setTimeout(() => {
                     if (myP > opP) {
@@ -276,23 +314,20 @@
                         document.getElementById('opp-hp-fill').style.width = '0%';
                         document.getElementById('opp-elim-count').textContent = oppEliminated;
                         document.getElementById('battle-log').textContent = `${myC.name} eliminated ${opC.name}!`;
-                    } else {
+                    } else if (opP > myP) {
                         myEliminated++;
                         document.getElementById('player-hp-fill').style.width = '0%';
                         document.getElementById('player-elim-count').textContent = myEliminated;
                         document.getElementById('battle-log').textContent = `${opC.name} eliminated ${myC.name}!`;
+                    } else {
+                        document.getElementById('battle-log').textContent = "It's a draw! Both stand firm.";
                     }
                     
                     setTimeout(() => {
-                        turnActive = false;
                         document.getElementById('player-hp-fill').style.width = '100%';
                         document.getElementById('opp-hp-fill').style.width = '100%';
-                        
-                        if (currentRound < 2) {
-                            loadRound(currentRound + 1);
-                        } else {
-                            finishBattle();
-                        }
+                        if (currentRound < 2) loadRound(currentRound + 1);
+                        else finishBattle();
                     }, 3000);
                 }, 1500);
             }
@@ -300,7 +335,10 @@
             async function finishBattle() {
                 clearInterval(pollTimer);
                 const winnerId = oppEliminated > myEliminated ? window.AumageDB.user.id : (isPlayerA ? battleData.player_b_id : battleData.player_a_id);
-                
+                if (oppEliminated === myEliminated) {
+                    // Tie logic could go here, but usually owner wins or random
+                }
+
                 await window.AumageDB.updateBattle(battleId, { 
                     status: 'completed', 
                     winner_id: winnerId 
