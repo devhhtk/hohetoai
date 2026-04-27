@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Opponents — HoHeTo Kyle</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/matchmaking.css">
+</head>
+
+<body class="dashboard-body">
+
+    <!-- ══ Sidebar Placeholder ══ -->
+    <div id="comp-sidebar"></div>
+
+    <!-- ══ Main Content Area ══ -->
+    <main class="main-area">
+        <div id="comp-header"></div>
+
+        <div class="content-view">
+            <div class="match-page">
+                
+                <header class="match-header">
+                    <h1 class="match-title">Resonance Matchmaking</h1>
+                    <div class="match-status">SCANNING FOR ACTIVE SQUADS</div>
+                </header>
+
+                <div id="opponent-grid" class="opponent-grid">
+                    <!-- Loaded dynamically -->
+                    <div class="streak-loading"></div>
+                </div>
+
+            </div>
+            <div id="comp-footer"></div>
+        </div>
+    </main>
+
+    <!-- ══ Loading Overlay for Battle Entry ══ -->
+    <div id="battle-loading" class="loading-overlay">
+        <div class="radar"></div>
+        <div class="loading-text">Synchronizing Resonance...</div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/db.js"></script>
+    <script src="../js/components.js"></script>
+    <script src="../js/theme.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await ComponentLoader.loadAll([
+                { id: 'comp-sidebar', path: '../components/sidebar.html' },
+                { id: 'comp-header', path: '../components/header.html' },
+                { id: 'comp-footer', path: '../components/footer.html' }
+            ]);
+
+            const navMatch = document.getElementById('nav-matchmaking');
+            if (navMatch) navMatch.classList.add('nav-item--active');
+
+            if (window.AumageDB) {
+                window.AumageDB.init();
+                await window.AumageDB.requireAuth();
+            }
+
+            const grid = document.getElementById('opponent-grid');
+
+            async function loadOpponents() {
+                const opponents = await window.AumageDB.findOpponents();
+                
+                if (!opponents || opponents.length === 0) {
+                    grid.innerHTML = `
+                        <div class="empty-opponents">
+                            <p>No other active squads found at the moment.</p>
+                            <a href="dashboard.html" class="btn-primary" style="text-decoration:none;">Return to Dashboard</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                grid.innerHTML = '';
+
+                for (const opp of opponents) {
+                    const profile = opp.profiles || {};
+                    const card = document.createElement('div');
+                    card.className = 'opponent-card';
+                    
+                    // Fetch creature previews for the opponent
+                    const creatureDetails = await Promise.all(
+                        (opp.creature_ids || []).slice(0, 3).map(id => 
+                            window.AumageDB.supabase.from('creatures').select('card_image_url, image_url').eq('id', id).single().then(r => r.data)
+                        )
+                    );
+
+                    card.innerHTML = `
+                        <div class="opponent-user">
+                            <img src="${profile.avatar_url || 'https://ui-avatars.com/api/?name=' + (profile.display_name || 'User')}" class="opponent-avatar">
+                            <div class="opponent-info">
+                                <h3>${profile.display_name || 'Aether Walker'}</h3>
+                                <span class="opponent-level">Active Competitor</span>
+                            </div>
+                        </div>
+                        <div class="opponent-squad-preview">
+                            ${creatureDetails.map(c => `
+                                <div class="squad-slot-mini">
+                                    <img src="${c?.card_image_url || c?.image_url || '../img/placeholder.png'}">
+                                </div>
+                            `).join('')}
+                            ${Array(3 - creatureDetails.length).fill('<div class="squad-slot-mini"></div>').join('')}
+                        </div>
+                        <button class="btn-battle" data-user-id="${opp.user_id}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                            </svg>
+                            Challenge Squad
+                        </button>
+                    `;
+                    
+                    grid.appendChild(card);
+                }
+
+                // Add Challenge Listeners
+                document.querySelectorAll('.btn-battle').forEach(btn => {
+                    btn.onclick = () => challengeOpponent(btn.dataset.userId);
+                });
+            }
+
+            function challengeOpponent(opponentId) {
+                document.getElementById('battle-loading').classList.add('loading-overlay--active');
+                
+                // Simulate resonance sync
+                setTimeout(() => {
+                    window.location.href = `battle.html?opponent=${opponentId}`;
+                }, 2000);
+            }
+
+            loadOpponents();
+        });
+    </script>
+</body>
+
+</html>

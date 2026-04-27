@@ -1,0 +1,228 @@
+/* Matchmaking Styles — HoHeTo Kyle */
+
+.match-page {
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.match-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.match-title {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 36px;
+  font-weight: 800;
+  background: linear-gradient(90deg, #fff, var(--color-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 12px;
+}
+
+.match-status {
+  display: inline-block;
+  padding: 8px 16px;
+  background: rgba(8, 210, 193, 0.1);
+  border: 1px solid var(--color-primary-glow);
+  border-radius: 20px;
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+/* ── Opponent Grid ── */
+.opponent-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.opponent-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 24px;
+  padding: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.opponent-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--color-primary);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+}
+
+.opponent-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--color-primary);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.opponent-card:hover::before {
+  opacity: 1;
+}
+
+.opponent-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.opponent-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: #334155;
+  object-fit: cover;
+  border: 2px solid var(--border-card);
+}
+
+.opponent-info h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.opponent-level {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.opponent-squad-preview {
+  display: flex;
+  gap: 12px;
+  background: rgba(0,0,0,0.2);
+  padding: 12px;
+  border-radius: 16px;
+}
+
+.squad-slot-mini {
+  flex: 1;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  background: var(--bg-sidebar);
+  border: 1px solid var(--border-card);
+  overflow: hidden;
+}
+
+.squad-slot-mini img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.btn-battle {
+  width: 100%;
+  background: var(--color-primary);
+  color: #011616;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-battle:hover {
+  background: #fff;
+  transform: scale(1.02);
+}
+
+.btn-battle svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Empty State ── */
+.empty-opponents {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 80px 20px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 32px;
+  border: 2px dashed var(--border-card);
+}
+
+.empty-opponents p {
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+/* ── Loading State ── */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(1, 22, 22, 0.9);
+  backdrop-filter: blur(10px);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s;
+}
+
+.loading-overlay--active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.radar {
+  width: 120px;
+  height: 120px;
+  border: 2px solid var(--color-primary);
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+}
+
+.radar::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: conic-gradient(from 0deg, var(--color-primary), transparent);
+  transform-origin: 0 0;
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 18px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}

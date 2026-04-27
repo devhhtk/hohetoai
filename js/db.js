@@ -578,6 +578,29 @@ const AumageDB = {
     }
   },
 
+  async findOpponents() {
+    if (!this.user) return [];
+
+    try {
+      const session = await this.supabase.auth.getSession();
+      const token = session?.data?.session?.access_token;
+      const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+
+      const response = await fetch(`${apiBase}/api/matchmaking`, {
+        method: 'GET',
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
+      });
+
+      const result = await response.json();
+      return result.success ? result.opponents : [];
+    } catch (e) {
+      console.error('AumageDB.findOpponents error:', e);
+      return [];
+    }
+  },
+
   // ============================================================
 
   // FOLDERS
