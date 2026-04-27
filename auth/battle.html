@@ -19,15 +19,21 @@
 
             <!-- Opponent Side -->
             <div class="status-panel status-panel--opponent" id="status-opp">
-                <div class="status-header">
-                    <span class="status-name" id="opp-display-name">Opponent</span>
-                    <span class="status-level" id="opp-level-text">Lv. --</span>
+                <div class="status-avatar-wrap">
+                    <img src="../img/avatar_placeholder.png" id="opp-avatar-img" class="status-avatar">
                 </div>
-                <div class="hp-bar-container">
-                    <div id="opp-hp-fill" class="hp-bar-fill"></div>
+                <div class="status-content">
+                    <div class="status-header">
+                        <span class="status-name" id="opp-display-name">Opponent</span>
+                        <span class="status-level" id="opp-level-text">Lv. --</span>
+                    </div>
+                    <div class="hp-bar-container">
+                        <div id="opp-hp-fill" class="hp-bar-fill"></div>
+                    </div>
+                    <div class="status-wins">WINS: <span id="opp-wins-count">0</span></div>
                 </div>
-                <div class="status-wins">WINS: <span id="opp-wins-count">0</span></div>
             </div>
+
 
             <div class="platform platform--opponent">
                 <div id="opp-creature" class="creature-card hidden">
@@ -40,15 +46,21 @@
 
             <!-- Player Side -->
             <div class="status-panel status-panel--player" id="status-player">
-                <div class="status-header">
-                    <span class="status-name" id="player-display-name">Me</span>
-                    <span class="status-level" id="player-level-text">Lv. --</span>
+                <div class="status-avatar-wrap">
+                    <img src="../img/avatar_placeholder.png" id="player-avatar-img" class="status-avatar">
                 </div>
-                <div class="hp-bar-container">
-                    <div id="player-hp-fill" class="hp-bar-fill"></div>
+                <div class="status-content">
+                    <div class="status-header">
+                        <span class="status-name" id="player-display-name">Me</span>
+                        <span class="status-level" id="player-level-text">Lv. --</span>
+                    </div>
+                    <div class="hp-bar-container">
+                        <div id="player-hp-fill" class="hp-bar-fill"></div>
+                    </div>
+                    <div class="status-wins">WINS: <span id="player-wins-count">0</span></div>
                 </div>
-                <div class="status-wins">WINS: <span id="player-wins-count">0</span></div>
             </div>
+
 
             <div class="platform platform--player">
                 <div id="player-creature" class="creature-card hidden creature-card--active">
@@ -149,8 +161,14 @@
                     oppTeamIds = isPlayerA ? teamB.creature_ids : teamA.creature_ids;
 
                     // UI Updates
+                    const pAvatar = document.getElementById('player-avatar-img');
+                    const oAvatar = document.getElementById('opp-avatar-img');
+
                     document.getElementById('player-display-name').textContent = myUser?.display_name || 'Me';
+                    if (pAvatar) pAvatar.src = myUser?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(myUser?.display_name || 'Me')}&background=08D2C1&color=fff`;
+                    
                     document.getElementById('opp-display-name').textContent = oppUser?.display_name || 'Opponent';
+                    if (oAvatar) oAvatar.src = oppUser?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(oppUser?.display_name || 'Opponent')}&background=ff4b4b&color=fff`;
                     
                     startMovePolling();
                 } else {
@@ -163,8 +181,19 @@
 
                     const { data: oppProfile } = await window.AumageDB.supabase.from('profiles').select('*').eq('id', opponentId).single();
                     document.getElementById('opp-display-name').textContent = oppProfile?.display_name || 'Aether Walker';
-                    document.getElementById('player-display-name').textContent = window.AumageDB.user.user_metadata?.full_name || 'Me';
+                    document.getElementById('opp-avatar-img').src = oppProfile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(oppProfile?.display_name || 'Opponent')}&background=ff4b4b&color=fff`;
+                    
+                    const myName = window.AumageDB.user.user_metadata?.full_name || window.AumageDB.user.email?.split('@')[0] || 'Me';
+                    document.getElementById('player-display-name').textContent = myName;
+                    document.getElementById('player-avatar-img').src = window.AumageDB.user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(myName)}&background=08D2C1&color=fff`;
                 }
+
+                if (myTeamIds.length === 0) {
+                    document.getElementById('battle-log').textContent = "ERROR: No squad detected. Please return to team manager.";
+                    setTimeout(() => window.location.href = 'team.html', 3000);
+                    return;
+                }
+
 
                 // Load Creatures
                 mySquad = await Promise.all(myTeamIds.map(id => window.AumageDB.supabase.from('creatures').select('*').eq('id', id).single().then(r => r.data)));
