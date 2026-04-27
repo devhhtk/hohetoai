@@ -164,12 +164,23 @@
                     const pAvatar = document.getElementById('player-avatar-img');
                     const oAvatar = document.getElementById('opp-avatar-img');
 
-                    document.getElementById('player-display-name').textContent = myUser?.display_name || 'Me';
-                    if (pAvatar) pAvatar.src = myUser?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(myUser?.display_name || 'Me')}&background=08D2C1&color=fff`;
+                    const pName = myUser?.display_name || 'Me';
+                    const oName = oppUser?.display_name || 'Opponent';
+
+                    document.getElementById('player-display-name').textContent = pName;
+                    if (pAvatar) pAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(pName)}&background=08D2C1&color=fff&size=128`;
                     
-                    document.getElementById('opp-display-name').textContent = oppUser?.display_name || 'Opponent';
-                    if (oAvatar) oAvatar.src = oppUser?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(oppUser?.display_name || 'Opponent')}&background=ff4b4b&color=fff`;
+                    document.getElementById('opp-display-name').textContent = oName;
+                    if (oAvatar) oAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(oName)}&background=ff4b4b&color=fff&size=128`;
                     
+                    console.log("[BATTLE] Identified:", { 
+                        me: pName, 
+                        opponent: oName, 
+                        isPlayerA,
+                        myTeamCount: myTeamIds.length,
+                        oppTeamCount: oppTeamIds.length
+                    });
+
                     startMovePolling();
                 } else {
                     // Bot Challenge
@@ -180,31 +191,42 @@
                     oppTeamIds = oppTeam?.creature_ids || [];
 
                     const { data: oppProfile } = await window.AumageDB.supabase.from('profiles').select('*').eq('id', opponentId).single();
-                    document.getElementById('opp-display-name').textContent = oppProfile?.display_name || 'Aether Walker';
-                    document.getElementById('opp-avatar-img').src = oppProfile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(oppProfile?.display_name || 'Opponent')}&background=ff4b4b&color=fff`;
                     
-                    const myName = window.AumageDB.user.user_metadata?.full_name || window.AumageDB.user.email?.split('@')[0] || 'Me';
-                    document.getElementById('player-display-name').textContent = myName;
-                    document.getElementById('player-avatar-img').src = window.AumageDB.user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(myName)}&background=08D2C1&color=fff`;
+                    const pName = window.AumageDB.user.user_metadata?.full_name || window.AumageDB.user.email?.split('@')[0] || 'Me';
+                    const oName = oppProfile?.display_name || 'Aether Walker';
+
+                    document.getElementById('player-display-name').textContent = pName;
+                    document.getElementById('player-avatar-img').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(pName)}&background=08D2C1&color=fff&size=128`;
+
+                    document.getElementById('opp-display-name').textContent = oName;
+                    document.getElementById('opp-avatar-img').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(oName)}&background=ff4b4b&color=fff&size=128`;
                 }
 
-                if (myTeamIds.length === 0) {
-                    document.getElementById('battle-log').textContent = "ERROR: No squad detected. Please return to team manager.";
+                if (!myTeamIds || myTeamIds.length === 0) {
+                    document.getElementById('battle-log').textContent = "ERROR: No squad detected. Redirecting...";
                     setTimeout(() => window.location.href = 'team.html', 3000);
                     return;
                 }
+
 
 
                 // Load Creatures
                 mySquad = await Promise.all(myTeamIds.map(id => window.AumageDB.supabase.from('creatures').select('*').eq('id', id).single().then(r => r.data)));
                 oppSquad = await Promise.all(oppTeamIds.map(id => window.AumageDB.supabase.from('creatures').select('*').eq('id', id).single().then(r => r.data)));
 
+                console.log("[BATTLE] Squads Loaded:", { 
+                    mySquad: mySquad.map(c => c?.name || 'Unknown'),
+                    oppSquad: oppSquad.map(c => c?.name || 'Unknown')
+                });
+
                 // Populate team preview slots
                 mySquad.forEach((c, i) => {
                     if (c) {
-                        document.getElementById(`slot-${i}`).innerHTML = `<img src="${c.card_image_url || c.image_url}">`;
+                        const imgUrl = c.card_image_url || c.image_url;
+                        document.getElementById(`slot-${i}`).innerHTML = `<img src="${imgUrl}" onerror="this.src='../img/card_placeholder.png'">`;
                     }
                 });
+
 
                 loadRound(0);
             }

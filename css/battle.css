@@ -41,11 +41,12 @@
   position: absolute;
   width: 400px;
   height: 200px;
-  background: url('../resonance_battle_platform_1777289283219.png') no-click center/cover;
+  background: url('../resonance_battle_platform_1777289283219.png') no-repeat center/cover;
   background-size: 100% 100%;
   transform-style: preserve-3d;
   filter: drop-shadow(0 0 30px var(--color-primary-glow));
 }
+
 
 .platform--opponent {
   top: 25%;
