@@ -47,28 +47,28 @@
 
 
 .platform--opponent {
-  top: 15%;
-  right: 15%;
-  transform: scale(0.9);
-  opacity: 0.8;
+  top: 10%;
+  right: 10%;
+  transform: scale(0.8);
+  opacity: 0.7;
 }
 
 .platform--player {
-  bottom: 15%;
-  left: 10%;
-  transform: scale(1);
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%) scale(1.4);
 }
 
 /* ── Creature Cards (Standing on Platforms) ── */
 .creature-card {
   position: absolute;
-  width: 160px;
+  width: 240px;
   aspect-ratio: 2/3;
-  bottom: 20%;
+  bottom: 25%;
   left: 50%;
   transform: translateX(-50%);
   transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 10;
+  z-index: 300;
 }
 
 .creature-card.hidden {
@@ -181,13 +181,13 @@
 
 
 .status-panel--opponent {
-  top: 15%;
-  left: 10%;
+  top: 24px;
+  left: 24px;
 }
 
 .status-panel--player {
-  bottom: 25%;
-  right: 10%;
+  top: 24px;
+  right: 24px;
 }
 
 .status-header {
@@ -233,14 +233,14 @@
 /* ── Command Bar (Footer) ── */
 .battle-footer {
   height: 100px;
-  background: rgba(2, 6, 23, 0.95);
+  background: rgba(2, 6, 23, 0.98);
   border-top: 1px solid var(--glass-border);
   backdrop-filter: blur(20px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 40px;
-  z-index: 200;
+  z-index: 250;
 }
 
 .command-grid {
