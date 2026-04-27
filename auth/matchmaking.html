@@ -111,16 +111,23 @@
 
                     statusText.textContent = `WAITING FOR CHALLENGER (${remaining}s)...`;
 
+                    // Use a slightly faster interval (1.5s) for better responsiveness
                     const battle = await window.AumageDB.getBattleStatus(battleId);
-                    if (battle && battle.status === 'ongoing') {
+                    
+                    // Always log for debugging if needed (can be removed later)
+                    console.log("Checking Battle Status:", battle?.status, battle?.player_b_id);
+
+                    if (battle && (battle.status === 'ongoing' || battle.player_b_id)) {
                         clearInterval(pollInterval);
                         statusText.textContent = "CHALLENGER JOINED! STARTING...";
                         loadingOverlay.classList.add('loading-overlay--active');
+                        
+                        // Force a small delay to ensure Player B is fully initialized
                         setTimeout(() => {
                             window.location.href = `battle.html?id=${battleId}`;
-                        }, 2000);
+                        }, 1000);
                     }
-                }, 2000);
+                }, 1500);
             }
 
             // --- Fallback: Manual Opponents ---
