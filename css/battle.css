@@ -1,161 +1,117 @@
-/* Battle Engine Styles — HoHeTo Kyle */
+/* Premium Pokémon-Style Battle Arena — HoHeTo Kyle */
+
+:root {
+  --color-primary: #08d2c1;
+  --color-primary-glow: rgba(8, 210, 193, 0.4);
+  --color-bg: #020617;
+  --glass-bg: rgba(15, 23, 42, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
 
 .battle-container {
   position: fixed;
   inset: 0;
-  background: #000;
+  background: var(--color-bg);
   color: #fff;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  font-family: 'Exo 2', sans-serif;
+  font-family: 'Outfit', sans-serif;
 }
 
-/* ── Dynamic Environments ── */
-.battle-env {
+/* ── The Stage ── */
+.battle-arena {
+  flex: 1;
+  position: relative;
+  perspective: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arena-background {
   position: absolute;
   inset: 0;
-  z-index: 0;
-  transition: opacity 2s ease-in-out;
-}
-
-.env--storm {
   background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+  z-index: -1;
 }
-.env--storm::after {
-  content: '';
+
+/* ── Platforms (Resonance Pads) ── */
+.platform {
   position: absolute;
-  inset: 0;
-  background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-  opacity: 0.1;
-}
-
-.env--volcanic {
-  background: radial-gradient(circle at center, #450a0a 0%, #020617 100%);
-}
-
-.env--ethereal {
-  background: radial-gradient(circle at center, #1e1b4b 0%, #020617 100%);
-}
-
-/* ── Battle Layout ── */
-.battle-ui {
-  position: relative;
-  z-index: 10;
-  height: 100%;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  padding: 40px;
-}
-
-.battle-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.player-info {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.player-info--opponent {
-  flex-direction: row-reverse;
-}
-
-.player-badge {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  border: 3px solid var(--color-primary);
-  box-shadow: 0 0 20px var(--color-primary-glow);
-}
-
-.player-stats {
-  text-align: left;
-}
-
-.player-info--opponent .player-stats {
-  text-align: right;
-}
-
-.player-name {
-  display: block;
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 1px;
-}
-
-.player-score {
-  font-size: 14px;
-  color: var(--color-primary);
-  font-weight: 700;
-}
-
-/* ── Battlefield (Lanes) ── */
-.battlefield {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 40px;
-}
-
-.lane {
-  width: 280px;
-  height: 420px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 32px;
-  position: relative;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 20px;
-}
-
-.lane--active {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 40px rgba(8, 210, 193, 0.1);
-  background: rgba(8, 210, 193, 0.05);
-}
-
-.card-slot {
-  width: 100%;
-  aspect-ratio: 2/3;
-  border-radius: 20px;
-  background: rgba(0,0,0,0.4);
-  border: 2px dashed rgba(255,255,255,0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
-  cursor: pointer;
-  perspective: 1000px;
-}
-
-.card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 400px;
+  height: 200px;
+  background: url('../resonance_battle_platform_1777289283219.png') no-click center/cover;
+  background-size: 100% 100%;
   transform-style: preserve-3d;
+  filter: drop-shadow(0 0 30px var(--color-primary-glow));
 }
 
-.card-slot.revealed .card-inner {
+.platform--opponent {
+  top: 25%;
+  right: 15%;
+  transform: rotateX(45deg) scale(0.8);
+  opacity: 0.8;
+}
+
+.platform--player {
+  bottom: 20%;
+  left: 10%;
+  transform: rotateX(45deg) scale(1.1);
+}
+
+/* ── Creature Cards (Standing on Platforms) ── */
+.creature-card {
+  position: absolute;
+  width: 200px;
+  aspect-ratio: 2/3;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%) rotateX(-45deg); /* Counter-rotate to stand upright */
+  transform-origin: bottom center;
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 10;
+}
+
+.creature-card.hidden {
+  opacity: 0;
+  transform: translateX(-50%) rotateX(-45deg) translateY(50px) scale(0.8);
+}
+
+.card-visual {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid var(--glass-border);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.card-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Card Reveal / Flip Logic */
+.creature-card .card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.creature-card.revealed .card-inner {
   transform: rotateY(180deg);
 }
 
 .card-front, .card-back {
   position: absolute;
-  width: 100%;
-  height: 100%;
-  -webkit-backface-visibility: hidden;
+  inset: 0;
   backface-visibility: hidden;
-  border-radius: 18px;
+  border-radius: 16px;
 }
 
 .card-front {
@@ -163,86 +119,188 @@
 }
 
 .card-back {
-  background: linear-gradient(135deg, #011616 0%, #08d2c1 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #08d2c1 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid rgba(255,255,255,0.1);
+  border: 2px solid var(--color-primary);
 }
 
-.card-back::before {
-  content: 'HHK';
+.card-back::after {
+  content: 'HHTK';
   font-weight: 900;
-  font-size: 32px;
-  letter-spacing: 4px;
-  color: rgba(255,255,255,0.2);
-}
-
-.card-slot img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-
-.clash-indicator {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-size: 24px;
-  font-weight: 900;
-  color: var(--color-primary);
-  text-shadow: 0 0 10px var(--color-primary-glow);
-}
-
-/* ── Control Bar ── */
-.battle-controls {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-}
-
-.btn-clash {
-  background: var(--color-primary);
-  color: #011616;
-  border: none;
-  padding: 16px 48px;
-  border-radius: 100px;
-  font-size: 18px;
-  font-weight: 900;
   letter-spacing: 4px;
+  opacity: 0.3;
+}
+
+/* ── Status Panels (Floating UI) ── */
+.status-panel {
+  position: absolute;
+  width: 300px;
+  padding: 16px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  z-index: 100;
+}
+
+.status-panel--opponent {
+  top: 15%;
+  left: 10%;
+}
+
+.status-panel--player {
+  bottom: 25%;
+  right: 10%;
+}
+
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.status-name {
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+}
+
+.status-level {
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.hp-bar-container {
+  height: 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.hp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444, #22c55e);
+  width: 100%;
+  transition: width 0.5s ease;
+}
+
+.status-wins {
+  font-size: 12px;
   text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.7;
+}
+
+/* ── Command Bar (Footer) ── */
+.battle-footer {
+  height: 180px;
+  background: rgba(2, 6, 23, 0.9);
+  border-top: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  padding: 24px;
+  gap: 24px;
+  z-index: 200;
+}
+
+.command-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.btn-command {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 10px 30px var(--color-primary-glow);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.btn-command:hover:not(:disabled) {
+  background: var(--color-primary);
+  color: #000;
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.btn-command--active {
+  background: var(--color-primary);
+  color: #000;
+}
+
+.battle-log {
+  background: rgba(0,0,0,0.3);
+  border-radius: 16px;
+  padding: 16px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid var(--glass-border);
+}
+
+.team-preview {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.team-slot {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--glass-border);
+  overflow: hidden;
+  opacity: 0.5;
   transition: all 0.3s;
 }
 
-.btn-clash:hover {
-  transform: scale(1.05) translateY(-2px);
-  background: #fff;
+.team-slot--active {
+  opacity: 1;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 15px var(--color-primary-glow);
 }
 
-.btn-clash:disabled {
-  opacity: 0.5;
-  filter: grayscale(1);
-  cursor: not-allowed;
-  transform: none;
+.team-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* ── Result Overlay ── */
 .result-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.95);
-  z-index: 100;
+  background: rgba(2, 6, 23, 0.95);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
   opacity: 0;
   pointer-events: none;
-  transition: all 0.8s;
+  transition: opacity 0.8s;
 }
 
 .result-overlay--show {
@@ -251,27 +309,31 @@
 }
 
 .result-title {
-  font-size: 72px;
+  font-size: 84px;
   font-weight: 900;
-  font-style: italic;
   margin-bottom: 20px;
+  background: linear-gradient(to bottom, #fff, var(--color-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.result-xp {
-  font-size: 24px;
-  color: var(--color-primary);
-  margin-bottom: 40px;
+/* Animations */
+@keyframes pulse {
+  0% { transform: translateX(-50%) rotateX(-45deg) scale(1); }
+  50% { transform: translateX(-50%) rotateX(-45deg) scale(1.05); }
+  100% { transform: translateX(-50%) rotateX(-45deg) scale(1); }
 }
 
-/* ── Animations ── */
-@keyframes shake {
-  0% { transform: translate(1px, 1px) rotate(0deg); }
-  10% { transform: translate(-1px, -2px) rotate(-1deg); }
-  20% { transform: translate(-3px, 0px) rotate(1deg); }
-  30% { transform: translate(3px, 2px) rotate(0deg); }
-  40% { transform: translate(1px, -1px) rotate(1deg); }
+.creature-card--active {
+  animation: pulse 2s infinite ease-in-out;
 }
 
 .clash-shake {
   animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(-50%) rotateX(-45deg); }
+  25% { transform: translateX(-55%) rotateX(-45deg); }
+  75% { transform: translateX(-45%) rotateX(-45deg); }
 }
