@@ -109,6 +109,40 @@
             <p id="result-xp" class="result-xp">+100 Resonance XP</p>
             <button onclick="window.location.href='dashboard.html'" class="btn-clash" style="margin-top: 20px;">CONTINUE</button>
         </div>
+
+        <!-- Player Profile & Collection Drawer -->
+        <div id="player-drawer" class="player-drawer">
+            <button class="drawer-toggle" id="btn-toggle-drawer">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </button>
+            
+            <div class="drawer-content">
+                <div class="drawer-header">
+                    <div class="drawer-profile">
+                        <img src="../img/avatar_placeholder.png" id="drawer-avatar" class="drawer-avatar">
+                        <div class="drawer-profile-info">
+                            <h3 id="drawer-name">Storyteller</h3>
+                            <div class="drawer-xp-wrap">
+                                <span id="drawer-level">Lv. 1</span>
+                                <div class="drawer-xp-bar"><div id="drawer-xp-fill" class="drawer-xp-fill"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collection-section">
+                    <h4>My Collection</h4>
+                    <div class="collection-grid" id="drawer-collection-grid">
+                        <!-- Collection cards will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Scripts -->
@@ -229,7 +263,42 @@
 
 
                 loadRound(0);
+                loadPlayerDrawer();
             }
+
+            async function loadPlayerDrawer() {
+                const data = await window.AumageDB.getUserProfile();
+                if (!data || !data.profile) return;
+
+                const profile = data.profile;
+                const target = data.target_level;
+
+                const name = profile.display_name || window.AumageDB.user.user_metadata?.full_name || window.AumageDB.user.email?.split('@')[0] || 'Storyteller';
+                document.getElementById('drawer-name').textContent = name;
+                document.getElementById('drawer-avatar').src = profile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=08D2C1&color=fff&size=128`;
+                document.getElementById('drawer-level').textContent = `Lv. ${profile.level}`;
+                
+                const xpPct = Math.min(100, (profile.total_xp / (target?.xp_required || 1000)) * 100);
+                document.getElementById('drawer-xp-fill').style.width = `${xpPct}%`;
+
+                // Load Collection
+                const collection = await window.AumageDB.getMyCreatures();
+                const grid = document.getElementById('drawer-collection-grid');
+                if (collection.length > 0) {
+                    grid.innerHTML = collection.map(c => `
+                        <div class="collection-item">
+                            <img src="${c.card_image_url || c.image_url}" onerror="this.src='../img/card_placeholder.png'">
+                            <span class="collection-item-name">${c.creature_name || 'Unnamed'}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    grid.innerHTML = '<div class="no-cards">No resonance cards found.</div>';
+                }
+            }
+
+            document.getElementById('btn-toggle-drawer').onclick = () => {
+                document.getElementById('player-drawer').classList.toggle('player-drawer--open');
+            };
 
             function loadRound(idx) {
                 currentRound = idx;
