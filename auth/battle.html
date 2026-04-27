@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resonance Clash — Stadium</title>
-    <link rel="stylesheet" href="../css/dashboard.css">
     <link rel="stylesheet" href="../css/battle.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
@@ -81,12 +80,6 @@
                     </svg>
                     REVEAL CARD
                 </button>
-                <button class="btn-command" disabled>
-                    SKILL (LOCKED)
-                </button>
-                <button class="btn-command" disabled>
-                    SWAP (AUTO)
-                </button>
                 <button class="btn-command" onclick="window.location.href='dashboard.html'">
                     FORFEIT
                 </button>
@@ -106,42 +99,7 @@
         <!-- Result Overlay -->
         <div id="result-overlay" class="result-overlay">
             <h1 id="result-title" class="result-title">VICTORY</h1>
-            <p id="result-xp" class="result-xp">+100 Resonance XP</p>
-            <button onclick="window.location.href='dashboard.html'" class="btn-clash" style="margin-top: 20px;">CONTINUE</button>
-        </div>
-
-        <!-- Player Profile & Collection Drawer -->
-        <div id="player-drawer" class="player-drawer">
-            <button class="drawer-toggle" id="btn-toggle-drawer">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
-            </button>
-            
-            <div class="drawer-content">
-                <div class="drawer-header">
-                    <div class="drawer-profile">
-                        <img src="../img/avatar_placeholder.png" id="drawer-avatar" class="drawer-avatar">
-                        <div class="drawer-profile-info">
-                            <h3 id="drawer-name">Storyteller</h3>
-                            <div class="drawer-xp-wrap">
-                                <span id="drawer-level">Lv. 1</span>
-                                <div class="drawer-xp-bar"><div id="drawer-xp-fill" class="drawer-xp-fill"></div></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="collection-section">
-                    <h4>My Collection</h4>
-                    <div class="collection-grid" id="drawer-collection-grid">
-                        <!-- Collection cards will be injected here -->
-                    </div>
-                </div>
-            </div>
+            <button onclick="window.location.href='dashboard.html'" class="btn-command" style="padding: 15px 40px;">CONTINUE</button>
         </div>
     </div>
 
@@ -151,7 +109,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
-            const opponentId = params.get('opponent');
             const battleId = params.get('id');
 
             if (window.AumageDB) {
@@ -159,7 +116,7 @@
                 await window.AumageDB.requireAuth();
             }
 
-            if (!opponentId && !battleId) {
+            if (!battleId) {
                 window.location.href = 'dashboard.html';
                 return;
             }
@@ -176,142 +133,46 @@
             let pollTimer = null;
 
             async function initBattle() {
-                let myTeamIds = [];
-                let oppTeamIds = [];
+                battleData = await window.AumageDB.getBattleStatus(battleId);
+                if (!battleData) return;
 
-                if (battleId) {
-                    battleData = await window.AumageDB.getBattleStatus(battleId);
-                    if (!battleData) return;
+                isPlayerA = battleData.player_a_id === window.AumageDB.user.id;
+                
+                const myUser = isPlayerA ? battleData.player_a : battleData.player_b;
+                const oppUser = isPlayerA ? battleData.player_b : battleData.player_a;
+                const myTeam = isPlayerA ? battleData.player_a_team : battleData.player_b_team;
+                const oppTeam = isPlayerA ? battleData.player_b_team : battleData.player_a_team;
 
-                    isPlayerA = battleData.player_a_id === window.AumageDB.user.id;
-                    const oppUser = isPlayerA ? battleData.player_b : battleData.player_a;
-                    const myUser = isPlayerA ? battleData.player_a : battleData.player_b;
+                mySquad = myTeam?.creatures || [];
+                oppSquad = oppTeam?.creatures || [];
 
-                    // Fetch teams
-                    const { data: teamA } = await window.AumageDB.supabase.from('teams').select('creature_ids').eq('id', battleData.player_a_team_id).single();
-                    const { data: teamB } = await window.AumageDB.supabase.from('teams').select('creature_ids').eq('id', battleData.player_b_team_id).single();
+                // UI Setup
+                document.getElementById('player-display-name').textContent = myUser?.display_name || 'Me';
+                document.getElementById('player-avatar-img').src = myUser?.avatar_url || `https://ui-avatars.com/api/?name=Me&background=08D2C1&color=fff`;
+                
+                document.getElementById('opp-display-name').textContent = oppUser?.display_name || 'Opponent';
+                document.getElementById('opp-avatar-img').src = oppUser?.avatar_url || `https://ui-avatars.com/api/?name=Opp&background=ff4b4b&color=fff`;
 
-                    myTeamIds = isPlayerA ? teamA.creature_ids : teamB.creature_ids;
-                    oppTeamIds = isPlayerA ? teamB.creature_ids : teamA.creature_ids;
-
-                    // UI Updates
-                    const pAvatar = document.getElementById('player-avatar-img');
-                    const oAvatar = document.getElementById('opp-avatar-img');
-
-                    const pName = myUser?.display_name || 'Me';
-                    const oName = oppUser?.display_name || 'Opponent';
-
-                    document.getElementById('player-display-name').textContent = pName;
-                    if (pAvatar) pAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(pName)}&background=08D2C1&color=fff&size=128`;
-                    
-                    document.getElementById('opp-display-name').textContent = oName;
-                    if (oAvatar) oAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(oName)}&background=ff4b4b&color=fff&size=128`;
-                    
-                    console.log("[BATTLE] Identified:", { 
-                        me: pName, 
-                        opponent: oName, 
-                        isPlayerA,
-                        myTeamCount: myTeamIds.length,
-                        oppTeamCount: oppTeamIds.length
-                    });
-
-                    startMovePolling();
-                } else {
-                    // Bot Challenge
-                    const myTeam = await window.AumageDB.getTeam();
-                    myTeamIds = myTeam?.creature_ids || [];
-
-                    const { data: oppTeam } = await window.AumageDB.supabase.from('teams').select('creature_ids').eq('user_id', opponentId).eq('is_active', true).single();
-                    oppTeamIds = oppTeam?.creature_ids || [];
-
-                    const { data: oppProfile } = await window.AumageDB.supabase.from('profiles').select('*').eq('id', opponentId).single();
-                    
-                    const pName = window.AumageDB.user.user_metadata?.full_name || window.AumageDB.user.email?.split('@')[0] || 'Me';
-                    const oName = oppProfile?.display_name || 'Aether Walker';
-
-                    document.getElementById('player-display-name').textContent = pName;
-                    document.getElementById('player-avatar-img').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(pName)}&background=08D2C1&color=fff&size=128`;
-
-                    document.getElementById('opp-display-name').textContent = oName;
-                    document.getElementById('opp-avatar-img').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(oName)}&background=ff4b4b&color=fff&size=128`;
-                }
-
-                if (!myTeamIds || myTeamIds.length === 0) {
-                    document.getElementById('battle-log').textContent = "ERROR: No squad detected. Redirecting...";
-                    setTimeout(() => window.location.href = 'team.html', 3000);
-                    return;
-                }
-
-
-
-                // Load Creatures
-                mySquad = await Promise.all(myTeamIds.map(id => window.AumageDB.supabase.from('creatures').select('*').eq('id', id).single().then(r => r.data)));
-                oppSquad = await Promise.all(oppTeamIds.map(id => window.AumageDB.supabase.from('creatures').select('*').eq('id', id).single().then(r => r.data)));
-
-                console.log("[BATTLE] Squads Loaded:", { 
-                    mySquad: mySquad.map(c => c?.name || 'Unknown'),
-                    oppSquad: oppSquad.map(c => c?.name || 'Unknown')
-                });
-
-                // Populate team preview slots
+                // Populate team preview
                 mySquad.forEach((c, i) => {
-                    if (c) {
-                        const imgUrl = c.card_image_url || c.image_url;
-                        document.getElementById(`slot-${i}`).innerHTML = `<img src="${imgUrl}" onerror="this.src='../img/card_placeholder.png'">`;
+                    if (c && i < 3) {
+                        document.getElementById(`slot-${i}`).innerHTML = `<img src="${c.card_image_url || c.image_url}">`;
                     }
                 });
 
-
                 loadRound(0);
-                loadPlayerDrawer();
+                startMovePolling();
             }
-
-            async function loadPlayerDrawer() {
-                const data = await window.AumageDB.getUserProfile();
-                if (!data || !data.profile) return;
-
-                const profile = data.profile;
-                const target = data.target_level;
-
-                const name = profile.display_name || window.AumageDB.user.user_metadata?.full_name || window.AumageDB.user.email?.split('@')[0] || 'Storyteller';
-                document.getElementById('drawer-name').textContent = name;
-                document.getElementById('drawer-avatar').src = profile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=08D2C1&color=fff&size=128`;
-                document.getElementById('drawer-level').textContent = `Lv. ${profile.level}`;
-                
-                const xpPct = Math.min(100, (profile.total_xp / (target?.xp_required || 1000)) * 100);
-                document.getElementById('drawer-xp-fill').style.width = `${xpPct}%`;
-
-                // Load Collection
-                const collection = await window.AumageDB.getMyCreatures();
-                const grid = document.getElementById('drawer-collection-grid');
-                if (collection.length > 0) {
-                    grid.innerHTML = collection.map(c => `
-                        <div class="collection-item">
-                            <img src="${c.card_image_url || c.image_url}" onerror="this.src='../img/card_placeholder.png'">
-                            <span class="collection-item-name">${c.creature_name || 'Unnamed'}</span>
-                        </div>
-                    `).join('');
-                } else {
-                    grid.innerHTML = '<div class="no-cards">No resonance cards found.</div>';
-                }
-            }
-
-            document.getElementById('btn-toggle-drawer').onclick = () => {
-                document.getElementById('player-drawer').classList.toggle('player-drawer--open');
-            };
 
             function loadRound(idx) {
                 currentRound = idx;
-                const log = document.getElementById('battle-log');
-                log.textContent = `Round ${idx + 1}: Analyze your opponent and prepare to reveal.`;
-
-                // Update Slots
+                roundActive = false;
+                document.getElementById('battle-log').textContent = `Round ${idx + 1}: Prepare to reveal.`;
+                
                 document.querySelectorAll('.team-slot').forEach((s, i) => s.classList.toggle('team-slot--active', i === idx));
 
-                // Setup Active Creatures
                 const pCreature = document.getElementById('player-creature');
                 const oCreature = document.getElementById('opp-creature');
-
                 pCreature.classList.add('hidden');
                 oCreature.classList.add('hidden');
                 pCreature.classList.remove('revealed');
@@ -332,131 +193,88 @@
 
                     pCreature.classList.remove('hidden');
                     oCreature.classList.remove('hidden');
-                    
                     document.getElementById('btn-reveal').disabled = false;
                 }, 600);
             }
 
             async function handleReveal() {
                 if (roundActive) return;
-                
-                const btn = document.getElementById('btn-reveal');
-                btn.disabled = true;
-                
+                document.getElementById('btn-reveal').disabled = true;
                 document.getElementById('player-creature').classList.add('revealed');
-                document.getElementById('battle-log').textContent = "Waiting for resonance feedback...";
+                document.getElementById('battle-log').textContent = "Waiting for opponent...";
 
-                if (battleId) {
-                    await syncMove(currentRound);
-                } else {
-                    // Bot logic
-                    roundActive = true;
-                    setTimeout(async () => {
-                        document.getElementById('opp-creature').classList.add('revealed');
-                        await processRoundResult();
-                        setTimeout(advanceRound, 3000);
-                    }, 1200);
-                }
-            }
+                const log = battleData.battle_log || [];
+                if (!log[currentRound]) log[currentRound] = { a_rev: false, b_rev: false };
+                
+                if (isPlayerA) log[currentRound].a_rev = true;
+                else log[currentRound].b_rev = true;
 
-            async function syncMove(idx) {
-                const log = battleData.battle_log || [
-                    { a_rev: false, b_rev: false },
-                    { a_rev: false, b_rev: false },
-                    { a_rev: false, b_rev: false }
-                ];
-                if (isPlayerA) log[idx].a_rev = true;
-                else log[idx].b_rev = true;
-
-                await window.AumageDB.supabase.from('battles').update({ battle_log: log }).eq('id', battleId);
-                battleData.battle_log = log;
+                await window.AumageDB.updateBattle(battleId, { battle_log: log });
             }
 
             function startMovePolling() {
                 pollTimer = setInterval(async () => {
-                    if (currentRound >= 3 || roundActive) return;
+                    if (roundActive) return;
 
-                    const { data } = await window.AumageDB.supabase.from('battles').select('*').eq('id', battleId).single();
+                    const data = await window.AumageDB.getBattleStatus(battleId);
                     if (!data) return;
-                    
                     battleData = data;
+
                     const roundLog = (battleData.battle_log || [])[currentRound];
                     if (!roundLog) return;
 
-                    // Update UI
-                    const oppRevealed = isPlayerA ? roundLog.b_rev : roundLog.a_rev;
-                    if (oppRevealed) {
-                        document.getElementById('opp-creature').classList.add('revealed');
-                    }
+                    const oppRev = isPlayerA ? roundLog.b_rev : roundLog.a_rev;
+                    const meRev = isPlayerA ? roundLog.a_rev : roundLog.b_rev;
 
-                    if (roundLog.a_rev && roundLog.b_rev && !roundActive) {
+                    if (oppRev) document.getElementById('opp-creature').classList.add('revealed');
+
+                    if (oppRev && meRev) {
                         roundActive = true;
-                        document.getElementById('battle-log').textContent = "Resonance Colliding!";
-                        await processRoundResult();
-                        setTimeout(advanceRound, 3000);
+                        document.getElementById('battle-log').textContent = "Resonance Clash!";
+                        await processRound();
                     }
                 }, 2000);
             }
 
-            async function processRoundResult() {
+            async function processRound() {
                 const myP = mySquad[currentRound]?.variant_tags?.power || 50;
                 const opP = oppSquad[currentRound]?.variant_tags?.power || 50;
 
-                const pCreature = document.getElementById('player-creature');
-                const oCreature = document.getElementById('opp-creature');
-                const log = document.getElementById('battle-log');
+                setTimeout(() => {
+                    if (myP > opP) {
+                        myWins++;
+                        document.getElementById('opp-hp-fill').style.width = '0%';
+                    } else if (opP > myP) {
+                        oppWins++;
+                        document.getElementById('player-hp-fill').style.width = '0%';
+                    }
+                    
+                    document.getElementById('player-wins-count').textContent = myWins;
+                    document.getElementById('opp-wins-count').textContent = oppWins;
 
-                pCreature.classList.add('clash-shake');
-                oCreature.classList.add('clash-shake');
-
-                if (myP > opP) {
-                    log.textContent = "VICTORY! Your resonance overpowered the opponent.";
-                    myWins++;
-                    document.getElementById('opp-hp-fill').style.width = '0%';
-                } else if (opP > myP) {
-                    log.textContent = "DEFEAT! Opponent's resonance was too strong.";
-                    oppWins++;
-                    document.getElementById('player-hp-fill').style.width = '0%';
-                } else {
-                    log.textContent = "DRAW! The resonance frequencies canceled out.";
-                }
-
-                document.getElementById('player-wins-count').textContent = myWins;
-                document.getElementById('opp-wins-count').textContent = oppWins;
+                    setTimeout(() => {
+                        if (currentRound < 2) loadRound(currentRound + 1);
+                        else finishBattle();
+                    }, 2000);
+                }, 1000);
             }
 
-            function advanceRound() {
-                roundActive = false;
-                document.getElementById('player-hp-fill').style.width = '100%';
-                document.getElementById('opp-hp-fill').style.width = '100%';
-
-                if (currentRound < 2) {
-                    loadRound(currentRound + 1);
-                } else {
-                    showFinalResult();
-                }
-            }
-
-            function showFinalResult() {
+            async function finishBattle() {
                 clearInterval(pollTimer);
-                const overlay = document.getElementById('result-overlay');
-                const title = document.getElementById('result-title');
+                const winnerId = myWins > oppWins ? window.AumageDB.user.id : (isPlayerA ? battleData.player_b_id : battleData.player_a_id);
                 
+                await window.AumageDB.updateBattle(battleId, { 
+                    status: 'completed', 
+                    winner_id: winnerId 
+                });
+
+                const overlay = document.getElementById('result-overlay');
+                document.getElementById('result-title').textContent = myWins > oppWins ? 'VICTORY' : 'DEFEAT';
                 overlay.classList.add('result-overlay--show');
-                if (myWins > oppWins) {
-                    title.textContent = 'VICTORY';
-                    title.style.color = 'var(--color-primary)';
-                } else if (oppWins > myWins) {
-                    title.textContent = 'DEFEAT';
-                    title.style.color = '#ef4444';
-                } else {
-                    title.textContent = 'DRAW';
-                }
             }
 
             document.getElementById('btn-reveal').onclick = handleReveal;
-
-            await initBattle();
+            initBattle();
         });
     </script>
 </body>

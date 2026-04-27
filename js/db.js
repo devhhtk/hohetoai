@@ -653,6 +653,27 @@ const AumageDB = {
     }
   },
 
+  async updateBattle(battleId, updates) {
+    try {
+      const session = await this.supabase.auth.getSession();
+      const token = session?.data?.session?.access_token;
+      const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+      const response = await fetch(`${apiBase}/api/battle/update`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ id: battleId, updates })
+      });
+      const result = await response.json();
+      return result.success;
+    } catch (e) {
+      console.error('AumageDB.updateBattle error:', e);
+      return false;
+    }
+  },
+
 
   // ============================================================
 
