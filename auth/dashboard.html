@@ -187,7 +187,7 @@
         </div>
     </main>
 
-    
+
 
     <!-- Supabase & DB Layer -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -293,7 +293,7 @@
                 const grid = document.getElementById('trending-cards-grid');
                 if (!grid || !window.AumageDB) return;
 
-                const creatures = await window.AumageDB.getTrendingCards(5);
+                const creatures = await window.AumageDB.getTrendingCards(10);
                 if (creatures && creatures.length > 0) {
                     grid.innerHTML = creatures.map(c => `
                         <a href="creature-details.html?${c.share_slug ? 's=' + c.share_slug : 'id=' + c.id}" class="creature-card--tall" title="${c.creature_name || 'Card'}">
