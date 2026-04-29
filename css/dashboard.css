@@ -1088,7 +1088,7 @@ body.dashboard-body {
 
 .creature-card--rounded {
   width: 100%;
-  aspect-ratio: 1/1;
+  /* aspect-ratio: 1/1; */
   border-radius: 24px;
   overflow: hidden;
   transition: transform 0.3s;
