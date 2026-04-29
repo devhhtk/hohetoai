@@ -144,23 +144,58 @@
                 <div id="trending-cards-grid" class="creatures-grid creatures-grid--horizontal">
                     <!-- Glimmerwisp -->
                     <div class="creature-card--tall">
-                        <img src="../img/placeholder.png" alt="Glimmerwisp">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <img src="../img/placeholder.png" alt="Glimmerwisp">
+                            </div>
+                            <div class="card-back">
+                                <img src="../img/placeholder.png" alt="Back">
+                            </div>
+                        </div>
                     </div>
                     <!-- Flamecurl -->
                     <div class="creature-card--tall">
-                        <img src="../img/placeholder.png" alt="Flamecurl">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <img src="../img/placeholder.png" alt="Flamecurl">
+                            </div>
+                            <div class="card-back">
+                                <img src="../img/placeholder.png" alt="Back">
+                            </div>
+                        </div>
                     </div>
                     <!-- Gloomseraph -->
                     <div class="creature-card--tall">
-                        <img src="../img/placeholder.png" alt="Gloomseraph">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <img src="../img/placeholder.png" alt="Gloomseraph">
+                            </div>
+                            <div class="card-back">
+                                <img src="../img/placeholder.png" alt="Back">
+                            </div>
+                        </div>
                     </div>
                     <!-- Gloomfizz -->
                     <div class="creature-card--tall">
-                        <img src="../img/placeholder.png" alt="Gloomfizz">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <img src="../img/placeholder.png" alt="Gloomfizz">
+                            </div>
+                            <div class="card-back">
+                                <img src="../img/placeholder.png" alt="Back">
+                            </div>
+                        </div>
                     </div>
                     <!-- Frostclaw -->
                     <div class="creature-card--tall">
-                        <img src="../img/placeholder.png" alt="Frostclaw">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <img src="../img/placeholder.png" alt="Frostclaw">
+                            </div>
+                            <div class="card-back">
+                                <img src="../img/placeholder.png" alt="Back">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -186,23 +221,58 @@
                 <div id="popular-grid" class="creatures-grid creatures-grid--horizontal">
                     <!-- Jellyfish -->
                     <div class="creature-card--rounded">
-                        <img src="../img/placeholder.png" alt="Jellyfish">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <img src="../img/placeholder.png" alt="Jellyfish">
+                            </div>
+                            <div class="card-back">
+                                <img src="../img/placeholder.png" alt="Back">
+                            </div>
+                        </div>
                     </div>
                     <!-- Oxidian -->
                     <div class="creature-card--rounded">
-                        <img src="../img/placeholder.png" alt="Oxidian">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <img src="../img/placeholder.png" alt="Oxidian">
+                            </div>
+                            <div class="card-back">
+                                <img src="../img/placeholder.png" alt="Back">
+                            </div>
+                        </div>
                     </div>
                     <!-- Monkpet -->
                     <div class="creature-card--rounded">
-                        <img src="../img/placeholder.png" alt="Monkpet">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <img src="../img/placeholder.png" alt="Monkpet">
+                            </div>
+                            <div class="card-back">
+                                <img src="../img/placeholder.png" alt="Back">
+                            </div>
+                        </div>
                     </div>
                     <!-- Lizard -->
                     <div class="creature-card--rounded">
-                        <img src="../img/placeholder.png" alt="Lizard">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <img src="../img/placeholder.png" alt="Lizard">
+                            </div>
+                            <div class="card-back">
+                                <img src="../img/placeholder.png" alt="Back">
+                            </div>
+                        </div>
                     </div>
                     <!-- Bearded -->
                     <div class="creature-card--rounded">
-                        <img src="../img/placeholder.png" alt="Bearded">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <img src="../img/placeholder.png" alt="Bearded">
+                            </div>
+                            <div class="card-back">
+                                <img src="../img/placeholder.png" alt="Back">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -303,7 +373,14 @@
                     if (validCreatures.length > 0) {
                         popularGrid.innerHTML = validCreatures.map(c => `
                             <a href="creature-details.html?${c.share_slug ? 's=' + c.share_slug : 'id=' + c.id}" class="creature-card--rounded" title="${c.creature_name || 'Creature'}">
-                                <img src="${c.image_url}" alt="${c.creature_name || 'Creature'}">
+                                <div class="card-inner">
+                                    <div class="card-front">
+                                        <img src="${c.image_url}" alt="${c.creature_name || 'Creature'}">
+                                    </div>
+                                    <div class="card-back">
+                                        <img src="../img/placeholder.png" alt="Back">
+                                    </div>
+                                </div>
                             </a>
                         `).join('');
                     } else {
@@ -323,13 +400,20 @@
                 if (creatures && creatures.length > 0) {
                     grid.innerHTML = creatures.map(c => `
                         <a href="creature-details.html?${c.share_slug ? 's=' + c.share_slug : 'id=' + c.id}" class="creature-card--tall" title="${c.creature_name || 'Card'}">
-                            <img src="${c.card_image_url}" alt="${c.creature_name || 'Card'}">
-                            ${(c.likes_count > 0 || c.comments_count > 0) ? `
-                                <div class="card-engagement-mini">
-                                    <span>❤️ ${c.likes_count}</span>
-                                    <span>💬 ${c.comments_count}</span>
+                            <div class="card-inner">
+                                <div class="card-front">
+                                    <img src="${c.card_image_url}" alt="${c.creature_name || 'Card'}">
+                                    ${(c.likes_count > 0 || c.comments_count > 0) ? `
+                                        <div class="card-engagement-mini">
+                                            <span>❤️ ${c.likes_count}</span>
+                                            <span>💬 ${c.comments_count}</span>
+                                        </div>
+                                    ` : ''}
                                 </div>
-                            ` : ''}
+                                <div class="card-back">
+                                    <img src="../img/placeholder.png" alt="Back">
+                                </div>
+                            </div>
                         </a>
                     `).join('');
                 } else {
