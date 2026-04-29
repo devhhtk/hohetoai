@@ -673,3 +673,43 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 480px) {
   .cta-banner { border-radius: 14px; }
 }
+
+/* ══════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════ */
+
+/* Scroll Reveal Base */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Page Entry */
+@keyframes pageEntry {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-hero__content > * {
+  animation: pageEntry 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.page-hero__title { animation-delay: 0.1s; }
+.page-hero__subtitle { animation-delay: 0.3s; }
+
+/* Scale on Hover for cards */
+.feature-card__inner, .wmd__creature {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease !important;
+}
+
+.wmd__creature:hover {
+  transform: scale(1.05) rotate(-2deg);
+}
+}

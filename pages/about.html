@@ -86,7 +86,7 @@
   <section class="who-we-are">
     <div class="who-we-are__inner">
       <!-- Left: Text -->
-      <div class="who-we-are__copy">
+      <div class="who-we-are__copy reveal">
         <h2 class="who-we-are__heading">Who We Are</h2>
         <div class="who-we-are__text">
           <p>
@@ -105,7 +105,7 @@
       </div>
 
       <!-- Right: Image -->
-      <div class="who-we-are__image">
+      <div class="who-we-are__image reveal">
         <img src="../img/img_about.png" alt="Team using Creature-Gen AI holographic display" />
       </div>
     </div>
@@ -123,7 +123,7 @@
           <img src="../img/cta-banner-bg.png" alt="" />
         </div>
         <div class="our-vision__content">
-          <h2 class="our-vision__heading">Our Vision</h2>
+          <h2 class="our-vision__heading reveal">Our Vision</h2>
           <p class="our-vision__text">
             We believe creativity should be limitless and accessible to
             everyone. Our vision is to become the world's leading platform for
@@ -151,7 +151,7 @@
       </div>
       <div class="features__cards">
         <!-- Card 1: Lightbulb — Make AI creativity simple and fun -->
-        <div class="feature-card">
+        <div class="feature-card reveal">
           <div class="feature-card__inner">
             <div class="feature-card__icon">
               <img src="../img/icon-mission-creativity.svg" alt="AI creativity icon" />
@@ -163,7 +163,7 @@
         </div>
 
         <!-- Card 2: Crossed tools — Empower creators with innovative tools -->
-        <div class="feature-card">
+        <div class="feature-card reveal">
           <div class="feature-card__inner">
             <div class="feature-card__icon">
               <img src="../img/icon-mission-tools.svg" alt="Innovative tools icon" />
@@ -175,7 +175,7 @@
         </div>
 
         <!-- Card 3: Community — Build a community where imagination thrives -->
-        <div class="feature-card">
+        <div class="feature-card reveal">
           <div class="feature-card__inner">
             <div class="feature-card__icon">
               <img src="../img/icon-mission-community.svg" alt="Community icon" />
@@ -200,12 +200,12 @@
   <section class="what-makes-us-different">
     <div class="wmd__inner">
       <!-- Left: Creature illustration -->
-      <div class="wmd__image">
+      <div class="wmd__image reveal">
         <img src="../img/makes_us_different.png" alt="Crystal creature illustration" class="wmd__creature" />
       </div>
 
       <!-- Right: Content -->
-      <div class="wmd__content">
+      <div class="wmd__content reveal">
         <h2 class="wmd__heading">What Makes Us Different</h2>
 
         <ul class="wmd__list">
@@ -412,6 +412,25 @@
           }
         });
       }
+    });
+  </script>
+  <script>
+    // Intersection Observer for Scroll Reveal
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal').forEach(el => {
+      observer.observe(el);
     });
   </script>
 </body>
