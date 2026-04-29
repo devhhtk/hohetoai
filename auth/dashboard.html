@@ -125,9 +125,17 @@
             <section class="dashboard-section">
                 <div class="section-header">
                     <h3 class="section-title">My Trending Creatures Cards</h3>
+                    <div class="scroll-actions">
+                        <button class="btn-scroll" onclick="scrollGrid('trending-cards-grid', 'left')" title="Scroll Left">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <button class="btn-scroll" onclick="scrollGrid('trending-cards-grid', 'right')" title="Scroll Right">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                    </div>
                     <a href="#" class="btn-see-all">See all</a>
                 </div>
-                <div id="trending-cards-grid" class="creatures-grid">
+                <div id="trending-cards-grid" class="creatures-grid creatures-grid--horizontal">
                     <!-- Glimmerwisp -->
                     <div class="creature-card--tall">
                         <img src="../img/placeholder.png" alt="Glimmerwisp">
@@ -318,6 +326,18 @@
             loadPopularCreatures();
             loadTrendingCards();
         });
+
+        // --- Grid Scrolling Logic ---
+        function scrollGrid(gridId, direction) {
+            const grid = document.getElementById(gridId);
+            if (!grid) return;
+            const scrollAmount = 400; // Adjust as needed
+            if (direction === 'left') {
+                grid.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            } else {
+                grid.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
+        }
     </script>
 </body>
 
