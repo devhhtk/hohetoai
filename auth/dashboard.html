@@ -163,9 +163,17 @@
             <section class="dashboard-section">
                 <div class="section-header">
                     <h3 class="section-title">My Popular Characters</h3>
+                    <div class="scroll-actions">
+                        <button class="btn-scroll" onclick="scrollGrid('popular-grid', 'left')" title="Scroll Left">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <button class="btn-scroll" onclick="scrollGrid('popular-grid', 'right')" title="Scroll Right">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                    </div>
                     <a href="#" class="btn-see-all">See all</a>
                 </div>
-                <div id="popular-grid" class="creatures-grid">
+                <div id="popular-grid" class="creatures-grid creatures-grid--horizontal">
                     <!-- Jellyfish -->
                     <div class="creature-card--rounded">
                         <img src="../img/placeholder.png" alt="Jellyfish">
@@ -274,13 +282,13 @@
                 if (!popularGrid || !window.AumageDB) return;
 
                 // Fetch popular creatures from Supabase
-                const creatures = await window.AumageDB.getPopularCreatures(10); // Fetch more to filter
+                const creatures = await window.AumageDB.getPopularCreatures(20); // Increased fetch limit
 
                 if (creatures && creatures.length > 0) {
-                    // Filter for valid images and take top 5
+                    // Filter for valid images and take top 20
                     const validCreatures = creatures
                         .filter(c => c.image_url)
-                        .slice(0, 5);
+                        .slice(0, 20);
 
                     if (validCreatures.length > 0) {
                         popularGrid.innerHTML = validCreatures.map(c => `
@@ -301,7 +309,7 @@
                 const grid = document.getElementById('trending-cards-grid');
                 if (!grid || !window.AumageDB) return;
 
-                const creatures = await window.AumageDB.getTrendingCards(10);
+                const creatures = await window.AumageDB.getTrendingCards(20);
                 if (creatures && creatures.length > 0) {
                     grid.innerHTML = creatures.map(c => `
                         <a href="creature-details.html?${c.share_slug ? 's=' + c.share_slug : 'id=' + c.id}" class="creature-card--tall" title="${c.creature_name || 'Card'}">
