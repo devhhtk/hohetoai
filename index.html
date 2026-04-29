@@ -78,7 +78,7 @@
   <!-- ══ Why People Love Summoning Creatures ══ -->
   <section class="features">
     <div class="features__inner">
-      <div class="features__header">
+      <div class="features__header reveal">
         <h2 class="features__heading">Why People Love Summoning Creatures</h2>
         <p class="features__subtext">
           Your creativity becomes something collectible. Every sound, beat,
@@ -86,7 +86,7 @@
         </p>
       </div>
       <div class="features__cards">
-        <div class="feature-card">
+        <div class="feature-card reveal">
           <div class="feature-card__inner">
             <div class="feature-card__icon">
               <img src="img/Layer_2_1.svg" alt="Sound Powered Creation icon" />
@@ -98,7 +98,7 @@
             </p>
           </div>
         </div>
-        <div class="feature-card">
+        <div class="feature-card reveal">
           <div class="feature-card__inner">
             <div class="feature-card__icon">
               <img src="img/Layer_2_2.svg" alt="Image Fusion icon" />
@@ -110,7 +110,7 @@
             </p>
           </div>
         </div>
-        <div class="feature-card">
+        <div class="feature-card reveal">
           <div class="feature-card__inner">
             <div class="feature-card__icon">
               <img src="img/Layer_2_3.svg" alt="Build Your Creature Collection icon" />
@@ -130,7 +130,7 @@
   <!-- ══ How It Works ══ -->
   <section class="how-it-works">
     <div class="how-it-works__inner">
-      <div class="how-it-works__header">
+      <div class="how-it-works__header reveal">
         <h2 class="how-it-works__heading">Create Your Creature In Seconds</h2>
         <p class="how-it-works__subtext">
           No design skills needed. Just create noise, upload an image, or mix
@@ -138,7 +138,7 @@
         </p>
       </div>
       <div class="how-it-works__steps">
-        <div class="how-step">
+        <div class="how-step reveal">
           <div class="how-step__img-wrap">
             <img src="img/record-sound.png" alt="Person recording a sound" />
           </div>
@@ -151,7 +151,7 @@
         <div class="how-step__arrow">
           <img src="img/arrow-dashed.svg" alt="" aria-hidden="true" />
         </div>
-        <div class="how-step">
+        <div class="how-step reveal">
           <div class="how-step__img-wrap">
             <img src="img/creature-generated.png" alt="AI generating a creature" />
           </div>
@@ -164,7 +164,7 @@
         <div class="how-step__arrow">
           <img src="img/arrow-dashed-2.svg" alt="" aria-hidden="true" />
         </div>
-        <div class="how-step">
+        <div class="how-step reveal">
           <div class="how-step__img-wrap how-step__img-wrap--card">
             <img src="img/creature-card.png" alt="Collectible digital creature card" />
           </div>
@@ -184,7 +184,7 @@
       <img src="img/carousel-bg.png" alt="" />
     </div>
     <div class="creatures-carousel__inner">
-      <h2 class="creatures-carousel__heading">Creatures Born From Sound</h2>
+      <h2 class="creatures-carousel__heading reveal">Meet Your Next Companion</h2>
       <p class="creatures-carousel__subtext">
         Every summon produces something different. No two creatures are
         exactly the same.
@@ -231,29 +231,29 @@
       </p>
       <div class="collection-hub__grid">
         <!-- Row 1 -->
-        <div class="trope-item">
+        <div class="trope-item reveal">
           <img src="img/tropes-icons/Terratrope.png" alt="Terratrope" class="trope-item__img" />
         </div>
-        <div class="trope-item">
+        <div class="trope-item reveal">
           <img src="img/tropes-icons/Aquatrope.png" alt="Aquatrope" class="trope-item__img" />
         </div>
-        <div class="trope-item">
+        <div class="trope-item reveal">
           <img src="img/tropes-icons/Aerotrope.png" alt="Aerotrope" class="trope-item__img" />
         </div>
-        <div class="trope-item">
+        <div class="trope-item reveal">
           <img src="img/tropes-icons/Pyrotrope.png" alt="Pyrotrope" class="trope-item__img" />
         </div>
         <!-- Row 2 -->
-        <div class="trope-item">
+        <div class="trope-item reveal">
           <img src="img/tropes-icons/Sonatrope.png" alt="Sonatrope" class="trope-item__img" />
         </div>
-        <div class="trope-item">
+        <div class="trope-item reveal">
           <img src="img/tropes-icons/Floratrope.png" alt="Floratrope" class="trope-item__img" />
         </div>
-        <div class="trope-item">
+        <div class="trope-item reveal">
           <img src="img/tropes-icons/Prismatrope.png" alt="Prismatrope" class="trope-item__img" />
         </div>
-        <div class="trope-item">
+        <div class="trope-item reveal">
           <img src="img/tropes-icons/Megatrope.png" alt="Megatrope" class="trope-item__img" />
         </div>
       </div>
@@ -553,6 +553,27 @@
         }, 2000);
       });
     }
+  </script>
+  <script>
+    // Intersection Observer for Scroll Reveal
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          // Optional: stop observing after reveal
+          // observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal').forEach(el => {
+      observer.observe(el);
+    });
   </script>
 </body>
 

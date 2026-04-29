@@ -1464,3 +1464,71 @@ a {
 .dot.active {
   background: #08d2c1;
 }
+
+/* ══════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════ */
+
+/* Scroll Reveal Base */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Float Animation */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Subtle Pulse */
+@keyframes subtlePulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.animate-pulse {
+  animation: subtlePulse 3s ease-in-out infinite;
+}
+
+/* Text Entry Animation */
+@keyframes textReveal {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero__content > * {
+  animation: textReveal 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.hero__badge { animation-delay: 0.1s; }
+.hero__heading { animation-delay: 0.3s; }
+.hero__cta { animation-delay: 0.5s; }
+
+/* Scale on Hover for cards */
+.feature-card__inner, .how-step, .trope-item {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease !important;
+}
+
+.trope-item:hover {
+  transform: scale(1.08) rotate(2deg);
+  z-index: 5;
+}
+
+.how-step:hover .how-step__img-wrap {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
