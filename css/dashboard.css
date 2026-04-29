@@ -1084,7 +1084,7 @@ body.dashboard-body {
 
 .creature-card--tall:hover .card-inner,
 .creature-card--rounded:hover .card-inner {
-  transform: rotateY(180deg);
+  transform: rotateY(360deg);
 }
 
 .card-front,
