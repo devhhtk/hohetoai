@@ -52,7 +52,8 @@
         <div class="page-hero__content">
             <h1 class="page-hero__title">Support The Future Of Creatures</h1>
             <p class="page-hero__subtitle">
-                Help us build, improve, and expand a new creative world where sound, visuals, and imagination come to life.
+                Help us build, improve, and expand a new creative world where sound, visuals, and imagination come to
+                life.
             </p>
         </div>
     </section>
@@ -75,7 +76,7 @@
     <section class="contact-section">
         <div class="contact-section__inner">
             <!-- Left: Contact Details -->
-            <div class="contact-info reveal">
+            <div class="contact-info">
                 <h2 class="contact-info__heading">Contact Details</h2>
                 <p class="contact-info__text">
                     Lorem ipsum dolor sit amet consectetur. Ut egestas quis urna lobortis.
@@ -130,7 +131,7 @@
             </div>
 
             <!-- Right: Contact Form -->
-            <div class="contact-form-container reveal">
+            <div class="contact-form-container">
                 <h2 class="contact-form-container__heading">Contact Form</h2>
                 <form action="#" class="contact-form" id="contactForm">
                     <div class="contact-form__group">
@@ -286,25 +287,6 @@
                     }
                 });
             }
-        });
-    </script>
-    <script>
-        // Intersection Observer for Scroll Reveal
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.reveal').forEach(el => {
-            observer.observe(el);
         });
     </script>
 </body>

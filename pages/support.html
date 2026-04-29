@@ -52,7 +52,8 @@
         <div class="page-hero__content">
             <h1 class="page-hero__title">Support The Future Of Creatures</h1>
             <p class="page-hero__subtitle">
-                Help us build, improve, and expand a new creative world where sound, visuals, and imagination come to life.
+                Help us build, improve, and expand a new creative world where sound, visuals, and imagination come to
+                life.
             </p>
         </div>
     </section>
@@ -72,14 +73,17 @@
     </nav>
 
     <!-- ══ Section 1: Why Your Support Matters ══ -->
-    <section class="why-support reveal">
+    <section class="why-support">
         <div class="why-support__inner">
             <h2 class="why-support__heading">Why Your Support Matters</h2>
             <p class="why-support__text">
-                We're creating a platform where creativity has no limits — where a simple sound, image, or video can transform into something alive and unique.
+                We're creating a platform where creativity has no limits — where a simple sound, image, or video can
+                transform into something alive and unique.
             </p>
             <p class="why-support__text">
-                Building this experience requires continuous innovation, powerful AI systems, and a deep focus on design and user experience. Your support helps us move faster, build better features, and bring new ideas to life for creators everywhere.
+                Building this experience requires continuous innovation, powerful AI systems, and a deep focus on design
+                and user experience. Your support helps us move faster, build better features, and bring new ideas to
+                life for creators everywhere.
             </p>
         </div>
     </section>
@@ -89,53 +93,57 @@
         <div class="ways-support__bg">
             <img src="../img/image_27.png" alt="" />
         </div>
-        <div class="ways-support__inner reveal">
+        <div class="ways-support__inner">
             <h2 class="ways-support__heading">Ways You Can Support</h2>
             <div class="ways-support__grid">
                 <!-- Card 1: Share -->
-                <div class="support-card reveal">
+                <div class="support-card">
                     <div class="support-card__icon">
                         <img src="../img/image_28.svg" alt="Share" />
                     </div>
                     <h3 class="support-card__title">Share The Platform</h3>
                     <p class="support-card__text">
-                        If you enjoy using the platform, one of the most powerful ways to support us is by sharing it with others. Every share helps us reach more creators.
+                        If you enjoy using the platform, one of the most powerful ways to support us is by sharing it
+                        with others. Every share helps us reach more creators.
                     </p>
                     <a href="#" class="support-card__btn">Share With Friends</a>
                 </div>
 
                 <!-- Card 2: Supporter -->
-                <div class="support-card reveal">
+                <div class="support-card">
                     <div class="support-card__icon">
                         <img src="../img/image_29.svg" alt="Become Supporter" />
                     </div>
                     <h3 class="support-card__title">Become Supporter</h3>
                     <p class="support-card__text">
-                        Join us as an early supporter and be part of the journey from the beginning. You'll get early access to upcoming features.
+                        Join us as an early supporter and be part of the journey from the beginning. You'll get early
+                        access to upcoming features.
                     </p>
                     <a href="#" class="support-card__btn">Become A Supporter</a>
                 </div>
 
                 <!-- Card 3: Create -->
-                <div class="support-card reveal">
+                <div class="support-card">
                     <div class="support-card__icon">
                         <img src="../img/image_30.svg" alt="Create" />
                     </div>
                     <h3 class="support-card__title">Create And Inspire</h3>
                     <p class="support-card__text">
-                        Every creature you create adds to a growing world of imagination. By creating and sharing your work, you inspire others.
+                        Every creature you create adds to a growing world of imagination. By creating and sharing your
+                        work, you inspire others.
                     </p>
                     <a href="explore.html" class="support-card__btn">Start Creating</a>
                 </div>
 
                 <!-- Card 4: Development -->
-                <div class="support-card reveal">
+                <div class="support-card">
                     <div class="support-card__icon">
                         <img src="../img/image_31.svg" alt="Development" />
                     </div>
                     <h3 class="support-card__title">Support Development</h3>
                     <p class="support-card__text">
-                        If you'd like to support us directly, you can contribute to help us maintain and improve the platform. Your support helps us invest in technology.
+                        If you'd like to support us directly, you can contribute to help us maintain and improve the
+                        platform. Your support helps us invest in technology.
                     </p>
                     <a href="#" class="support-card__btn">Start Creating</a>
                 </div>
@@ -145,13 +153,14 @@
 
     <!-- ══ Section 3: Built With Creators ══ -->
     <section class="creators-banner">
-        <div class="creators-banner__inner reveal">
+        <div class="creators-banner__inner">
             <h2 class="creators-banner__heading">Built With Creators, For Creators</h2>
             <p class="creators-banner__text">
                 This platform is more than just a tool — it's a space for creativity, experimentation, and expression.
             </p>
             <p class="creators-banner__text">
-                Everything we build is shaped by the people who use it. Together, we are creating something new, where technology and imagination meet.
+                Everything we build is shaped by the people who use it. Together, we are creating something new, where
+                technology and imagination meet.
             </p>
             <a href="explore.html" class="creators-banner__link">Start Creating Now</a>
         </div>
@@ -289,25 +298,6 @@
                     }
                 });
             }
-        });
-    </script>
-    <script>
-        // Intersection Observer for Scroll Reveal
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.reveal').forEach(el => {
-            observer.observe(el);
         });
     </script>
 </body>
