@@ -951,3 +951,64 @@ a {
         border-radius: 14px;
     }
 }
+
+/* ══════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════ */
+
+/* Scroll Reveal Base */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Page Entry */
+@keyframes pageEntry {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.page-hero__content>* {
+    animation: pageEntry 0.8s ease-out forwards;
+    opacity: 0;
+}
+
+.page-hero__title {
+    animation-delay: 0.1s;
+}
+
+.page-hero__subtitle {
+    animation-delay: 0.3s;
+}
+
+/* Scale on Hover for steps and items */
+.comons_cards01,
+.how-step {
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease !important;
+}
+
+.comons_cards01:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+.comons_cards01__icon img {
+    transition: transform 0.4s ease;
+}
+
+.comons_cards01:hover .comons_cards01__icon img {
+    transform: rotate(5deg) scale(1.1);
+}

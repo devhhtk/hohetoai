@@ -81,8 +81,8 @@
          Body: Instrument Sans Medium 16px, line-height 26px
     ══ -->
     <section class="how-it-work">
-        <h2 class="how-it-work__heading text-center">Create Your Creature in Seconds</h2>
-        <div class="how-it-work__text text-center sub-para">
+        <h2 class="how-it-work__heading text-center reveal">Create Your Creature in Seconds</h2>
+        <div class="how-it-work__text text-center sub-para reveal">
             <p> No design skills needed. Just create noise, upload an image, or mix both —
                 and
                 the
@@ -91,7 +91,7 @@
         </div>
         <div class="how-it-work__inner">
             <!-- Left: Text -->
-            <div class="comons_cards01 left-box">
+            <div class="comons_cards01 left-box reveal">
                 <div class="comons_cards01__inner">
                     <h3 class="comons_cards01__number">1</h3>
                     <div class="comons_cards01__icon">
@@ -113,7 +113,7 @@
 
 
 
-            <div class="comons_cards01 left-box middle_box015">
+            <div class="comons_cards01 left-box middle_box015 reveal">
                 <div class="comons_cards01__inner">
                     <h3 class="comons_cards01__number">2</h3>
                     <div class="comons_cards01__icon">
@@ -133,7 +133,7 @@
             </div>
 
 
-            <div class="comons_cards01 left-box right-box-icons">
+            <div class="comons_cards01 left-box right-box-icons reveal">
                 <div class="comons_cards01__inner">
                     <h3 class="comons_cards01__number">3</h3>
                     <div class="comons_cards01__icon">
@@ -333,6 +333,25 @@
                     }
                 });
             }
+        });
+    </script>
+    <script>
+        // Intersection Observer for Scroll Reveal
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
         });
     </script>
 </body>
