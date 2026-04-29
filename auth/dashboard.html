@@ -383,6 +383,7 @@
                                 </div>
                             </a>
                         `).join('');
+                        revealCards('popular-grid');
                     } else {
                         popularGrid.innerHTML = '<div class="no-data-msg">No creatures yet. <a href="generate.html" style="color:var(--color-primary);">Create one!</a></div>';
                     }
@@ -416,6 +417,7 @@
                             </div>
                         </a>
                     `).join('');
+                    revealCards('trending-cards-grid');
                 } else {
                     grid.innerHTML = '<div class="no-data-msg">No trending cards found for your collection.</div>';
                 }
@@ -424,10 +426,26 @@
 
 
             // Run initial load
-            loadAchievements();
-            loadPopularCreatures();
-            loadTrendingCards();
+            await Promise.all([
+                loadAchievements(),
+                loadPopularCreatures(),
+                loadTrendingCards()
+            ]);
+
+            // Initial reveal for static or already present cards
+            revealCards();
         });
+
+        // --- Card Reveal Animation ---
+        function revealCards(containerId = null) {
+            const selector = containerId ? `#${containerId} .card-inner` : '.card-inner:not(.is-revealed)';
+            const cards = document.querySelectorAll(selector);
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('is-revealed');
+                }, index * 100); // Staggered reveal
+            });
+        }
 
         // --- Grid Scrolling Logic ---
         function scrollGrid(gridId, direction) {

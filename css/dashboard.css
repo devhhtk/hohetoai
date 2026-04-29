@@ -1078,12 +1078,17 @@ body.dashboard-body {
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   transform-style: preserve-3d;
+  transform: rotateY(180deg); /* Initial state: Back showing */
 }
 
-.creature-card--tall:hover .card-inner,
-.creature-card--rounded:hover .card-inner {
+.card-inner.is-revealed {
+  transform: rotateY(0deg); /* Reveal front */
+}
+
+.creature-card--tall:hover .card-inner.is-revealed,
+.creature-card--rounded:hover .card-inner.is-revealed {
   transform: rotateY(360deg);
 }
 
