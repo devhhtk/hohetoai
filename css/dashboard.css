@@ -1107,7 +1107,7 @@ body.dashboard-body {
 }
 
 .card-back {
-  transform: rotateY(360deg);
+  transform: rotateY(180deg);
   display: flex;
   align-items: center;
   justify-content: center;
