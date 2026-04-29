@@ -100,7 +100,7 @@
     <section class="trending-creatures">
       <div class="trending-creatures__inner">
         <!-- Section header row -->
-        <div class="trending-creatures__header">
+        <div class="trending-creatures__header reveal">
           <h2 class="trending-creatures__heading">Trending Creatures</h2>
           <a href="#" class="trending-creatures__see-more">See More</a>
         </div>
@@ -109,7 +109,7 @@
         <div class="trending-creatures__grid">
           <!-- Row 1 -->
           <!-- Card 1: Pyre-Spec Delta -->
-          <div class="creature-card">
+          <div class="creature-card reveal">
             <img
               src="../img/carousel-card-pyre-spec-delta.png"
               alt="Pyre-Spec Delta creature card"
@@ -117,7 +117,7 @@
           </div>
 
           <!-- Card 2: Aether-Sculptor Jade -->
-          <div class="creature-card">
+          <div class="creature-card reveal">
             <img
               src="../img/carousel-card-aether-sculptor-jade.png"
               alt="Aether-Sculptor Jade creature card"
@@ -125,7 +125,7 @@
           </div>
 
           <!-- Card 3: Aether-Spec Delta (Celestial Mason) -->
-          <div class="creature-card">
+          <div class="creature-card reveal">
             <img
               src="../img/carousel-card-aether-spec-delta-mason.png"
               alt="Aether-Spec Delta creature card"
@@ -133,7 +133,7 @@
           </div>
 
           <!-- Card 4: Rime-Spec Omega -->
-          <div class="creature-card">
+          <div class="creature-card reveal">
             <img
               src="../img/carousel-card-rime-spec-omega.png"
               alt="Rime-Spec Omega creature card"
@@ -142,7 +142,7 @@
 
           <!-- Row 2 -->
           <!-- Card 5: Aero-Seraph Vortex -->
-          <div class="creature-card">
+          <div class="creature-card reveal">
             <img
               src="../img/carousel-card-aero-seraph.png"
               alt="Aero-Seraph Vortex creature card"
@@ -150,7 +150,7 @@
           </div>
 
           <!-- Card 6: Aether-Spec Delta (Gravitational Anchor) -->
-          <div class="creature-card">
+          <div class="creature-card reveal">
             <img
               src="../img/carousel-card-aether-spec-delta-anchor.png"
               alt="Aether-Spec Delta creature card"
@@ -158,7 +158,7 @@
           </div>
 
           <!-- Card 7: Aether-Spec Epsilon -->
-          <div class="creature-card">
+          <div class="creature-card reveal">
             <img
               src="../img/carousel-card-aether-spec-epsilon.png"
               alt="Aether-Spec Epsilon creature card"
@@ -166,7 +166,7 @@
           </div>
 
           <!-- Card 8: Aether-Spec Delta (Crystal) -->
-          <div class="creature-card">
+          <div class="creature-card reveal">
             <img
               src="../img/carousel-card-aether-spec-delta-crystal.png"
               alt="Aether-Spec Delta creature card"
@@ -186,7 +186,7 @@
     <section class="popular-characters">
       <div class="popular-characters__inner">
         <!-- Section header row -->
-        <div class="popular-characters__header">
+        <div class="popular-characters__header reveal">
           <h2 class="popular-characters__heading">
             Our Most Popular Characters
           </h2>
@@ -195,28 +195,28 @@
 
         <!-- Row 1: 4 cards -->
         <div class="popular-characters__row popular-characters__row--4">
-          <div class="popular-card">
+          <div class="popular-card reveal">
             <img
               src="../img/popular-creature-storm-dragon.png"
               alt="Storm Dragon creature"
             />
           </div>
 
-          <div class="popular-card">
+          <div class="popular-card reveal">
             <img
               src="../img/popular-creature-leviathan-whale.png"
               alt="Leviathan Whale creature"
             />
           </div>
 
-          <div class="popular-card">
+          <div class="popular-card reveal">
             <img
               src="../img/popular-creature-mycelium-shroomling.png"
               alt="Mycelium Shroomling creature"
             />
           </div>
 
-          <div class="popular-card">
+          <div class="popular-card reveal">
             <img
               src="../img/popular-creature-ironshell-tortoise.png"
               alt="Ironshell Tortoise creature"
@@ -226,21 +226,21 @@
 
         <!-- Row 2: 3 cards -->
         <div class="popular-characters__row popular-characters__row--3">
-          <div class="popular-card">
+          <div class="popular-card reveal">
             <img
               src="../img/popular-creature-verdant-ursine.png"
               alt="Verdant Ursine creature"
             />
           </div>
 
-          <div class="popular-card">
+          <div class="popular-card reveal">
             <img
               src="../img/popular-creature-spinefish-puffer.png"
               alt="Spinefish Puffer creature"
             />
           </div>
 
-          <div class="popular-card">
+          <div class="popular-card reveal">
             <img
               src="../img/popular-creature-dustfur-fox.png"
               alt="Dustfur Fox creature"
@@ -468,6 +468,25 @@
             }
           });
         }
+      });
+    </script>
+    <script>
+      // Intersection Observer for Scroll Reveal
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('.reveal').forEach(el => {
+        observer.observe(el);
       });
     </script>
   </body>
