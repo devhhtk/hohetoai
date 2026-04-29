@@ -72,7 +72,7 @@
     </nav>
 
     <!-- ══ Section 1: Why Your Support Matters ══ -->
-    <section class="why-support">
+    <section class="why-support reveal">
         <div class="why-support__inner">
             <h2 class="why-support__heading">Why Your Support Matters</h2>
             <p class="why-support__text">
@@ -89,11 +89,11 @@
         <div class="ways-support__bg">
             <img src="../img/image_27.png" alt="" />
         </div>
-        <div class="ways-support__inner">
+        <div class="ways-support__inner reveal">
             <h2 class="ways-support__heading">Ways You Can Support</h2>
             <div class="ways-support__grid">
                 <!-- Card 1: Share -->
-                <div class="support-card">
+                <div class="support-card reveal">
                     <div class="support-card__icon">
                         <img src="../img/image_28.svg" alt="Share" />
                     </div>
@@ -105,7 +105,7 @@
                 </div>
 
                 <!-- Card 2: Supporter -->
-                <div class="support-card">
+                <div class="support-card reveal">
                     <div class="support-card__icon">
                         <img src="../img/image_29.svg" alt="Become Supporter" />
                     </div>
@@ -117,7 +117,7 @@
                 </div>
 
                 <!-- Card 3: Create -->
-                <div class="support-card">
+                <div class="support-card reveal">
                     <div class="support-card__icon">
                         <img src="../img/image_30.svg" alt="Create" />
                     </div>
@@ -129,7 +129,7 @@
                 </div>
 
                 <!-- Card 4: Development -->
-                <div class="support-card">
+                <div class="support-card reveal">
                     <div class="support-card__icon">
                         <img src="../img/image_31.svg" alt="Development" />
                     </div>
@@ -145,7 +145,7 @@
 
     <!-- ══ Section 3: Built With Creators ══ -->
     <section class="creators-banner">
-        <div class="creators-banner__inner">
+        <div class="creators-banner__inner reveal">
             <h2 class="creators-banner__heading">Built With Creators, For Creators</h2>
             <p class="creators-banner__text">
                 This platform is more than just a tool — it's a space for creativity, experimentation, and expression.
@@ -289,6 +289,25 @@
                     }
                 });
             }
+        });
+    </script>
+    <script>
+        // Intersection Observer for Scroll Reveal
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
         });
     </script>
 </body>

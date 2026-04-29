@@ -75,7 +75,7 @@
     <section class="contact-section">
         <div class="contact-section__inner">
             <!-- Left: Contact Details -->
-            <div class="contact-info">
+            <div class="contact-info reveal">
                 <h2 class="contact-info__heading">Contact Details</h2>
                 <p class="contact-info__text">
                     Lorem ipsum dolor sit amet consectetur. Ut egestas quis urna lobortis.
@@ -130,7 +130,7 @@
             </div>
 
             <!-- Right: Contact Form -->
-            <div class="contact-form-container">
+            <div class="contact-form-container reveal">
                 <h2 class="contact-form-container__heading">Contact Form</h2>
                 <form action="#" class="contact-form" id="contactForm">
                     <div class="contact-form__group">
@@ -286,6 +286,25 @@
                     }
                 });
             }
+        });
+    </script>
+    <script>
+        // Intersection Observer for Scroll Reveal
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
         });
     </script>
 </body>

@@ -340,3 +340,55 @@ a {
         padding: 32px 24px;
     }
 }
+
+/* ══════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════ */
+
+/* Scroll Reveal Base */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Page Entry */
+@keyframes pageEntry {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-hero__content > * {
+  animation: pageEntry 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.page-hero__title { animation-delay: 0.1s; }
+.page-hero__subtitle { animation-delay: 0.3s; }
+
+/* Contact Specific Animations */
+.contact-info, .contact-form-container {
+  transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.6s ease;
+}
+
+.contact-detail-item {
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.contact-detail-item:hover {
+  transform: translateX(10px);
+}
+
+.contact-form__input, .contact-form__textarea {
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.contact-form__input:focus, .contact-form__textarea:focus {
+  transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(8, 210, 193, 0.1);
+}
