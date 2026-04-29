@@ -126,11 +126,17 @@
                 <div class="section-header">
                     <h3 class="section-title">My Trending Creatures Cards</h3>
                     <div class="scroll-actions">
-                        <button class="btn-scroll" onclick="scrollGrid('trending-cards-grid', 'left')" title="Scroll Left">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <button class="btn-scroll" onclick="scrollGrid('trending-cards-grid', 'left')"
+                            title="Scroll Left">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
                         </button>
-                        <button class="btn-scroll" onclick="scrollGrid('trending-cards-grid', 'right')" title="Scroll Right">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <button class="btn-scroll" onclick="scrollGrid('trending-cards-grid', 'right')"
+                            title="Scroll Right">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
                         </button>
                     </div>
                     <a href="#" class="btn-see-all">See all</a>
@@ -165,10 +171,14 @@
                     <h3 class="section-title">My Popular Characters</h3>
                     <div class="scroll-actions">
                         <button class="btn-scroll" onclick="scrollGrid('popular-grid', 'left')" title="Scroll Left">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
                         </button>
                         <button class="btn-scroll" onclick="scrollGrid('popular-grid', 'right')" title="Scroll Right">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
                         </button>
                     </div>
                     <a href="#" class="btn-see-all">See all</a>
@@ -282,7 +292,7 @@
                 if (!popularGrid || !window.AumageDB) return;
 
                 // Fetch popular creatures from Supabase
-                const creatures = await window.AumageDB.getPopularCreatures(20); // Increased fetch limit
+                const creatures = await window.AumageDB.getPopularCreatures(10); // Increased fetch limit
 
                 if (creatures && creatures.length > 0) {
                     // Filter for valid images and take top 20
