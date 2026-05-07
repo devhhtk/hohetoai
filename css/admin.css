@@ -259,9 +259,9 @@ body.admin-body::after {
   bottom: -15px;
   width: 130px;
   height: auto;
-  opacity: 0.15;
+  opacity: 0.05; /* Base opacity remains low for watermark feel */
   pointer-events: none;
-  filter: brightness(2) contrast(1.1) drop-shadow(0 0 15px var(--color-primary-glow));
+  filter: brightness(0) invert(1); /* Makes it white */
   transform: rotate(-15deg);
   z-index: 1;
   transition: all 0.5s ease;
@@ -269,7 +269,7 @@ body.admin-body::after {
 
 .stat-card:hover .stat-card__icon {
   transform: rotate(-5deg) scale(1.15);
-  opacity: 0.25;
+  opacity: 0.1;
 }
 
 /* ── Cyber Table ── */
