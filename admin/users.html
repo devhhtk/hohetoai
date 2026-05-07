@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management — HoHeTo Kai</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    <style>
+        /* Custom DataTables Styling to match Cyber Blue theme */
+        .dataTables_wrapper {
+            padding: 20px;
+            color: var(--color-text-body);
+        }
+
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            border-radius: 8px;
+            padding: 4px 8px;
+        }
+
+        table.dataTable {
+            border-collapse: collapse !important;
+            border-bottom: none !important;
+        }
+
+        table.dataTable thead th {
+            background: rgba(0, 212, 255, 0.05) !important;
+            color: var(--color-primary) !important;
+            border-bottom: 1px solid var(--glass-border) !important;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        table.dataTable tbody tr {
+            background-color: transparent !important;
+            color: #fff !important;
+        }
+
+        table.dataTable tbody td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+            padding: 12px 20px !important;
+        }
+
+        table.dataTable.no-footer {
+            border-bottom: none !important;
+        }
+
+        .dataTables_wrapper .dataTables_info {
+            color: var(--color-text-muted) !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: var(--color-text-muted) !important;
+            border-radius: 8px !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: var(--color-primary) !important;
+            color: #010a16 !important;
+            border: none !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: rgba(0, 212, 255, 0.2) !important;
+            border: none !important;
+            color: #fff !important;
+        }
+    </style>
+</head>
+
+<body class="admin-body">
+
+    <!-- Sidebar Placeholder -->
+    <div id="comp-admin-sidebar"></div>
+
+    <main class="main-area">
+        <!-- Top Bar Placeholder -->
+        <div id="comp-admin-header"></div>
+
+        <div class="content-view">
+            <div class="admin-welcome">
+                <h1>User Management</h1>
+                <p>Manage and monitor all registered users in the ecosystem.</p>
+            </div>
+
+            <section class="admin-section">
+                <div class="table-container">
+                    <table id="usersTable" class="display responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th>Level</th>
+                                <th>XP</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data populated by DataTables -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer Placeholder -->
+        <div id="comp-admin-footer"></div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/db.js"></script>
+    <script src="../js/admin-components.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load Admin Components
+            await AdminComponentLoader.loadAll([
+                { id: 'comp-admin-sidebar', path: '../components/admin-sidebar.html' },
+                { id: 'comp-admin-header', path: '../components/admin-header.html' },
+                { id: 'comp-admin-footer', path: '../components/admin-footer.html' }
+            ]);
+
+            // Set active nav
+            const navDashboard = document.getElementById('nav-admin-dashboard');
+            const navUsers = document.getElementById('nav-admin-users');
+            if (navDashboard) navDashboard.classList.remove('nav-item--active');
+            if (navUsers) navUsers.classList.add('nav-item--active');
+
+            // Database Initialization
+            if (window.AumageDB) {
+                window.AumageDB.init();
+                initializeUsersTable();
+            }
+        });
+
+        async function initializeUsersTable() {
+            try {
+                const { data: users, error } = await AumageDB.supabase
+                    .from('profiles')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                $('#usersTable').DataTable({
+                    data: users,
+                    columns: [
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                const avatar = row.avatar_url || `https://ui-avatars.com/api/?name=${row.display_name || 'User'}&background=00d4ff&color=fff`;
+                                return `
+                                    <div class="user-info">
+                                        <img src="${avatar}" class="user-avatar">
+                                        <div>
+                                            <span class="user-name">${row.display_name || 'Anonymous'}</span>
+                                            <span class="user-email">UID: ${row.id.slice(0, 8)}...</span>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        },
+                        {
+                            data: 'role',
+                            render: function (data) {
+                                return `<span class="badge badge--${data}">${data}</span>`;
+                            }
+                        },
+                        { data: 'level' },
+                        { data: 'total_xp' },
+                        {
+                            data: 'created_at',
+                            render: function (data) {
+                                return new Date(data).toLocaleDateString();
+                            }
+                        },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                return `<button class="btn-action" onclick="editUser('${row.id}')">Edit</button>`;
+                            }
+                        }
+                    ],
+                    responsive: true,
+                    pageLength: 10,
+                    language: {
+                        searchPlaceholder: "Search users...",
+                        search: ""
+                    }
+                });
+            } catch (e) {
+                console.error('Error fetching users:', e);
+            }
+        }
+
+        function editUser(userId) {
+            console.log('Editing user:', userId);
+            // Implement edit logic or modal
+        }
+    </script>
+</body>
+
+</html>

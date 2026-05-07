@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creature Management — HoHeTo Kai</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    <style>
+        /* Custom DataTables Styling to match Cyber Blue theme */
+        .dataTables_wrapper {
+            padding: 20px;
+            color: var(--color-text-body);
+        }
+
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            border-radius: 8px;
+            padding: 4px 8px;
+        }
+
+        table.dataTable {
+            border-collapse: collapse !important;
+            border-bottom: none !important;
+        }
+
+        table.dataTable thead th {
+            background: rgba(0, 212, 255, 0.05) !important;
+            color: var(--color-primary) !important;
+            border-bottom: 1px solid var(--glass-border) !important;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        table.dataTable tbody tr {
+            background-color: transparent !important;
+            color: #fff !important;
+        }
+
+        table.dataTable tbody td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+            padding: 12px 20px !important;
+        }
+
+        table.dataTable.no-footer {
+            border-bottom: none !important;
+        }
+
+        .dataTables_wrapper .dataTables_info {
+            color: var(--color-text-muted) !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: var(--color-text-muted) !important;
+            border-radius: 8px !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: var(--color-primary) !important;
+            color: #010a16 !important;
+            border: none !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: rgba(0, 212, 255, 0.2) !important;
+            border: none !important;
+            color: #fff !important;
+        }
+
+        .creature-preview {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .creature-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--glass-border);
+        }
+
+        .rarity-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .rarity--common { background: rgba(255, 255, 255, 0.1); color: #fff; }
+        .rarity--rare { background: rgba(0, 212, 255, 0.2); color: #00d4ff; }
+        .rarity--epic { background: rgba(163, 53, 238, 0.2); color: #a335ee; }
+        .rarity--legendary { background: rgba(255, 128, 0, 0.2); color: #ff8000; }
+    </style>
+</head>
+
+<body class="admin-body">
+
+    <!-- Sidebar Placeholder -->
+    <div id="comp-admin-sidebar"></div>
+
+    <main class="main-area">
+        <!-- Top Bar Placeholder -->
+        <div id="comp-admin-header"></div>
+
+        <div class="content-view">
+            <div class="admin-welcome">
+                <h1>Creature Management</h1>
+                <p>Monitor and moderate the creatures minted in the HoHeTo Kai world.</p>
+            </div>
+
+            <section class="admin-section">
+                <div class="table-container">
+                    <table id="creaturesTable" class="display responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Creature</th>
+                                <th>Owner</th>
+                                <th>Rarity</th>
+                                <th>Element</th>
+                                <th>Tier</th>
+                                <th>Minted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data populated by DataTables -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer Placeholder -->
+        <div id="comp-admin-footer"></div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/db.js"></script>
+    <script src="../js/admin-components.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load Admin Components
+            await AdminComponentLoader.loadAll([
+                { id: 'comp-admin-sidebar', path: '../components/admin-sidebar.html' },
+                { id: 'comp-admin-header', path: '../components/admin-header.html' },
+                { id: 'comp-admin-footer', path: '../components/admin-footer.html' }
+            ]);
+
+            // Set active nav
+            const navDashboard = document.getElementById('nav-admin-dashboard');
+            const navCreatures = document.getElementById('nav-admin-creatures');
+            if (navDashboard) navDashboard.classList.remove('nav-item--active');
+            if (navCreatures) navCreatures.classList.add('nav-item--active');
+
+            // Database Initialization
+            if (window.AumageDB) {
+                window.AumageDB.init();
+                initializeCreaturesTable();
+            }
+        });
+
+        async function initializeCreaturesTable() {
+            try {
+                const { data: creatures, error } = await AumageDB.supabase
+                    .from('creatures')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                $('#creaturesTable').DataTable({
+                    data: creatures,
+                    columns: [
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                return `
+                                    <div class="creature-preview">
+                                        <img src="${row.image_url || '../img/creature-card.png'}" class="creature-thumb">
+                                        <div>
+                                            <span style="display:block; font-weight:600; color:#fff;">${row.creature_name || 'Unnamed'}</span>
+                                            <span style="font-size:11px; color:var(--color-text-muted);">#${row.serial_number || '0000'}</span>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        },
+                        {
+                            data: 'user_id',
+                            render: function (data) {
+                                return `<span style="font-size:11px; color:var(--color-text-muted);">ID: ${data ? data.slice(0, 8) : 'System'}...</span>`;
+                            }
+                        },
+                        {
+                            data: 'base_rarity',
+                            render: function (data) {
+                                const rarity = (data || 'common').toLowerCase();
+                                return `<span class="rarity-badge rarity--${rarity}">${rarity}</span>`;
+                            }
+                        },
+                        {
+                            data: 'element',
+                            render: function (data) {
+                                return `<span style="text-transform: capitalize;">${data || 'N/A'}</span>`;
+                            }
+                        },
+                        { data: 'tier' },
+                        {
+                            data: 'created_at',
+                            render: function (data) {
+                                return new Date(data).toLocaleDateString();
+                            }
+                        },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                return `
+                                    <div style="display:flex; gap:8px;">
+                                        <button class="btn-action" onclick="viewCreature('${row.id}')">View</button>
+                                        <button class="btn-action" onclick="editCreature('${row.id}')" style="background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.1); color:#fff;">Edit</button>
+                                    </div>
+                                `;
+                            }
+                        }
+                    ],
+                    responsive: true,
+                    pageLength: 10,
+                    language: {
+                        searchPlaceholder: "Search creatures...",
+                        search: ""
+                    }
+                });
+            } catch (e) {
+                console.error('Error fetching creatures:', e);
+            }
+        }
+
+        function viewCreature(id) {
+            window.open(`../creature.html?id=${id}`, '_blank');
+        }
+
+        function editCreature(id) {
+            console.log('Editing creature:', id);
+        }
+    </script>
+</body>
+
+</html>
