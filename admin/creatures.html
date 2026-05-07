@@ -401,7 +401,7 @@
                                 return `
                                     <div style="display:flex; gap:8px;">
                                         <button class="btn-action" onclick="viewCreature('${row.id}')">View</button>
-                                        <button class="btn-action" onclick="editCreature('${row.id}')" style="background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.1); color:#fff;">Edit</button>
+                                        <button class="btn-action" onclick="deleteCreature('${row.id}')" style="background:rgba(255,71,87,0.1); border-color:rgba(255,71,87,0.2); color:#ff4757;">Delete</button>
                                     </div>
                                 `;
                             }
@@ -502,8 +502,28 @@
             }
         }
 
-        function editCreature(id) {
-            console.log('Editing creature:', id);
+        async function deleteCreature(id) {
+            const creature = allCreatures.find(c => c.id === id);
+            if (!creature) return;
+
+            if (!confirm(`Are you sure you want to delete ${creature.creature_name || 'this creature'}? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const { error } = await AumageDB.supabase
+                    .from('creatures')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                alert('Creature deleted successfully.');
+                location.reload(); // Refresh the list
+            } catch (e) {
+                console.error('Error deleting creature:', e);
+                alert('Failed to delete creature: ' + e.message);
+            }
         }
     </script>
 </body>
