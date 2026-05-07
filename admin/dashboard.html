@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard — HoHeTo Kai</title>
     <link rel="stylesheet" href="../css/admin.css">
 </head>
+
 <body class="admin-body">
 
     <!-- Sidebar Placeholder -->
@@ -62,7 +64,7 @@
                         </thead>
                         <tbody id="recent-users-table">
                             <tr>
-                                <td colspan="6" style="text-align: center; padding: 40px; color: var(--color-primary);">
+                                <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
                                     Loading user data...
                                 </td>
                             </tr>
@@ -87,7 +89,7 @@
                             </tr>
                         </thead>
                         <tbody id="recent-activity-table">
-                             <tr>
+                            <tr>
                                 <td colspan="4" style="text-align: center; padding: 40px; color: var(--text-muted);">
                                     Loading activity...
                                 </td>
@@ -118,19 +120,19 @@
             // Database & Auth Initialization
             if (window.AumageDB) {
                 window.AumageDB.init();
-                
+
                 const { data: { user }, error: userError } = await window.AumageDB.supabase.auth.getUser();
                 if (userError || !user) {
                     window.location.href = '../pages/login.html';
                     return;
                 }
-                
+
                 const { data: profile } = await window.AumageDB.supabase
                     .from('profiles')
                     .select('role, display_name, avatar_url')
                     .eq('id', user.id)
                     .single();
-                
+
                 if (profile?.role !== 'admin') {
                     alert('Access Denied: Admin privileges required.');
                     window.location.href = '../auth/dashboard.html';
@@ -163,7 +165,7 @@
                 const { count: userCount } = await AumageDB.supabase
                     .from('profiles')
                     .select('*', { count: 'exact', head: true });
-                
+
                 const { count: creatureCount } = await AumageDB.supabase
                     .from('creatures')
                     .select('*', { count: 'exact', head: true });
@@ -232,4 +234,5 @@
         }
     </script>
 </body>
+
 </html>
