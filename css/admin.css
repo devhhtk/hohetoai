@@ -223,6 +223,27 @@ body.admin-body::after {
   border-radius: 20px;
   position: relative;
   transition: all 0.4s ease;
+  overflow: hidden;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: 10%;
+  right: -10px;
+  width: 100px;
+  height: 80%;
+  background: url('../img/dragon.png') no-repeat center right;
+  background-size: contain;
+  opacity: 0.08;
+  pointer-events: none;
+  z-index: 0;
+  filter: grayscale(1) brightness(2);
+}
+
+.stat-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .stat-card:hover {
