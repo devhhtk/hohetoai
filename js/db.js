@@ -47,6 +47,7 @@ const AumageDB = {
     this.supabase.auth.onAuthStateChange((event, session) => {
       this.user = session?.user || null;
       this.updateAuthUI();
+      
       if (event === 'SIGNED_IN') {
         console.log('AumageDB: Signed in');
         if (window.NotificationUI) window.NotificationUI.init();
@@ -55,6 +56,15 @@ const AumageDB = {
         if (savedSlug) {
           localStorage.removeItem('aumage_creature_state');
           window.location.href = '/c/' + savedSlug;
+        }
+      } else if (event === 'SIGNED_OUT') {
+        console.log('AumageDB: Signed out');
+        // Redirect to login if we are on a protected page
+        const path = window.location.pathname;
+        if (path.includes('/auth/') || path.includes('/admin/')) {
+          const isSubfolder = path.includes('/auth/') || path.includes('/admin/');
+          const loginUrl = isSubfolder ? '../pages/login.html' : 'pages/login.html';
+          window.location.href = loginUrl;
         }
       }
     });
@@ -128,18 +138,44 @@ const AumageDB = {
       if (loggedOut) loggedOut.classList.add('hidden');
       if (loggedIn) loggedIn.classList.remove('hidden');
       if (userName) userName.textContent = this.user.email?.split('@')[0] || 'Creator';
+      
       if (signOutBtn) {
-        signOutBtn.onclick = () => {
-          this.supabase.auth.signOut();
-          this.user = null;
-          this.updateAuthUI();
+        signOutBtn.onclick = async (e) => {
+          if (e) e.preventDefault();
+          console.log('AumageDB: Sign-out button clicked');
+          try {
+            await this.supabase.auth.signOut();
+            // Redirect handled by onAuthStateChange or manually if needed
+            const path = window.location.pathname;
+            const isSubfolder = path.includes('/auth/') || path.includes('/admin/');
+            const loginUrl = isSubfolder ? '../pages/login.html' : 'pages/login.html';
+            window.location.href = loginUrl;
+          } catch (err) {
+            console.error('AumageDB: Sign out error:', err);
+            window.location.href = '/pages/login.html';
+          }
         };
+      } else {
+        // If button not found, it might be in a component not yet loaded
+        // Listen for component load events to re-attach
+        if (!this._authUILoadListenerAttached) {
+          this._authUILoadListenerAttached = true;
+          const reattach = () => {
+            this._authUILoadListenerAttached = false;
+            this.updateAuthUI();
+          };
+          document.addEventListener('componentsLoaded', reattach, { once: true });
+          document.addEventListener('adminComponentsLoaded', reattach, { once: true });
+        }
       }
       // Call progress update
       this.updateSidebarStats();
     } else {
       if (loggedOut) loggedOut.classList.remove('hidden');
       if (loggedIn) loggedIn.classList.add('hidden');
+      
+      // If we are logged out but the button is still there (e.g. state change), clear it
+      if (signOutBtn) signOutBtn.onclick = null;
     }
   },
 
