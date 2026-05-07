@@ -1,0 +1,207 @@
+/* Admin Dashboard Styles — HoHeTo Kai */
+
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap');
+
+:root {
+  --color-primary: #08D2C1;
+  --color-primary-glow: rgba(8, 210, 193, 0.25);
+  --color-admin: #f43f5e; /* Rose/Red for admin accents */
+  --bg-sidebar: #011616;
+  --bg-main: #020C0C;
+  --bg-card: #011F1F;
+  --border-card: rgba(255, 255, 255, 0.06);
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.5);
+  --sidebar-width: 250px;
+  --topbar-height: 56px;
+  --transition: 0.2s ease;
+}
+
+body.admin-body {
+  font-family: 'Instrument Sans', sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  font-size: 12px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: radial-gradient(circle at top right, rgba(244, 63, 94, 0.03), transparent 60%);
+}
+
+.content-view {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-card) transparent;
+}
+
+/* ── Admin Widgets ── */
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  padding: 20px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-card__label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-card__value {
+  font-size: 28px;
+  font-weight: 700;
+  font-family: 'Exo 2', sans-serif;
+  color: var(--color-primary);
+}
+
+/* ── Data Tables ── */
+.admin-section {
+  margin-bottom: 40px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.table-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+thead {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border-card);
+}
+
+th {
+  padding: 16px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+td {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover td {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+/* ── User Row ── */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #334155;
+  object-fit: cover;
+}
+
+.user-name {
+  font-weight: 600;
+  display: block;
+}
+
+.user-email {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: block;
+}
+
+/* ── Status Badges ── */
+.badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge--admin {
+  background: rgba(244, 63, 94, 0.1);
+  color: #f43f5e;
+}
+
+.badge--user {
+  background: rgba(8, 210, 193, 0.1);
+  color: var(--color-primary);
+}
+
+/* ── Action Buttons ── */
+.btn-action {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-action:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-delete {
+  color: #ff4d4f;
+  border-color: rgba(255, 77, 79, 0.2);
+}
+
+.btn-delete:hover {
+  background: rgba(255, 77, 79, 0.1);
+}

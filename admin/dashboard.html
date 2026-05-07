@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — HoHeTo Kai</title>
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body class="admin-body">
+
+    <!-- Sidebar Placeholder -->
+    <div id="admin-sidebar"></div>
+
+    <main class="main-area">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <h1 class="top-bar__title">Admin Control Center</h1>
+            <div class="top-bar__actions">
+                <span id="admin-time" style="color: var(--text-muted); font-size: 11px;"></span>
+            </div>
+        </header>
+
+        <div class="content-view">
+            <!-- Stats Grid -->
+            <div class="admin-stats-grid">
+                <div class="stat-card">
+                    <span class="stat-card__label">Total Users</span>
+                    <span class="stat-card__value" id="stat-total-users">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-card__label">Total Creatures</span>
+                    <span class="stat-card__value" id="stat-total-creatures">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-card__label">New Users (24h)</span>
+                    <span class="stat-card__value" id="stat-new-users">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-card__label">System Status</span>
+                    <span class="stat-card__value" style="color: #10b981;">Online</span>
+                </div>
+            </div>
+
+            <!-- Recent Users Section -->
+            <section class="admin-section">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Registered Users</h2>
+                    <a href="users.html" class="btn-action">View All Users</a>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th>Level</th>
+                                <th>XP</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-users-table">
+                            <!-- Populated by JS -->
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                                    Loading user data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- System Logs or Recent Activity -->
+            <section class="admin-section">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Global Activity</h2>
+                </div>
+                <div class="table-container">
+                    <table id="activity-table">
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>User</th>
+                                <th>Target</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-activity-table">
+                             <tr>
+                                <td colspan="4" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                                    Loading activity...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/db.js"></script>
+    <script src="../js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load Sidebar
+            await ComponentLoader.loadAll([
+                { id: 'admin-sidebar', path: '../components/admin-sidebar.html' }
+            ]);
+
+            // Init DB & Auth
+            if (window.AumageDB) {
+                window.AumageDB.init();
+                // Ensure the user is actually an admin
+                const { data: { user }, error: userError } = await window.AumageDB.supabase.auth.getUser();
+                if (userError || !user) {
+                    window.location.href = '../pages/login.html';
+                    return;
+                }
+                
+                // Secondary role check for security
+                const { data: profile } = await window.AumageDB.supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+                
+                if (profile?.role !== 'admin') {
+                    alert('Access Denied: Admin privileges required.');
+                    window.location.href = '../auth/dashboard.html';
+                    return;
+                }
+            }
+
+            // Update Time
+            setInterval(() => {
+                document.getElementById('admin-time').textContent = new Date().toLocaleString();
+            }, 1000);
+
+            // Fetch Stats
+            fetchStats();
+            // Fetch Users
+            fetchRecentUsers();
+            // Fetch Activity
+            fetchRecentActivity();
+        });
+
+        async function fetchStats() {
+            try {
+                const { count: userCount } = await AumageDB.supabase
+                    .from('profiles')
+                    .select('*', { count: 'exact', head: true });
+                
+                const { count: creatureCount } = await AumageDB.supabase
+                    .from('creatures')
+                    .select('*', { count: 'exact', head: true });
+
+                document.getElementById('stat-total-users').textContent = userCount || 0;
+                document.getElementById('stat-total-creatures').textContent = creatureCount || 0;
+            } catch (e) {
+                console.error('Stats fetch error:', e);
+            }
+        }
+
+        async function fetchRecentUsers() {
+            const tableBody = document.getElementById('recent-users-table');
+            try {
+                const { data: users, error } = await AumageDB.supabase
+                    .from('profiles')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+
+                if (users && users.length > 0) {
+                    tableBody.innerHTML = users.map(u => `
+                        <tr>
+                            <td>
+                                <div class="user-info">
+                                    <img src="${u.avatar_url || 'https://ui-avatars.com/api/?name=' + (u.display_name || 'User')}" class="user-avatar">
+                                    <div>
+                                        <span class="user-name">${u.display_name || 'Anonymous'}</span>
+                                        <span class="user-email">UID: ${u.id.slice(0, 8)}...</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge badge--${u.role}">${u.role}</span></td>
+                            <td>${u.level}</td>
+                            <td>${u.total_xp}</td>
+                            <td>${new Date(u.created_at).toLocaleDateString()}</td>
+                            <td>
+                                <button class="btn-action">Edit</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No users found.</td></tr>';
+                }
+            } catch (e) {
+                tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: #ff4d4f;">Error loading users: ${e.message}</td></tr>`;
+            }
+        }
+
+        async function fetchRecentActivity() {
+            const tableBody = document.getElementById('recent-activity-table');
+            try {
+                const { data: creatures, error } = await AumageDB.supabase
+                    .from('creatures')
+                    .select('creature_name, created_at, user_id')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+
+                if (creatures && creatures.length > 0) {
+                    tableBody.innerHTML = creatures.map(c => `
+                        <tr>
+                            <td><span style="color: var(--color-primary);">Creature Minted</span></td>
+                            <td>User ${c.user_id.slice(0, 8)}</td>
+                            <td>${c.creature_name || 'Unnamed'}</td>
+                            <td>${new Date(c.created_at).toLocaleTimeString()}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No recent activity.</td></tr>';
+                }
+            } catch (e) {
+                tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Activity data unavailable.</td></tr>`;
+            }
+        }
+    </script>
+</body>
+</html>
