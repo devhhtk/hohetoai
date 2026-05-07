@@ -322,6 +322,58 @@
         </div>
     </div>
 
+    <!-- Admin Add Modal (Separate) -->
+    <div id="addAdminModal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Admin</h2>
+                <button class="modal-close" onclick="closeAddAdminModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addAdminForm" class="cyber-form">
+                    <div class="form-row" style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label for="addEmail">Email Address</label>
+                            <input type="email" id="addEmail" placeholder="admin@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addPassword">Password</label>
+                            <input type="password" id="addPassword" placeholder="••••••••" required minlength="6">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="addDisplayName">Display Name</label>
+                            <input type="text" id="addDisplayName" placeholder="Enter display name" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row" style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label for="addRole">Role</label>
+                            <select id="addRole" disabled>
+                                <option value="admin" selected>Admin</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="addAvatar">Avatar URL</label>
+                            <input type="text" id="addAvatar" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <div class="form-actions"
+                        style="margin-top: 32px; display: flex; gap: 12px; justify-content: flex-end;">
+                        <button type="button" class="btn-action"
+                            style="background:transparent; border-color:var(--glass-border); color:#fff;"
+                            onclick="closeAddAdminModal()">Cancel</button>
+                        <button type="submit" class="btn-action">Create Admin</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -355,6 +407,11 @@
             document.getElementById('userForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 await saveUser();
+            });
+
+            document.getElementById('addAdminForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await createAdmin();
             });
         });
 
@@ -432,10 +489,12 @@
         }
 
         function addUser() {
-            document.getElementById('userModalTitle').textContent = 'Add New User';
-            document.getElementById('userForm').reset();
-            document.getElementById('userId').value = '';
-            document.getElementById('userModal').classList.add('active');
+            document.getElementById('addAdminForm').reset();
+            document.getElementById('addAdminModal').classList.add('active');
+        }
+
+        function closeAddAdminModal() {
+            document.getElementById('addAdminModal').classList.remove('active');
         }
 
         function editUser(userId) {
@@ -487,28 +546,52 @@
 
                     const result = await response.json();
                     if (!result.success) throw new Error(result.error || 'Failed to update user');
-                } else {
-                    // Create via Backend
-                    userData.id = crypto.randomUUID();
-                    const response = await fetch(`${apiBase}/api/admin/create-profile`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify(userData)
-                    });
-
-                    const result = await response.json();
-                    if (!result.success) throw new Error(result.error || 'Failed to create user');
                 }
 
-                alert('User saved successfully!');
+                alert('User updated successfully!');
                 closeUserModal();
                 initializeUsersTable();
             } catch (e) {
                 console.error('Error saving user:', e);
                 alert('Failed to save user: ' + e.message);
+            }
+        }
+
+        async function createAdmin() {
+            const adminData = {
+                email: document.getElementById('addEmail').value,
+                password: document.getElementById('addPassword').value,
+                display_name: document.getElementById('addDisplayName').value,
+                role: 'admin',
+                avatar_url: document.getElementById('addAvatar').value,
+                level: 1,
+                total_xp: 0,
+                currency: 0
+            };
+
+            try {
+                const session = await AumageDB.supabase.auth.getSession();
+                const token = session?.data?.session?.access_token;
+                const apiBase = 'https://hohetai-api.devhhtk.workers.dev';
+
+                const response = await fetch(`${apiBase}/api/admin/create-user`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(adminData)
+                });
+
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error || 'Failed to create admin');
+
+                alert('Admin created successfully!');
+                closeAddAdminModal();
+                initializeUsersTable();
+            } catch (e) {
+                console.error('Error creating admin:', e);
+                alert('Failed to create admin: ' + e.message);
             }
         }
 
