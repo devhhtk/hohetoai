@@ -6,7 +6,8 @@
 @import url('variables.css');
 
 :root {
-  --color-admin-accent: #00d4ff; /* Shifting from Teal to a more Blueish Cyan */
+  --color-admin-accent: #00d4ff;
+  /* Shifting from Teal to a more Blueish Cyan */
   --color-admin-glow: rgba(0, 212, 255, 0.4);
   --color-primary: #00d4ff;
   --color-primary-glow: rgba(0, 212, 255, 0.3);
@@ -18,10 +19,11 @@
 
 body.admin-body {
   font-family: var(--font-body);
-  background: 
+  background:
     linear-gradient(rgba(0, 212, 255, 0.02) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 212, 255, 0.02) 1px, transparent 1px),
-    radial-gradient(circle at 0% 0%, #0a192f 0%, #020c0c 100%); /* Deeper blueish dark background */
+    radial-gradient(circle at 0% 0%, #0a192f 0%, #020c0c 100%);
+  /* Deeper blueish dark background */
   background-size: 50px 50px, 50px 50px, 100% 100%;
   color: var(--color-text-body);
   display: flex;
@@ -45,8 +47,13 @@ body.admin-body::after {
 }
 
 @keyframes scanline {
-  0% { transform: translateY(-100vh); }
-  100% { transform: translateY(100vh); }
+  0% {
+    transform: translateY(-100vh);
+  }
+
+  100% {
+    transform: translateY(100vh);
+  }
 }
 
 .main-area {
@@ -61,7 +68,8 @@ body.admin-body::after {
 .sidebar {
   width: var(--sidebar-width);
   height: 100vh;
-  background: rgba(1, 10, 22, 0.85); /* Slightly blueish tint */
+  background: rgba(1, 10, 22, 0.85);
+  /* Slightly blueish tint */
   backdrop-filter: blur(25px);
   border-right: 1px solid var(--glass-border);
   display: flex;
@@ -259,9 +267,11 @@ body.admin-body::after {
   bottom: -15px;
   width: 130px;
   height: auto;
-  opacity: 0.05; /* Base opacity remains low for watermark feel */
+  opacity: 0.7;
+  /* Base opacity remains low for watermark feel */
   pointer-events: none;
-  filter: brightness(0) invert(1); /* Makes it white */
+  filter: brightness(0) invert(1);
+  /* Makes it white */
   transform: rotate(-15deg);
   z-index: 1;
   transition: all 0.5s ease;
