@@ -278,16 +278,20 @@
 
         async function initializeCreaturesTable() {
             try {
+                // Use explicit relationship hints (!foreign_key_name) to ensure Supabase finds the tables
                 const { data: creatures, error } = await AumageDB.supabase
                     .from('creatures')
                     .select(`
                         *,
-                        creature_comments(count),
-                        creature_likes(count)
+                        creature_comments!creature_comments_creature_id_fkey(count),
+                        creature_likes!creature_likes_creature_id_fkey(count)
                     `)
                     .order('created_at', { ascending: false });
 
-                if (error) throw error;
+                if (error) {
+                    console.error('Supabase Query Error:', error);
+                    throw error;
+                }
 
                 console.log('Admin: Fetched creatures with interactions:', creatures);
 
