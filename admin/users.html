@@ -273,24 +273,10 @@
                 <form id="userForm" class="cyber-form">
                     <input type="hidden" id="userId">
 
-                    <div class="form-row" style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="displayName">Display Name</label>
                             <input type="text" id="displayName" placeholder="Enter display name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="userEmail">Email</label>
-                            <input type="email" id="userEmail" placeholder="user@example.com" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row" id="passwordRow">
-                        <div class="form-group">
-                            <label for="userPassword">Password</label>
-                            <input type="password" id="userPassword" placeholder="Enter password">
-                            <small id="passwordHint"
-                                style="color:var(--text-muted); font-size:11px; display:none;">Leave blank to keep
-                                current password</small>
                         </div>
                     </div>
 
@@ -376,20 +362,12 @@
 
         async function initializeUsersTable() {
             try {
-                // Get auth token
-                const session = await AumageDB.supabase.auth.getSession();
-                const token = session?.data?.session?.access_token;
-                const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
+                const { data: users, error } = await AumageDB.supabase
+                    .from('profiles')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-                const resp = await fetch(`${apiBase}/api/admin/users/list`, {
-                    headers: {
-                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-                    }
-                });
-
-                if (!resp.ok) throw new Error('Failed to fetch users');
-                const result = await resp.json();
-                const users = result.users || [];
+                if (error) throw error;
                 allUsers = users;
 
                 // Destroy existing table if it exists
@@ -405,14 +383,14 @@
                             render: function (data, type, row) {
                                 const avatar = row.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(row.display_name || 'User')}&background=00d4ff&color=fff`;
                                 return `
-                                <div class="user-info">
-                                    <img src="${avatar}" class="user-avatar">
-                                    <div>
-                                        <span class="user-name">${row.display_name || 'Anonymous'}</span>
-                                        <span class="user-email">${row.email || 'N/A'}</span>
+                                    <div class="user-info">
+                                        <img src="${avatar}" class="user-avatar">
+                                        <div>
+                                            <span class="user-name">${row.display_name || 'Anonymous'}</span>
+                                            <span class="user-email">UID: ${row.id.slice(0, 8)}...</span>
+                                        </div>
                                     </div>
-                                </div>
-                            `;
+                                `;
                             }
                         },
                         {
@@ -433,11 +411,11 @@
                             data: null,
                             render: function (data, type, row) {
                                 return `
-                                <div style="display:flex; gap:8px;">
-                                    <button class="btn-action" onclick="editUser('${row.id}')">Edit</button>
-                                    <button class="btn-action" onclick="deleteUser('${row.id}')" style="background:rgba(255,71,87,0.1); border-color:rgba(255,71,87,0.2); color:#ff4757;">Delete</button>
-                                </div>
-                            `;
+                                    <div style="display:flex; gap:8px;">
+                                        <button class="btn-action" onclick="editUser('${row.id}')">Edit</button>
+                                        <button class="btn-action" onclick="deleteUser('${row.id}')" style="background:rgba(255,71,87,0.1); border-color:rgba(255,71,87,0.2); color:#ff4757;">Delete</button>
+                                    </div>
+                                `;
                             }
                         }
                     ],
@@ -453,6 +431,13 @@
             }
         }
 
+        function addUser() {
+            document.getElementById('userModalTitle').textContent = 'Add New User';
+            document.getElementById('userForm').reset();
+            document.getElementById('userId').value = '';
+            document.getElementById('userModal').classList.add('active');
+        }
+
         function editUser(userId) {
             const user = allUsers.find(u => u.id === userId);
             if (!user) return;
@@ -460,26 +445,12 @@
             document.getElementById('userModalTitle').textContent = 'Edit User';
             document.getElementById('userId').value = user.id;
             document.getElementById('displayName').value = user.display_name || '';
-            document.getElementById('userEmail').value = user.email || '';
-            document.getElementById('userEmail').disabled = true;
             document.getElementById('userRole').value = user.role || 'user';
             document.getElementById('userAvatar').value = user.avatar_url || '';
             document.getElementById('userLevel').value = user.level || 1;
             document.getElementById('userXP').value = user.total_xp || 0;
             document.getElementById('userCurrency').value = user.currency || 0;
 
-            document.getElementById('userPassword').value = '';
-            document.getElementById('passwordHint').style.display = 'block';
-
-            document.getElementById('userModal').classList.add('active');
-        }
-
-        function addUser() {
-            document.getElementById('userModalTitle').textContent = 'Add New User';
-            document.getElementById('userForm').reset();
-            document.getElementById('userId').value = '';
-            document.getElementById('userEmail').disabled = false;
-            document.getElementById('passwordHint').style.display = 'none';
             document.getElementById('userModal').classList.add('active');
         }
 
@@ -491,7 +462,6 @@
             const id = document.getElementById('userId').value;
             const userData = {
                 display_name: document.getElementById('displayName').value,
-                email: document.getElementById('userEmail').value,
                 role: document.getElementById('userRole').value,
                 avatar_url: document.getElementById('userAvatar').value,
                 level: parseInt(document.getElementById('userLevel').value),
@@ -499,60 +469,33 @@
                 currency: parseInt(document.getElementById('userCurrency').value)
             };
 
-            const password = document.getElementById('userPassword').value;
-            if (password) userData.password = password;
-
             try {
-                const btn = document.querySelector('#userForm button[type="submit"]');
-                const originalText = btn?.textContent || 'Save User';
-                if (btn) {
-                    btn.disabled = true;
-                    btn.textContent = 'Saving...';
-                }
-
-                const session = await AumageDB.supabase.auth.getSession();
-                const token = session?.data?.session?.access_token;
-                const apiBase = window.Aumage?.PIPELINE_URL || 'https://hohetai-api.devhhtk.workers.dev';
-
-                let url = `${apiBase}/api/admin/users/create`;
-                let method = 'POST';
-
+                let error;
                 if (id) {
-                    url = `${apiBase}/api/admin/users/update`;
-                    method = 'PATCH';
-                    userData.id = id;
+                    // Update
+                    const { error: err } = await AumageDB.supabase
+                        .from('profiles')
+                        .update(userData)
+                        .eq('id', id);
+                    error = err;
+                } else {
+                    // Create (Note: This only creates a profile, not an auth user)
+                    // We generate a UUID if it's just a profile entry
+                    userData.id = crypto.randomUUID();
+                    const { error: err } = await AumageDB.supabase
+                        .from('profiles')
+                        .insert(userData);
+                    error = err;
                 }
 
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-                    },
-                    body: JSON.stringify(userData)
-                });
+                if (error) throw error;
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Failed to save user');
-                }
-
-                showNotification(id ? 'User updated successfully' : 'User created successfully', 'success');
+                alert('User saved successfully!');
                 closeUserModal();
                 initializeUsersTable();
-
-                if (btn) {
-                    btn.disabled = false;
-                    btn.textContent = originalText;
-                }
             } catch (e) {
                 console.error('Error saving user:', e);
-                showNotification(e.message, 'error');
-                const btn = document.querySelector('#userForm button[type="submit"]');
-                if (btn) {
-                    btn.disabled = false;
-                    btn.textContent = 'Save User';
-                }
+                alert('Failed to save user: ' + e.message);
             }
         }
 
@@ -569,11 +512,11 @@
 
                 if (error) throw error;
 
-                showNotification('User profile deleted successfully!', 'success');
+                alert('User profile deleted successfully!');
                 initializeUsersTable();
             } catch (e) {
                 console.error('Error deleting user:', e);
-                showNotification('Failed to delete user: ' + e.message, 'error');
+                alert('Failed to delete user: ' + e.message);
             }
         }
 
