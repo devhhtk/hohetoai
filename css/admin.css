@@ -223,27 +223,6 @@ body.admin-body::after {
   border-radius: 20px;
   position: relative;
   transition: all 0.4s ease;
-  overflow: hidden;
-}
-
-.stat-card::after {
-  content: '';
-  position: absolute;
-  top: 10%;
-  right: -10px;
-  width: 100px;
-  height: 80%;
-  background: url('../img/dragon.png') no-repeat center right;
-  background-size: contain;
-  opacity: 0.08;
-  pointer-events: none;
-  z-index: 0;
-  filter: grayscale(1) brightness(2);
-}
-
-.stat-card > * {
-  position: relative;
-  z-index: 1;
 }
 
 .stat-card:hover {
@@ -259,6 +238,8 @@ body.admin-body::after {
   letter-spacing: 1px;
   color: var(--color-text-muted);
   margin-bottom: 8px;
+  position: relative;
+  z-index: 2;
 }
 
 .stat-card__value {
@@ -267,6 +248,27 @@ body.admin-body::after {
   font-family: var(--font-display);
   color: #fff;
   text-shadow: 0 0 20px var(--color-primary-glow);
+  position: relative;
+  z-index: 2;
+}
+
+.stat-card__icon {
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  width: 120px;
+  height: auto;
+  opacity: 0.08;
+  pointer-events: none;
+  filter: brightness(1.5);
+  transform: rotate(-15deg);
+  z-index: 1;
+  transition: all 0.5s ease;
+}
+
+.stat-card:hover .stat-card__icon {
+  transform: rotate(-5deg) scale(1.1);
+  opacity: 0.12;
 }
 
 /* ── Cyber Table ── */
