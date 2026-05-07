@@ -257,9 +257,14 @@ body.admin-body::after {
   backdrop-filter: blur(10px);
 }
 
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
 th {
   background: rgba(0, 212, 255, 0.05);
-  padding: 20px;
+  padding: 12px 20px;
   text-align: left;
   font-size: 11px;
   text-transform: uppercase;
@@ -269,14 +274,34 @@ th {
 }
 
 td {
-  padding: 20px;
+  padding: 12px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .badge--admin {
   background: rgba(0, 212, 255, 0.1);
   color: var(--color-primary);
   border: 1px solid var(--color-primary-glow);
+}
+
+.badge--user {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-muted);
+  border: 1px solid var(--glass-border);
+}
+
+.badge--moderator {
+  background: rgba(255, 165, 0, 0.1);
+  color: #ffa500;
+  border: 1px solid rgba(255, 165, 0, 0.2);
 }
 
 .user-info {
@@ -368,6 +393,11 @@ td {
 }
 
 /* ── Profile UI ── */
+.sidebar__profile {
+  margin-top: auto;
+  padding-bottom: 8px;
+}
+
 .profile-card {
   display: flex;
   align-items: center;
