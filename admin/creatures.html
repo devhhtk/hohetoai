@@ -9,6 +9,70 @@
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    <style>
+        /* Custom DataTables Styling to match Cyber Blue theme */
+        .dataTables_wrapper {
+            padding: 20px;
+            color: var(--color-text-body);
+        }
+
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            border-radius: 8px;
+            padding: 4px 8px;
+        }
+
+        table.dataTable {
+            border-collapse: collapse !important;
+            border-bottom: none !important;
+        }
+
+        table.dataTable thead th {
+            background: rgba(0, 212, 255, 0.05) !important;
+            color: var(--color-primary) !important;
+            border-bottom: 1px solid var(--glass-border) !important;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        table.dataTable tbody tr {
+            background-color: transparent !important;
+            color: #fff !important;
+        }
+
+        table.dataTable tbody td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+            padding: 12px 20px !important;
+        }
+
+        table.dataTable.no-footer {
+            border-bottom: none !important;
+        }
+
+        .dataTables_wrapper .dataTables_info {
+            color: var(--color-text-muted) !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: var(--color-text-muted) !important;
+            border-radius: 8px !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: var(--color-primary) !important;
+            color: #010a16 !important;
+            border: none !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: rgba(0, 212, 255, 0.2) !important;
+            border: none !important;
+            color: #fff !important;
+        }
 
         .creature-preview {
             display: flex;
@@ -32,10 +96,25 @@
             font-weight: bold;
         }
 
-        .rarity--common { background: rgba(255, 255, 255, 0.1); color: #fff; }
-        .rarity--rare { background: rgba(0, 212, 255, 0.2); color: #00d4ff; }
-        .rarity--epic { background: rgba(163, 53, 238, 0.2); color: #a335ee; }
-        .rarity--legendary { background: rgba(255, 128, 0, 0.2); color: #ff8000; }
+        .rarity--common {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .rarity--rare {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+        }
+
+        .rarity--epic {
+            background: rgba(163, 53, 238, 0.2);
+            color: #a335ee;
+        }
+
+        .rarity--legendary {
+            background: rgba(255, 128, 0, 0.2);
+            color: #ff8000;
+        }
     </style>
 </head>
 
