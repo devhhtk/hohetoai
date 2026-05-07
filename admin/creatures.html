@@ -246,6 +246,19 @@
         <div id="comp-admin-footer"></div>
     </main>
 
+    <!-- Creature Detail Modal -->
+    <div id="creatureModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalCreatureName">Creature Details</h2>
+                <button class="modal-close" onclick="closeCreatureModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalCreatureBody">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -276,6 +289,8 @@
             }
         });
 
+        let allCreatures = []; // Keep a local copy for modal lookups
+
         async function initializeCreaturesTable() {
             try {
                 // 1. Fetch all creatures
@@ -289,6 +304,8 @@
                     alert('Error fetching creatures: ' + error.message);
                     throw error;
                 }
+
+                allCreatures = creatures; // Store globally
 
                 // 2. Fetch ALL interactions separately (Bypasses relationship detection)
                 const [likesRes, commentsRes] = await Promise.all([
@@ -403,7 +420,86 @@
         }
 
         function viewCreature(id) {
-            window.open(`../creature.html?id=${id}`, '_blank');
+            const creature = allCreatures.find(c => c.id === id);
+            if (!creature) return;
+
+            document.getElementById('modalCreatureName').textContent = creature.creature_name || 'Unnamed Creature';
+            
+            const stats = creature.variant_tags || {};
+            
+            document.getElementById('modalCreatureBody').innerHTML = `
+                <div class="creature-detail-view">
+                    <div>
+                        <img src="${creature.image_url || '../img/creature-card.png'}" class="creature-detail-img">
+                        <div class="detail-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Likes</span>
+                                <span class="stat-val">${creature.likes_count || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Comments</span>
+                                <span class="stat-val">${creature.comments_count || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Tier</span>
+                                <span class="stat-val">${creature.tier || '1'}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">ARS</span>
+                                <span class="stat-val">${creature.ars || '0.5'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-group">
+                            <span class="detail-label">Serial Number</span>
+                            <span class="detail-value">#${creature.serial_number || '0000'}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Rarity</span>
+                            <span class="detail-badge rarity-badge rarity--${(creature.base_rarity || 'common').toLowerCase()}">${creature.base_rarity || 'Common'}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Element</span>
+                            <span class="detail-value" style="text-transform:capitalize;">${creature.element || 'Neutral'}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Morphology</span>
+                            <span class="detail-value" style="text-transform:capitalize;">${creature.morphology || 'N/A'}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Domain</span>
+                            <span class="detail-value" style="text-transform:capitalize;">${creature.domain || 'N/A'}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Trope Class</span>
+                            <span class="detail-value" style="text-transform:capitalize;">${creature.trope_class || 'N/A'}</span>
+                        </div>
+                        <div class="detail-group detail-group--full">
+                            <span class="detail-label">Flavor Text</span>
+                            <span class="detail-value" style="font-style:italic; color:var(--color-text-muted); font-size:14px;">"${creature.flavor_text || 'No description available.'}"</span>
+                        </div>
+                        <div class="detail-group detail-group--full">
+                            <span class="detail-label">Prompt</span>
+                            <span class="detail-value" style="font-size:12px; color:var(--color-text-muted); line-height:1.4;">${creature.prompt_text || 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('creatureModal').classList.add('active');
+        }
+
+        function closeCreatureModal() {
+            document.getElementById('creatureModal').classList.remove('active');
+        }
+
+        // Close on overlay click
+        window.onclick = function(event) {
+            const modal = document.getElementById('creatureModal');
+            if (event.target == modal) {
+                closeCreatureModal();
+            }
         }
 
         function editCreature(id) {
