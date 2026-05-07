@@ -279,7 +279,7 @@ body.admin-body::after {
 
 .stat-card:hover .stat-card__icon {
   transform: rotate(-5deg) scale(1.15);
-  opacity: 0.1;
+  opacity: 0.8;
 }
 
 /* ── Cyber Table ── */
