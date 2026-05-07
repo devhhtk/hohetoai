@@ -29,9 +29,14 @@
             align-items: center;
         }
 
-        .dataTables_wrapper .dataTables_length { float: left; }
-        .dataTables_wrapper .dataTables_filter { float: right; }
-        
+        .dataTables_wrapper .dataTables_length {
+            float: left;
+        }
+
+        .dataTables_wrapper .dataTables_filter {
+            float: right;
+        }
+
         .dataTables_wrapper::after {
             content: "";
             display: table;
@@ -173,10 +178,29 @@
             letter-spacing: 0.5px;
         }
 
-        .rarity--common { background: rgba(255, 255, 255, 0.08); color: #eee; border: 1px solid rgba(255, 255, 255, 0.1); }
-        .rarity--rare { background: rgba(0, 212, 255, 0.15); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); }
-        .rarity--epic { background: rgba(163, 53, 238, 0.15); color: #a335ee; border: 1px solid rgba(163, 53, 238, 0.3); }
-        .rarity--legendary { background: rgba(255, 128, 0, 0.15); color: #ff8000; border: 1px solid rgba(255, 128, 0, 0.3); }
+        .rarity--common {
+            background: rgba(255, 255, 255, 0.08);
+            color: #eee;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .rarity--rare {
+            background: rgba(0, 212, 255, 0.15);
+            color: #00d4ff;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .rarity--epic {
+            background: rgba(163, 53, 238, 0.15);
+            color: #a335ee;
+            border: 1px solid rgba(163, 53, 238, 0.3);
+        }
+
+        .rarity--legendary {
+            background: rgba(255, 128, 0, 0.15);
+            color: #ff8000;
+            border: 1px solid rgba(255, 128, 0, 0.3);
+        }
     </style>
 </head>
 
@@ -260,6 +284,8 @@
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
+
+                console.log(creatures);
 
                 $('#creaturesTable').DataTable({
                     data: creatures,
