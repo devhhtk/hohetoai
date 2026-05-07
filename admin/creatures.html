@@ -278,18 +278,22 @@
 
         async function initializeCreaturesTable() {
             try {
-                // Use explicit relationship hints (!foreign_key_name) to ensure Supabase finds the tables
+                // DIAGNOSTIC: Check if tables are even visible
+                const diagLikes = await AumageDB.supabase.from('creature_likes').select('id', { count: 'exact', head: true });
+                console.log('Diagnostic - creature_likes visibility:', diagLikes);
+
                 const { data: creatures, error } = await AumageDB.supabase
                     .from('creatures')
                     .select(`
                         *,
-                        creature_comments!creature_comments_creature_id_fkey(count),
-                        creature_likes!creature_likes_creature_id_fkey(count)
+                        likes:creature_likes(id),
+                        comments:creature_comments(id)
                     `)
                     .order('created_at', { ascending: false });
 
                 if (error) {
                     console.error('Supabase Query Error:', error);
+                    alert('Supabase Error: ' + error.message);
                     throw error;
                 }
 
@@ -323,9 +327,9 @@
                         {
                             data: null,
                             render: function (data, type, row) {
-                                // Supabase returns counts as an array of one object: [{ count: X }]
-                                const likes = row.creature_likes?.[0]?.count || 0;
-                                const comments = row.creature_comments?.[0]?.count || 0;
+                                // Handle both .length (if IDs fetched) and .count (if count fetched)
+                                const likes = row.likes ? row.likes.length : (row.creature_likes?.[0]?.count || 0);
+                                const comments = row.comments ? row.comments.length : (row.creature_comments?.[0]?.count || 0);
                                 return `
                                     <div style="display:flex; gap:12px; align-items:center;">
                                         <div title="Likes" style="display:flex; align-items:center; gap:4px; color: #ff4757;">
