@@ -573,6 +573,11 @@ td {
   transition: all 0.3s;
 }
 
+.dataTables_wrapper .dataTables_length select option {
+  background-color: #0a192f;
+  color: #fff;
+}
+
 .dataTables_wrapper .dataTables_length select:hover {
   border-color: var(--color-primary-glow);
   background: rgba(255, 255, 255, 0.06);
