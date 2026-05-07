@@ -9,18 +9,19 @@
 <body class="admin-body">
 
     <!-- Sidebar Placeholder -->
-    <div id="admin-sidebar"></div>
+    <div id="comp-admin-sidebar"></div>
 
     <main class="main-area">
-        <!-- Top Bar -->
-        <header class="top-bar">
-            <h1 class="top-bar__title">Admin Control Center</h1>
-            <div class="top-bar__actions">
-                <span id="admin-time" style="color: var(--text-muted); font-size: 11px;"></span>
-            </div>
-        </header>
+        <!-- Top Bar Placeholder -->
+        <div id="comp-admin-header"></div>
 
         <div class="content-view">
+            <!-- Welcome Header -->
+            <div class="admin-welcome" style="margin-bottom: 32px;">
+                <h1 style="font-family: 'Exo 2', sans-serif; font-size: 24px; margin-bottom: 8px;">System Overview</h1>
+                <p style="color: var(--text-muted);">Monitor and manage the HoHeTo Kai ecosystem.</p>
+            </div>
+
             <!-- Stats Grid -->
             <div class="admin-stats-grid">
                 <div class="stat-card">
@@ -36,8 +37,8 @@
                     <span class="stat-card__value" id="stat-new-users">0</span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-card__label">System Status</span>
-                    <span class="stat-card__value" style="color: #10b981;">Online</span>
+                    <span class="stat-card__label">DB Connections</span>
+                    <span class="stat-card__value" style="color: #10b981;">Active</span>
                 </div>
             </div>
 
@@ -60,7 +61,6 @@
                             </tr>
                         </thead>
                         <tbody id="recent-users-table">
-                            <!-- Populated by JS -->
                             <tr>
                                 <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
                                     Loading user data...
@@ -71,13 +71,13 @@
                 </div>
             </section>
 
-            <!-- System Logs or Recent Activity -->
+            <!-- Recent Activity Section -->
             <section class="admin-section">
                 <div class="section-header">
                     <h2 class="section-title">Recent Global Activity</h2>
                 </div>
                 <div class="table-container">
-                    <table id="activity-table">
+                    <table>
                         <thead>
                             <tr>
                                 <th>Action</th>
@@ -97,33 +97,37 @@
                 </div>
             </section>
         </div>
+
+        <!-- Footer Placeholder -->
+        <div id="comp-admin-footer"></div>
     </main>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/db.js"></script>
-    <script src="../js/components.js"></script>
+    <script src="../js/admin-components.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // Load Sidebar
-            await ComponentLoader.loadAll([
-                { id: 'admin-sidebar', path: '../components/admin-sidebar.html' }
+            // Load Admin Components
+            await AdminComponentLoader.loadAll([
+                { id: 'comp-admin-sidebar', path: '../components/admin-sidebar.html' },
+                { id: 'comp-admin-header', path: '../components/admin-header.html' },
+                { id: 'comp-admin-footer', path: '../components/admin-footer.html' }
             ]);
 
-            // Init DB & Auth
+            // Database & Auth Initialization
             if (window.AumageDB) {
                 window.AumageDB.init();
-                // Ensure the user is actually an admin
+                
                 const { data: { user }, error: userError } = await window.AumageDB.supabase.auth.getUser();
                 if (userError || !user) {
                     window.location.href = '../pages/login.html';
                     return;
                 }
                 
-                // Secondary role check for security
                 const { data: profile } = await window.AumageDB.supabase
                     .from('profiles')
-                    .select('role')
+                    .select('role, display_name, avatar_url')
                     .eq('id', user.id)
                     .single();
                 
@@ -132,18 +136,25 @@
                     window.location.href = '../auth/dashboard.html';
                     return;
                 }
+
+                // Update Sidebar Profile Info
+                const profName = document.getElementById('prof-name');
+                const profAvatar = document.getElementById('prof-avatar');
+                if (profName) profName.textContent = profile.display_name || 'Admin';
+                if (profAvatar && profile.avatar_url) profAvatar.src = profile.avatar_url;
             }
 
-            // Update Time
-            setInterval(() => {
-                document.getElementById('admin-time').textContent = new Date().toLocaleString();
-            }, 1000);
+            // Update Header Time
+            const timeDisplay = document.getElementById('admin-header-time');
+            if (timeDisplay) {
+                setInterval(() => {
+                    timeDisplay.textContent = new Date().toLocaleTimeString();
+                }, 1000);
+            }
 
-            // Fetch Stats
+            // Data Fetching
             fetchStats();
-            // Fetch Users
             fetchRecentUsers();
-            // Fetch Activity
             fetchRecentActivity();
         });
 
@@ -159,9 +170,7 @@
 
                 document.getElementById('stat-total-users').textContent = userCount || 0;
                 document.getElementById('stat-total-creatures').textContent = creatureCount || 0;
-            } catch (e) {
-                console.error('Stats fetch error:', e);
-            }
+            } catch (e) { console.error(e); }
         }
 
         async function fetchRecentUsers() {
@@ -196,40 +205,30 @@
                             </td>
                         </tr>
                     `).join('');
-                } else {
-                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No users found.</td></tr>';
                 }
-            } catch (e) {
-                tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: #ff4d4f;">Error loading users: ${e.message}</td></tr>`;
-            }
+            } catch (e) { console.error(e); }
         }
 
         async function fetchRecentActivity() {
             const tableBody = document.getElementById('recent-activity-table');
             try {
-                const { data: creatures, error } = await AumageDB.supabase
+                const { data: creatures } = await AumageDB.supabase
                     .from('creatures')
                     .select('creature_name, created_at, user_id')
                     .order('created_at', { ascending: false })
                     .limit(5);
 
-                if (error) throw error;
-
                 if (creatures && creatures.length > 0) {
                     tableBody.innerHTML = creatures.map(c => `
                         <tr>
                             <td><span style="color: var(--color-primary);">Creature Minted</span></td>
-                            <td>User ${c.user_id.slice(0, 8)}</td>
+                            <td>User ${c.user_id ? c.user_id.slice(0, 8) : 'Guest'}</td>
                             <td>${c.creature_name || 'Unnamed'}</td>
                             <td>${new Date(c.created_at).toLocaleTimeString()}</td>
                         </tr>
                     `).join('');
-                } else {
-                    tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No recent activity.</td></tr>';
                 }
-            } catch (e) {
-                tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Activity data unavailable.</td></tr>`;
-            }
+            } catch (e) { console.error(e); }
         }
     </script>
 </body>
