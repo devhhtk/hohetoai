@@ -280,12 +280,18 @@
             try {
                 const { data: creatures, error } = await AumageDB.supabase
                     .from('creatures')
-                    .select('*, creature_comments(count), creature_likes(count)')
+                    .select(`
+                        *,
+                        creature_comments(count),
+                        creature_likes(count)
+                    `)
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
 
-                console.log(data);
+                console.log('Admin: Fetched creatures with interactions:', creatures);
+
+
 
                 $('#creaturesTable').DataTable({
                     data: creatures,
@@ -313,6 +319,7 @@
                         {
                             data: null,
                             render: function (data, type, row) {
+                                // Supabase returns counts as an array of one object: [{ count: X }]
                                 const likes = row.creature_likes?.[0]?.count || 0;
                                 const comments = row.creature_comments?.[0]?.count || 0;
                                 return `
