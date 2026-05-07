@@ -59,8 +59,29 @@ document.addEventListener('DOMContentLoaded', () => {
             if (error) throw error;
 
             console.log('Login successful:', data);
-            // Redirect to dashboard
-            window.location.href = '../auth/dashboard.html';
+            
+            // Fetch profile role directly from Supabase for fast redirection
+            const { data: profile, error: profError } = await AumageDB.supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', data.user.id)
+                .single();
+
+            if (profError) {
+                console.warn('Profile fetch error, defaulting to user dashboard:', profError.message);
+                window.location.href = '../auth/dashboard.html';
+                return;
+            }
+
+            const role = profile?.role || 'user';
+            console.log('User role verified:', role);
+
+            // Redirect based on role
+            if (role === 'admin') {
+                window.location.href = '../admin/dashboard.html';
+            } else {
+                window.location.href = '../auth/dashboard.html';
+            }
         } catch (err) {
             console.error('Login error:', err.message);
             alert('Login failed: ' + err.message);
