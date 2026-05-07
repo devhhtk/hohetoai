@@ -470,25 +470,38 @@
             };
 
             try {
-                let error;
-                if (id) {
-                    // Update
-                    const { error: err } = await AumageDB.supabase
-                        .from('profiles')
-                        .update(userData)
-                        .eq('id', id);
-                    error = err;
-                } else {
-                    // Create (Note: This only creates a profile, not an auth user)
-                    // We generate a UUID if it's just a profile entry
-                    userData.id = crypto.randomUUID();
-                    const { error: err } = await AumageDB.supabase
-                        .from('profiles')
-                        .insert(userData);
-                    error = err;
-                }
+                const session = await AumageDB.supabase.auth.getSession();
+                const token = session?.data?.session?.access_token;
+                const apiBase = 'https://hohetai-api.devhhtk.workers.dev'; // Centralize this if needed
 
-                if (error) throw error;
+                if (id) {
+                    // Update via Backend
+                    const response = await fetch(`${apiBase}/api/admin/update-profile`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ id, updates: userData })
+                    });
+
+                    const result = await response.json();
+                    if (!result.success) throw new Error(result.error || 'Failed to update user');
+                } else {
+                    // Create via Backend
+                    userData.id = crypto.randomUUID();
+                    const response = await fetch(`${apiBase}/api/admin/create-profile`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(userData)
+                    });
+
+                    const result = await response.json();
+                    if (!result.success) throw new Error(result.error || 'Failed to create user');
+                }
 
                 alert('User saved successfully!');
                 closeUserModal();
@@ -499,26 +512,33 @@
             }
         }
 
-        async function deleteUser(userId) {
-            if (!confirm('Are you sure you want to delete this user profile? This action cannot be undone.')) {
-                return;
-            }
-
-            try {
-                const { error } = await AumageDB.supabase
-                    .from('profiles')
-                    .delete()
-                    .eq('id', userId);
-
-                if (error) throw error;
-
-                alert('User profile deleted successfully!');
-                initializeUsersTable();
-            } catch (e) {
-                console.error('Error deleting user:', e);
-                alert('Failed to delete user: ' + e.message);
-            }
+    async function deleteUser(userId) {
+        if (!confirm('Are you sure you want to delete this user profile? This action cannot be undone.')) {
+            return;
         }
+
+        try {
+            const session = await AumageDB.supabase.auth.getSession();
+            const token = session?.data?.session?.access_token;
+            const apiBase = 'https://hohetai-api.devhhtk.workers.dev';
+
+            const response = await fetch(`${apiBase}/api/admin/delete-user?id=${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const result = await response.json();
+            if (!result.success) throw new Error(result.error || 'Failed to delete user');
+
+            alert('User profile deleted successfully!');
+            initializeUsersTable();
+        } catch (e) {
+            console.error('Error deleting user:', e);
+            alert('Failed to delete user: ' + e.message);
+        }
+    }
 
         // Close on overlay click
         window.onclick = function (event) {
