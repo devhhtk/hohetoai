@@ -10,70 +10,145 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
     <style>
-        /* Custom DataTables Styling to match Cyber Blue theme */
+        /* ── DataTables Modern Cyber Design ── */
         .dataTables_wrapper {
-            padding: 20px;
-            color: var(--color-text-body);
+            padding: 0;
+            margin-top: 10px;
+            display: block;
+            overflow: visible;
         }
 
-        .dataTables_wrapper .dataTables_length select,
-        .dataTables_wrapper .dataTables_filter input {
-            background: rgba(255, 255, 255, 0.05);
+        /* Header Section (Entries + Search) */
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 24px;
+            color: var(--color-text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .dataTables_wrapper .dataTables_length { float: left; }
+        .dataTables_wrapper .dataTables_filter { float: right; }
+        
+        .dataTables_wrapper::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        /* Entries Dropdown */
+        .dataTables_wrapper .dataTables_length select {
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
             color: #fff;
             border-radius: 8px;
-            padding: 4px 8px;
+            padding: 6px 12px;
+            margin: 0 10px;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 12px;
+            padding-right: 28px;
         }
 
+        .dataTables_wrapper .dataTables_length select:hover {
+            border-color: var(--color-primary);
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Search Input */
+        .dataTables_wrapper .dataTables_filter input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            border-radius: 20px;
+            padding: 10px 20px;
+            margin-left: 15px;
+            width: 280px;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: var(--font-body);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            width: 320px;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 20px var(--color-primary-glow), inset 0 0 10px rgba(0, 212, 255, 0.1);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        /* Table Structure */
         table.dataTable {
             border-collapse: collapse !important;
             border-bottom: none !important;
+            margin: 0 !important;
+            width: 100% !important;
+            clear: both;
+            background: transparent !important;
         }
 
         table.dataTable thead th {
-            background: rgba(0, 212, 255, 0.05) !important;
+            background: rgba(0, 212, 255, 0.08) !important;
             color: var(--color-primary) !important;
-            border-bottom: 1px solid var(--glass-border) !important;
+            border-bottom: 2px solid var(--color-primary-glow) !important;
             text-transform: uppercase;
             font-size: 11px;
-            letter-spacing: 1px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 18px 20px !important;
         }
 
-        table.dataTable tbody tr {
-            background-color: transparent !important;
-            color: #fff !important;
+        table.dataTable tbody tr:hover {
+            background: rgba(0, 212, 255, 0.03) !important;
+            box-shadow: inset 0 0 15px rgba(0, 212, 255, 0.05);
         }
 
         table.dataTable tbody td {
             border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
-            padding: 12px 20px !important;
+            padding: 15px 20px !important;
+            color: rgba(255, 255, 255, 0.85);
+            vertical-align: middle;
         }
 
-        table.dataTable.no-footer {
-            border-bottom: none !important;
-        }
-
+        /* Pagination & Info */
         .dataTables_wrapper .dataTables_info {
             color: var(--color-text-muted) !important;
+            padding-top: 25px !important;
+            font-size: 13px;
+            float: left;
+        }
+
+        .dataTables_wrapper .dataTables_paginate {
+            padding-top: 25px !important;
+            float: right;
         }
 
         .dataTables_wrapper .dataTables_paginate .paginate_button {
             color: var(--color-text-muted) !important;
-            border-radius: 8px !important;
+            border-radius: 10px !important;
+            border: 1px solid var(--glass-border) !important;
+            padding: 6px 14px !important;
+            margin-left: 6px !important;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.02) !important;
         }
 
         .dataTables_wrapper .dataTables_paginate .paginate_button.current {
             background: var(--color-primary) !important;
             color: #010a16 !important;
-            border: none !important;
+            border-color: var(--color-primary) !important;
+            font-weight: 700;
+            box-shadow: 0 0 15px var(--color-primary-glow);
         }
 
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            background: rgba(0, 212, 255, 0.2) !important;
-            border: none !important;
-            color: #fff !important;
-        }
-
+        /* Creature Specifics */
         .creature-preview {
             display: flex;
             align-items: center;
@@ -81,40 +156,27 @@
         }
 
         .creature-thumb {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
             object-fit: cover;
             border: 1px solid var(--glass-border);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
 
         .rarity-badge {
             font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 4px;
+            padding: 3px 10px;
+            border-radius: 6px;
             text-transform: uppercase;
-            font-weight: bold;
+            font-weight: 800;
+            letter-spacing: 0.5px;
         }
 
-        .rarity--common {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
-
-        .rarity--rare {
-            background: rgba(0, 212, 255, 0.2);
-            color: #00d4ff;
-        }
-
-        .rarity--epic {
-            background: rgba(163, 53, 238, 0.2);
-            color: #a335ee;
-        }
-
-        .rarity--legendary {
-            background: rgba(255, 128, 0, 0.2);
-            color: #ff8000;
-        }
+        .rarity--common { background: rgba(255, 255, 255, 0.08); color: #eee; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rarity--rare { background: rgba(0, 212, 255, 0.15); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); }
+        .rarity--epic { background: rgba(163, 53, 238, 0.15); color: #a335ee; border: 1px solid rgba(163, 53, 238, 0.3); }
+        .rarity--legendary { background: rgba(255, 128, 0, 0.15); color: #ff8000; border: 1px solid rgba(255, 128, 0, 0.3); }
     </style>
 </head>
 
