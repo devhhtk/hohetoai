@@ -278,26 +278,41 @@
 
         async function initializeCreaturesTable() {
             try {
-                // DIAGNOSTIC: Check if tables are even visible
-                const diagLikes = await AumageDB.supabase.from('creature_likes').select('id', { count: 'exact', head: true });
-                console.log('Diagnostic - creature_likes visibility:', diagLikes);
-
+                // 1. Fetch all creatures
                 const { data: creatures, error } = await AumageDB.supabase
                     .from('creatures')
-                    .select(`
-                        *,
-                        likes:creature_likes(id),
-                        comments:creature_comments(id)
-                    `)
+                    .select('*')
                     .order('created_at', { ascending: false });
 
                 if (error) {
                     console.error('Supabase Query Error:', error);
-                    alert('Supabase Error: ' + error.message);
+                    alert('Error fetching creatures: ' + error.message);
                     throw error;
                 }
 
-                console.log('Admin: Fetched creatures with interactions:', creatures);
+                // 2. Fetch ALL interactions separately (Bypasses relationship detection)
+                const [likesRes, commentsRes] = await Promise.all([
+                    AumageDB.supabase.from('creature_likes').select('creature_id'),
+                    AumageDB.supabase.from('creature_comments').select('creature_id')
+                ]);
+
+                // 3. Map the counts to the creature objects
+                const likesMap = (likesRes.data || []).reduce((acc, item) => {
+                    acc[item.creature_id] = (acc[item.creature_id] || 0) + 1;
+                    return acc;
+                }, {});
+
+                const commentsMap = (commentsRes.data || []).reduce((acc, item) => {
+                    acc[item.creature_id] = (acc[item.creature_id] || 0) + 1;
+                    return acc;
+                }, {});
+
+                creatures.forEach(cr => {
+                    cr.likes_count = likesMap[cr.id] || 0;
+                    cr.comments_count = commentsMap[cr.id] || 0;
+                });
+
+                console.log('Admin: Processed creatures with counts:', creatures);
 
 
 
@@ -327,9 +342,8 @@
                         {
                             data: null,
                             render: function (data, type, row) {
-                                // Handle both .length (if IDs fetched) and .count (if count fetched)
-                                const likes = row.likes ? row.likes.length : (row.creature_likes?.[0]?.count || 0);
-                                const comments = row.comments ? row.comments.length : (row.creature_comments?.[0]?.count || 0);
+                                const likes = row.likes_count || 0;
+                                const comments = row.comments_count || 0;
                                 return `
                                     <div style="display:flex; gap:12px; align-items:center;">
                                         <div title="Likes" style="display:flex; align-items:center; gap:4px; color: #ff4757;">
