@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level Scaling — HoHeTo Kai</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    <style>
+        /* ── DataTables Modern Cyber Design ── */
+        .dataTables_wrapper {
+            padding: 0;
+            margin-top: 10px;
+            display: block;
+            overflow: visible;
+        }
+
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 24px;
+            color: var(--color-text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .dataTables_wrapper .dataTables_length { float: left; }
+        .dataTables_wrapper .dataTables_filter { float: right; }
+        
+        .dataTables_wrapper::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .dataTables_wrapper .dataTables_length select {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            border-radius: 8px;
+            padding: 6px 12px;
+            margin: 0 10px;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 12px;
+            padding-right: 28px;
+        }
+
+        .dataTables_wrapper .dataTables_filter input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            border-radius: 20px;
+            padding: 10px 20px;
+            margin-left: 15px;
+            width: 280px;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: var(--font-body);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            width: 320px;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 20px var(--color-primary-glow), inset 0 0 10px rgba(0, 212, 255, 0.1);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        table.dataTable {
+            border-collapse: collapse !important;
+            border-bottom: none !important;
+            margin: 0 !important;
+            width: 100% !important;
+            clear: both;
+            background: transparent !important;
+        }
+
+        table.dataTable thead th {
+            background: rgba(0, 212, 255, 0.08) !important;
+            color: var(--color-primary) !important;
+            border-bottom: 2px solid var(--color-primary-glow) !important;
+            text-transform: uppercase;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 18px 20px !important;
+        }
+
+        table.dataTable tbody tr {
+            background: transparent !important;
+            transition: all 0.2s;
+        }
+
+        table.dataTable tbody tr:hover {
+            background: rgba(0, 212, 255, 0.03) !important;
+            box-shadow: inset 0 0 15px rgba(0, 212, 255, 0.05);
+        }
+
+        table.dataTable tbody td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+            padding: 15px 20px !important;
+            color: rgba(255, 255, 255, 0.85);
+            vertical-align: middle;
+        }
+
+        .dataTables_wrapper .dataTables_info {
+            color: var(--color-text-muted) !important;
+            padding-top: 25px !important;
+            font-size: 13px;
+            float: left;
+        }
+
+        .dataTables_wrapper .dataTables_paginate {
+            padding-top: 25px !important;
+            float: right;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: var(--color-text-muted) !important;
+            border-radius: 10px !important;
+            border: 1px solid var(--glass-border) !important;
+            padding: 6px 14px !important;
+            margin-left: 6px !important;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.02) !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: var(--color-primary) !important;
+            color: #010a16 !important;
+            border-color: var(--color-primary) !important;
+            font-weight: 700;
+            box-shadow: 0 0 15px var(--color-primary-glow);
+        }
+
+        /* Form Styles */
+        .cyber-form .form-group {
+            margin-bottom: 20px;
+        }
+        .cyber-form label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--color-text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .cyber-form input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: #fff;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .cyber-form input:focus {
+            border-color: var(--color-primary);
+            background: rgba(255, 255, 255, 0.07);
+            box-shadow: 0 0 15px var(--color-primary-glow);
+        }
+
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--color-primary-glow);
+            border: 1px solid var(--color-primary);
+            border-radius: 50%;
+            color: var(--color-primary);
+            font-weight: 800;
+            font-size: 14px;
+            box-shadow: 0 0 10px var(--color-primary-glow);
+        }
+    </style>
+</head>
+
+<body class="admin-body">
+
+    <!-- Sidebar Placeholder -->
+    <div id="comp-admin-sidebar"></div>
+
+    <main class="main-area">
+        <!-- Top Bar Placeholder -->
+        <div id="comp-admin-header"></div>
+
+        <div class="content-view">
+            <div class="admin-welcome" style="display:flex; justify-content:space-between; align-items:flex-end;">
+                <div>
+                    <h1>Level Scaling</h1>
+                    <p>Configure experience points required for each level threshold.</p>
+                </div>
+                <button class="btn-action" onclick="addLevel()" style="padding: 12px 24px; font-size: 14px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Add Level
+                </button>
+            </div>
+
+            <section class="admin-section">
+                <div class="table-container">
+                    <table id="levelsTable" class="display responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Level</th>
+                                <th>XP Required</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data populated by DataTables -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer Placeholder -->
+        <div id="comp-admin-footer"></div>
+    </main>
+
+    <!-- Level Add/Edit Modal -->
+    <div id="levelModal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 class="modal-title" id="levelModalTitle">Add New Level</h2>
+                <button class="modal-close" onclick="closeLevelModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="levelForm" class="cyber-form">
+                    <input type="hidden" id="levelId">
+                    
+                    <div class="form-group">
+                        <label for="levelValue">Level</label>
+                        <input type="number" id="levelValue" placeholder="e.g. 5" required min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="xpRequired">XP Required</label>
+                        <input type="number" id="xpRequired" placeholder="e.g. 1500" required min="0">
+                    </div>
+
+                    <div class="form-actions" style="margin-top: 32px; display: flex; gap: 12px; justify-content: flex-end;">
+                        <button type="button" class="btn-action" style="background:transparent; border-color:var(--glass-border); color:#fff;" onclick="closeLevelModal()">Cancel</button>
+                        <button type="submit" class="btn-action">Save Level</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/db.js"></script>
+    <script src="../js/admin-components.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load Admin Components
+            await AdminComponentLoader.loadAll([
+                { id: 'comp-admin-sidebar', path: '../components/admin-sidebar.html' },
+                { id: 'comp-admin-header', path: '../components/admin-header.html' },
+                { id: 'comp-admin-footer', path: '../components/admin-footer.html' }
+            ]);
+
+            // Set active nav
+            const navDashboard = document.getElementById('nav-admin-dashboard');
+            const navLevels = document.getElementById('nav-admin-levels');
+            if (navDashboard) navDashboard.classList.remove('nav-item--active');
+            if (navLevels) navLevels.classList.add('nav-item--active');
+
+            // Database Initialization
+            if (window.AumageDB) {
+                window.AumageDB.init();
+                initializeLevelsTable();
+            }
+
+            // Form Submit
+            document.getElementById('levelForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await saveLevel();
+            });
+        });
+
+        let allLevels = [];
+
+        async function initializeLevelsTable() {
+            try {
+                const { data: levels, error } = await AumageDB.supabase
+                    .from('levels')
+                    .select('*')
+                    .order('level', { ascending: true });
+
+                if (error) throw error;
+                allLevels = levels;
+
+                // Destroy existing table if it exists
+                if ($.fn.DataTable.isDataTable('#levelsTable')) {
+                    $('#levelsTable').DataTable().destroy();
+                }
+
+                $('#levelsTable').DataTable({
+                    data: levels,
+                    columns: [
+                        {
+                            data: 'level',
+                            render: function (data) {
+                                return `<div class="level-badge">${data}</div>`;
+                            }
+                        },
+                        { 
+                            data: 'xp_required',
+                            render: function(data) {
+                                return `<span style="font-family: monospace; font-size: 1.1em; color: var(--color-primary);">${data.toLocaleString()} XP</span>`;
+                            }
+                        },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                return `
+                                    <div style="display:flex; gap:8px;">
+                                        <button class="btn-action" onclick="editLevel(${row.id})">Edit</button>
+                                        <button class="btn-action" onclick="deleteLevel(${row.id})" style="background:rgba(255,71,87,0.1); border-color:rgba(255,71,87,0.2); color:#ff4757;">Delete</button>
+                                    </div>
+                                `;
+                            }
+                        }
+                    ],
+                    responsive: true,
+                    pageLength: 25,
+                    order: [[0, 'asc']],
+                    language: {
+                        searchPlaceholder: "Search levels...",
+                        search: ""
+                    }
+                });
+            } catch (e) {
+                console.error('Error fetching levels:', e);
+            }
+        }
+
+        function addLevel() {
+            document.getElementById('levelModalTitle').textContent = 'Add New Level';
+            document.getElementById('levelForm').reset();
+            document.getElementById('levelId').value = '';
+            document.getElementById('levelModal').classList.add('active');
+        }
+
+        function editLevel(id) {
+            const level = allLevels.find(l => l.id === id);
+            if (!level) return;
+
+            document.getElementById('levelModalTitle').textContent = 'Edit Level';
+            document.getElementById('levelId').value = level.id;
+            document.getElementById('levelValue').value = level.level;
+            document.getElementById('xpRequired').value = level.xp_required;
+
+            document.getElementById('levelModal').classList.add('active');
+        }
+
+        function closeLevelModal() {
+            document.getElementById('levelModal').classList.remove('active');
+        }
+
+        async function saveLevel() {
+            const id = document.getElementById('levelId').value;
+            const levelData = {
+                level: parseInt(document.getElementById('levelValue').value),
+                xp_required: parseInt(document.getElementById('xpRequired').value)
+            };
+
+            try {
+                let error;
+                if (id) {
+                    // Update
+                    const { error: err } = await AumageDB.supabase
+                        .from('levels')
+                        .update(levelData)
+                        .eq('id', id);
+                    error = err;
+                } else {
+                    // Create
+                    const { error: err } = await AumageDB.supabase
+                        .from('levels')
+                        .insert(levelData);
+                    error = err;
+                }
+
+                if (error) throw error;
+
+                alert('Level saved successfully!');
+                closeLevelModal();
+                initializeLevelsTable();
+            } catch (e) {
+                console.error('Error saving level:', e);
+                alert('Failed to save level: ' + e.message);
+            }
+        }
+
+        async function deleteLevel(id) {
+            if (!confirm('Are you sure you want to delete this level requirement?')) {
+                return;
+            }
+
+            try {
+                const { error } = await AumageDB.supabase
+                    .from('levels')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                alert('Level deleted successfully!');
+                initializeLevelsTable();
+            } catch (e) {
+                console.error('Error deleting level:', e);
+                alert('Failed to delete level: ' + e.message);
+            }
+        }
+
+        // Close on overlay click
+        window.onclick = function(event) {
+            const modal = document.getElementById('levelModal');
+            if (event.target == modal) {
+                closeLevelModal();
+            }
+        }
+    </script>
+</body>
+
+</html>
